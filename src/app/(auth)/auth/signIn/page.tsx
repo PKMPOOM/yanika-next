@@ -10,7 +10,7 @@ const playfair_Display = Playfair_Display({
   weight: "400",
 });
 
-export default async function page() {
+export default async function SignIn() {
   const session = await getServerSession(authOptions);
   if (session) {
     redirect("/");

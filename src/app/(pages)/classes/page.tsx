@@ -9,17 +9,11 @@ import type { CalendarProps } from "antd";
 import themeConfig from "@/theme/themeConfig";
 import dayjs from "dayjs";
 
-export default function page() {
+export default function Classes() {
   const { data: session } = useSession();
   const today = dayjs();
 
   const [Value, setValue] = useState(today);
-
-  // const onPanelChange = (value: Dayjs, mode: CalendarProps<Dayjs>["mode"]) => {
-  //   console.log(value.format("YYYY-MM-DD"), mode);
-  // };
-
-  // const [selectedValue, setSelectedValue] = useState(dayjs());
 
   const onSelect = (newValue: Dayjs) => {
     console.log(dayjs(newValue).format("DD-MMM-YYYY"));

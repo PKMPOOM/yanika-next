@@ -5,7 +5,7 @@ import Statistics from "@/Components/Dashboard/Statistics";
 import ClassLists from "@/Components/Dashboard/ClassLists";
 import Container from "@/Components/Global/Container";
 
-export default async function page() {
+export default async function Dashboard() {
   return (
     <ConfigProvider theme={themeConfig}>
       <Container>

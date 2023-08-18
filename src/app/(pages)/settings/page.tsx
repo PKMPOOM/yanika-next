@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-export default function page() {
+export default function Settings() {
   return (
     <section className=" min-h-full flex items-center justify-center">
       All subject page

@@ -17,7 +17,7 @@ type grade = {
 // const gradeSchema = z.object({
 
 // })
-export default function page() {
+export default function Subjects() {
   return (
     <Container>
       <div>All subject</div>
