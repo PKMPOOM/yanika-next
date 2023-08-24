@@ -29,8 +29,6 @@ function SignInForm() {
   const callbackUrl = searchParams.get("callbackUrl") || "/";
   const [Error, setError] = useState<boolean>(false);
   const [Loading, setLoading] = useState<boolean>(false);
-  console.log(callbackUrl);
-  console.log(callbackUrl);
 
   const onSignIn = async (event: SiteConfigurationsType) => {
     try {

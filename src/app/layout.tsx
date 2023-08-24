@@ -6,6 +6,8 @@ import AuthProvider from "@/context/AuthProvider";
 import Navbar from "@/Components/Global/Navbar";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/authOptions";
+import { ConfigProvider } from "antd";
+import themeConfig from "@/theme/themeConfig";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -26,8 +28,10 @@ export default async function RootLayout({
       <body className={inter.className}>
         <AuthProvider>
           <StyledComponentsRegistry>
-            {session && <Navbar />}
-            {children}
+            <ConfigProvider theme={themeConfig}>
+              {session && <Navbar />}
+              {children}
+            </ConfigProvider>
           </StyledComponentsRegistry>
         </AuthProvider>
       </body>

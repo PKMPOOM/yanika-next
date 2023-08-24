@@ -2,7 +2,7 @@ import React from "react";
 
 function Container({ children }: { children: React.ReactNode }) {
   return (
-    <main className=" min-h-full flex items-center justify-center">
+    <main className=" min-h-full flex items-center justify-center px-8 xl:px-0">
       <div className=" max-w-7xl pt-6 w-full ">{children}</div>
     </main>
   );

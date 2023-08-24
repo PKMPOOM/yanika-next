@@ -10,6 +10,7 @@ import {
   theme,
   ConfigProvider,
   Skeleton,
+  Tag,
 } from "antd";
 import type { MenuProps } from "antd";
 import { useSession } from "next-auth/react";
@@ -104,64 +105,75 @@ function Navbar() {
     }
   };
 
+  console.log(session);
+
   return (
     <ConfigProvider theme={themeConfig}>
-      <nav className=" w-full h-10  justify-center flex items-center border-b border-slate-300  ">
+      <nav className=" w-full h-10  justify-center flex items-center border-b border-slate-200  ">
         <div className=" w-full max-w-7xl flex justify-between items-center px-8 xl:px-0">
           <Link
             href={session?.user.role === "admin" ? "/dashboard" : "/classes"}
           >
-            <div>Yanika</div>
+            {/* <div>Yanika</div> */}
+            <div>Meenites</div>
           </Link>
 
           {session?.user ? (
-            <ul className=" flex gap-3 items-center ">
-              {navMenu
-                .filter((item) => item.role.includes(session?.user.role))
-                .map((item) => (
-                  <Link key={item.id} href={item.href}>
-                    <li
-                      className={`${
-                        item.href === currentPath
-                          ? "font-semibold text-emerald-500"
-                          : ""
-                      }  py-1 text-sm  px-4 rounded hover:bg-emerald-50 cursor-pointer hover:text-emerald-500 transition-all duration-200`}
-                    >
-                      {item.name}
-                    </li>
-                  </Link>
-                ))}
-              <li>
-                <Dropdown
-                  placement="bottomRight"
-                  menu={{ items, onClick: onDropdownClick }}
-                  dropdownRender={(menu) => (
-                    <div style={contentStyle}>
-                      <div style={{ padding: "10px 16px" }}>
-                        <p>@{session?.user?.name}</p>
-                        <p className=" text-xs text-slate-500">
-                          {session?.user?.email ?? "No email added"}
-                        </p>
-                      </div>
-                      <Divider style={{ margin: 0 }} />
+            <>
+              <ul className=" flex gap-3 items-center ">
+                {session.user.role === "admin" && (
+                  <li>
+                    <Tag>Admin</Tag>
+                  </li>
+                )}
+                {navMenu
+                  .filter((item) => item.role.includes(session?.user.role))
+                  .map((item) => (
+                    <Link key={item.id} href={item.href}>
+                      <li
+                        className={`${
+                          currentPath.includes(item.href)
+                            ? // item.href === currentPath
+                              "font-semibold text-emerald-500"
+                            : ""
+                        }  py-1 text-sm  px-4 rounded hover:bg-emerald-50 cursor-pointer hover:text-emerald-500 transition-all duration-200`}
+                      >
+                        {item.name}
+                      </li>
+                    </Link>
+                  ))}
+                <li>
+                  <Dropdown
+                    placement="bottomRight"
+                    menu={{ items, onClick: onDropdownClick }}
+                    dropdownRender={(menu) => (
+                      <div style={contentStyle}>
+                        <div style={{ padding: "10px 16px" }}>
+                          <p>@{session?.user?.name}</p>
+                          <p className=" text-xs text-slate-500">
+                            {session?.user?.email ?? "No email added"}
+                          </p>
+                        </div>
+                        <Divider style={{ margin: 0 }} />
 
-                      {React.cloneElement(menu as React.ReactElement, {
-                        style: menuStyle,
-                      })}
-                    </div>
-                  )}
-                >
-                  <Avatar
-                    style={{
-                      backgroundColor: "#10b981",
-                      cursor: "pointer",
-                    }}
-                    src={session?.user.image}
-                    icon={<UserOutlined />}
-                  />
-                </Dropdown>
-              </li>
-            </ul>
+                        {React.cloneElement(menu as React.ReactElement, {
+                          style: menuStyle,
+                        })}
+                      </div>
+                    )}
+                  >
+                    <Avatar
+                      style={{
+                        backgroundColor: "#10b981",
+                        cursor: "pointer",
+                      }}
+                      src={session?.user.image}
+                      icon={<UserOutlined />}
+                    />
+                  </Dropdown>
+                </li>
+              </ul>
+            </>
           ) : (
             <div className=" flex gap-5 items-center">
               <Skeleton.Button active={true} size={"small"} />

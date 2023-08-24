@@ -13,6 +13,7 @@ async function main() {
       email: process.env.INIT_ADMIN_EMAIL,
       name: process.env.INIT_ADMIN_USERNAME,
       password,
+      role: "admin",
     },
   });
   console.log({ user });
