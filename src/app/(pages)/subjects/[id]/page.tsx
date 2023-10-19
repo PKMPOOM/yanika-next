@@ -101,7 +101,7 @@ const page = async ({ params }: PageProps) => {
             </h1>
             <div className=" flex ">
               {subject.tags.map((item) => (
-                <Tag>{item}</Tag>
+                <Tag key={item}>{item}</Tag>
               ))}
             </div>
             <p>{subject.description}</p>
@@ -109,9 +109,10 @@ const page = async ({ params }: PageProps) => {
             <p className=" font-semibold">Course Outline</p>
             <ul>
               {formatedCourseOutline.map((item, index) => (
-                <li className=" mb-2 flex gap-2 text-base">{`${
-                  index + 1
-                }.) ${item}`}</li>
+                <li
+                  key={item + index}
+                  className=" mb-2 flex gap-2 text-base"
+                >{`${index + 1}.) ${item}`}</li>
               ))}
             </ul>
 
@@ -126,7 +127,7 @@ const page = async ({ params }: PageProps) => {
         <h1 className=" text-2xl font-semibold">Other subjects</h1>
         <div className="grid grid-cols-4 gap-4">
           {recomendedSubject.map((item) => (
-            <Subject subject={item} />
+            <Subject key={item.id} subject={item} />
           ))}
         </div>
       </div>

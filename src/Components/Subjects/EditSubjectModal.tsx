@@ -28,6 +28,7 @@ import { z } from "zod";
 import { editSubjectSchema } from "@/interface/payload_validator";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { subjectFullTypes } from "@/interface/interface";
+import Image from "next/image";
 
 const { Text } = Typography;
 
@@ -252,7 +253,7 @@ function EditSubjectModal({
                     ) : null}
 
                     {Url ? (
-                      <img
+                      <Image
                         style={{
                           position: "absolute",
                           objectFit: "cover",
@@ -261,6 +262,7 @@ function EditSubjectModal({
                           borderRadius: "8px",
                           overflow: "hidden",
                         }}
+                        alt="subject image"
                         src={Url}
                       />
                     ) : (

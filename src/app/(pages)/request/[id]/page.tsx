@@ -137,7 +137,10 @@ const page = async ({ params }: PageProps) => {
                 return b.requestAt.getTime() - a.requestAt.getTime();
               })
               .map((item) => (
-                <div className="flex items-center justify-between rounded-md border border-emerald-400 p-3">
+                <div
+                  key={item.id}
+                  className="flex items-center justify-between rounded-md border border-emerald-400 p-3"
+                >
                   <div className=" ">
                     <DescValue
                       textSize="sm"
