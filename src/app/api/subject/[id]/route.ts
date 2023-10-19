@@ -6,7 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 // edit subject information
 export async function PUT(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     const id = params.id;
@@ -48,10 +48,7 @@ export async function PUT(
 }
 
 // get single subject information
-export async function GET(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+export async function GET(_: Request, { params }: { params: { id: string } }) {
   try {
     const id = params.id;
 
@@ -73,8 +70,8 @@ export async function GET(
 
 // delete single subject information
 export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
+  _: NextRequest,
+  { params }: { params: { id: string } },
 ) {
   try {
     const id = params.id;

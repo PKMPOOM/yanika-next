@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 
 export default function MySubjects() {
   return (
-    <section className=" min-h-full flex items-center justify-center">
+    <section className=" flex min-h-full items-center justify-center">
       My subject page
     </section>
   );
