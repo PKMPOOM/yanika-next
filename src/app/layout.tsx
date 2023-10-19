@@ -1,4 +1,4 @@
-import "./globals.css";
+import "@/app/globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import StyledComponentsRegistry from "../lib/AntdRegistry";
@@ -30,6 +30,7 @@ export default async function RootLayout({
           <StyledComponentsRegistry>
             <ConfigProvider theme={themeConfig}>
               {session && <Navbar />}
+
               {children}
             </ConfigProvider>
           </StyledComponentsRegistry>

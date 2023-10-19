@@ -4,9 +4,7 @@ import { useSession } from "next-auth/react";
 import React, { useState } from "react";
 import Loader from "@/Components/Global/Loader";
 import type { Dayjs } from "dayjs";
-import { Calendar, ConfigProvider } from "antd";
-import type { CalendarProps } from "antd";
-import themeConfig from "@/theme/themeConfig";
+import { Calendar } from "antd";
 import dayjs from "dayjs";
 
 export default function Classes() {
@@ -25,21 +23,15 @@ export default function Classes() {
   }
 
   return (
-    <ConfigProvider theme={themeConfig}>
-      <main className=" min-h-full flex items-center justify-center">
-        <div className=" max-w-7xl pt-6 w-full flex gap-4">
-          <div className=" w-2/4">
-            <Calendar
-              value={Value}
-              // onPanelChange={onPanelChange}
-              onSelect={onSelect}
-            />
-          </div>
-          <div className=" w-2/4">
-            <p className=" text-4xl">Welcome {session?.user.name}</p>
-          </div>
+    <main className=" flex min-h-full items-center justify-center">
+      <div className=" flex w-full max-w-7xl gap-4 pt-6">
+        <div className=" w-2/4">
+          <Calendar value={Value} onSelect={onSelect} />
         </div>
-      </main>
-    </ConfigProvider>
+        <div className=" w-2/4">
+          <p className=" text-4xl">Welcome {session?.user.name}</p>
+        </div>
+      </div>
+    </main>
   );
 }

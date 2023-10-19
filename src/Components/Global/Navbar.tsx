@@ -2,27 +2,29 @@
 
 import React from "react";
 import Link from "next/link";
-import { z } from "zod";
 import {
   Avatar,
   Dropdown,
   Divider,
   theme,
-  ConfigProvider,
   Skeleton,
   Tag,
+  Typography,
+  Button,
+  ConfigProvider,
 } from "antd";
 import type { MenuProps } from "antd";
 import { useSession } from "next-auth/react";
 import { signOut } from "next-auth/react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   SettingOutlined,
   LogoutOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import themeConfig from "@/theme/themeConfig";
-import { type systemRoles, navMenuTypes } from "@/interface/interface";
+import { type navMenuTypes } from "@/interface/interface";
+
+const { Title } = Typography;
 
 const items: MenuProps["items"] = [
   {
@@ -44,13 +46,17 @@ const menuStyle: React.CSSProperties = {
   boxShadow: "none",
 };
 
-const currentRole = "admin";
-
 const navMenu: navMenuTypes[] = [
   {
     name: "Dashboard",
     id: "dashboard",
     href: "/dashboard",
+    role: ["admin"],
+  },
+  {
+    name: "Request class",
+    id: "request_class",
+    href: "/request",
     role: ["admin"],
   },
   {
@@ -88,6 +94,9 @@ const navMenu: navMenuTypes[] = [
 function Navbar() {
   const { data: session } = useSession();
   const currentPath = usePathname();
+  const router = useRouter();
+
+  const isAdmin = session?.user.role === "admin";
 
   const { token } = useToken();
 
@@ -100,27 +109,39 @@ function Navbar() {
 
   const onDropdownClick: MenuProps["onClick"] = ({ key }) => {
     console.log(key);
-    if (key === "sign_out") {
-      signOut();
+
+    switch (key) {
+      case "sign_out":
+        return signOut();
+      case "settings":
+        isAdmin ? router.push("/settings/admin") : router.push("/settings");
+        break;
+      default:
+        break;
     }
   };
 
-  console.log(session);
-
   return (
-    <ConfigProvider theme={themeConfig}>
-      <nav className=" w-full h-10  justify-center flex items-center border-b border-slate-200  ">
-        <div className=" w-full max-w-7xl flex justify-between items-center px-8 xl:px-0">
-          <Link
-            href={session?.user.role === "admin" ? "/dashboard" : "/classes"}
-          >
-            {/* <div>Yanika</div> */}
-            <div>Meenites</div>
+    <ConfigProvider
+      theme={{
+        token: {
+          colorPrimary: "#fff",
+          colorPrimaryHover: "#ecfdf5",
+          colorBgTextHover: "#ecfdf5",
+        },
+      }}
+    >
+      <nav className=" flex h-10  w-full items-center justify-center border-b border-slate-200  ">
+        <div className=" flex w-full max-w-7xl items-center justify-between px-8 xl:px-0">
+          <Link href={isAdmin ? "/dashboard" : "/classes"}>
+            <Title style={{ marginBottom: 0 }} level={5}>
+              Meenites
+            </Title>
           </Link>
 
           {session?.user ? (
             <>
-              <ul className=" flex gap-3 items-center ">
+              <ul className=" flex items-center gap-3 ">
                 {session.user.role === "admin" && (
                   <li>
                     <Tag>Admin</Tag>
@@ -130,15 +151,29 @@ function Navbar() {
                   .filter((item) => item.role.includes(session?.user.role))
                   .map((item) => (
                     <Link key={item.id} href={item.href}>
-                      <li
-                        className={`${
-                          currentPath.includes(item.href)
-                            ? // item.href === currentPath
-                              "font-semibold text-emerald-500"
-                            : ""
-                        }  py-1 text-sm  px-4 rounded hover:bg-emerald-50 cursor-pointer hover:text-emerald-500 transition-all duration-200`}
-                      >
-                        {item.name}
+                      <li>
+                        <Button
+                          // shape="round"
+                          size="small"
+                          type={
+                            currentPath.includes(item.href)
+                              ? // item.href === currentPath
+                                "primary"
+                              : "text"
+                          }
+                        >
+                          <p
+                            className={` mb1 ${
+                              currentPath.includes(item.href)
+                                ? // item.href === currentPath
+                                  "font-semibold text-emerald-500"
+                                : ""
+                            } `}
+                          >
+                            {" "}
+                            {item.name}
+                          </p>
+                        </Button>
                       </li>
                     </Link>
                   ))}
@@ -175,7 +210,7 @@ function Navbar() {
               </ul>
             </>
           ) : (
-            <div className=" flex gap-5 items-center">
+            <div className=" flex items-center gap-5">
               <Skeleton.Button active={true} size={"small"} />
               <Skeleton.Button active={true} size={"small"} />
               <Skeleton.Button active={true} size={"small"} />

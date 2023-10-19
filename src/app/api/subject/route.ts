@@ -4,11 +4,10 @@ import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 import { createSubjectSchema } from "@/interface/payload_validator";
 
-export async function POST(req: Request, res: Response) {
+export async function POST(req: Request) {
   try {
     const { data } = await req.json();
     const { grade, subject_name } = createSubjectSchema.parse(data);
-    console.log(data);
     await prisma.subject.create({
       data: {
         name: subject_name,
@@ -27,7 +26,7 @@ export async function POST(req: Request, res: Response) {
   }
 }
 
-export async function GET(req: Request, res: Response) {
+export async function GET() {
   let allSubjects: gradeTypes[] = [
     {
       id: "school_1",
@@ -126,7 +125,7 @@ export async function GET(req: Request, res: Response) {
     });
 
     const filteredGrades = allSubjects.filter(
-      (item) => item.subjects.length > 0
+      (item) => item.subjects.length > 0,
     );
 
     return NextResponse.json({ subjectList: filteredGrades }, { status: 200 });
@@ -136,6 +135,7 @@ export async function GET(req: Request, res: Response) {
 
       return new Response("Invalid body", { status: 422 });
     }
+    console.log(error);
     return new Response("Internal server error", { status: 500 });
   }
 }

@@ -3,9 +3,8 @@
 import type { gradeTypes } from "@/interface/interface";
 import React, { createContext, useState } from "react";
 import Subject from "./Subject";
-import { Button, ConfigProvider, Input } from "antd";
+import { Button, Input } from "antd";
 import Loader from "../Global/Loader";
-import themeConfig from "@/theme/themeConfig";
 import EditSubjectModal from "./EditSubjectModal";
 import WideBTNSpan from "../Global/WideBTNSpan";
 import { useQuery } from "@tanstack/react-query";
@@ -30,8 +29,9 @@ function AllSubjects() {
   const [EditSubjectModalOpen, setEditSubjectModalOpen] = useState(false);
   const [CreateSubjectModalOpen, setCreateSubjectModalOpen] = useState(false);
   const [ActiveSubject, setActiveSubject] = useState<string | undefined>(
-    undefined
+    undefined,
   );
+  const [SearchKey, setSearchKey] = useState("");
 
   const SubjectPageContextValue: SubjectPageContext = {
     EditSubjectModalOpen,
@@ -53,6 +53,22 @@ function AllSubjects() {
     refetchOnWindowFocus: false,
   });
 
+  const filteredSubjectList = SubjectsData?.map((school) => ({
+    ...school,
+    subjects: school.subjects.filter((subject) => {
+      const valuesToSearch = [
+        ...Object.values(subject),
+        ...(subject.tags || []),
+      ];
+
+      return valuesToSearch.some(
+        (value) =>
+          typeof value === "string" &&
+          value.toLowerCase().includes(SearchKey.toLowerCase()),
+      );
+    }),
+  }));
+
   if (!session?.user) {
     return <Loader />;
   }
@@ -61,14 +77,20 @@ function AllSubjects() {
     <SubjectPageContext.Provider value={SubjectPageContextValue}>
       <div className="  flex flex-col gap-6">
         <div className=" flex gap-2 ">
-          <Input.Search placeholder="Search subjects" />
+          <Input.Search
+            value={SearchKey}
+            onChange={(e) => {
+              setSearchKey(e.target.value);
+            }}
+            placeholder="Search subjects"
+          />
           {session.user.role === "admin" && (
             <>
               <Button
+                type="primary"
                 onClick={() => {
                   setCreateSubjectModalOpen(true);
                 }}
-                type="primary"
               >
                 <WideBTNSpan>Add Subject</WideBTNSpan>
               </Button>
@@ -78,21 +100,20 @@ function AllSubjects() {
 
         {isLoading && <Loader />}
 
-        {SubjectsData &&
-          SubjectsData.map((grade) => {
-            if (grade.subjects.length > 0) {
-              return (
-                <div key={grade.id} className=" flex flex-col gap-2 mb-4 ">
-                  <p className=" font-bold">{grade.name}</p>
-                  <div className=" grid grid-cols-4 gap-4">
-                    {grade.subjects.map((items) => (
-                      <Subject key={items.id} subject={items} />
-                    ))}
-                  </div>
+        {filteredSubjectList?.map((grade) => {
+          if (grade.subjects.length > 0) {
+            return (
+              <div key={grade.id} className=" mb-4 flex flex-col gap-2 ">
+                <p className=" font-bold">{grade.name}</p>
+                <div className=" grid grid-cols-4 gap-4 ">
+                  {grade.subjects.map((items) => (
+                    <Subject key={items.id} subject={items} />
+                  ))}
                 </div>
-              );
-            }
-          })}
+              </div>
+            );
+          }
+        })}
       </div>
       <EditSubjectModal activeSubject={ActiveSubject} />
       <NewSubjectModal />

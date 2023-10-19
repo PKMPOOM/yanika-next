@@ -78,7 +78,7 @@ function NewSubjectModal() {
           <Select showSearch options={gradesOption} />
         </Form.Item>
 
-        <div className=" flex gap-2 justify-end w-full">
+        <div className=" flex gap-2 justify-end w-full mt-5">
           <Button htmlType="reset" onClick={onCancel} type="text">
             Cancel
           </Button>

@@ -6,8 +6,7 @@ import { NextRequest, NextResponse } from "next/server";
 // edit subject information
 export async function PUT(
   req: Request,
-  { params }: { params: { id: string } },
-  res: Response
+  { params }: { params: { id: string } }
 ) {
   try {
     const id = params.id;
@@ -48,8 +47,9 @@ export async function PUT(
   }
 }
 
+// get single subject information
 export async function GET(
-  req: NextRequest,
+  req: Request,
   { params }: { params: { id: string } }
 ) {
   try {
@@ -64,6 +64,31 @@ export async function GET(
     return NextResponse.json({ subject: subject }, { status: 200 });
   } catch (error) {
     if (error instanceof ZodError) {
+      return new Response("Invalid body", { status: 422 });
+    }
+    console.log(error);
+    return new Response("Internal server error", { status: 500 });
+  }
+}
+
+// delete single subject information
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const id = params.id;
+
+    await prisma.subject.delete({
+      where: {
+        id,
+      },
+    });
+
+    return new Response("DELETED", { status: 200 });
+  } catch (error) {
+    if (error instanceof ZodError) {
+      console.log(error);
       return new Response("Invalid body", { status: 422 });
     }
     console.log(error);

@@ -1,9 +1,18 @@
-import React, { useState } from "react";
+import Container from "@/Components/Global/Container";
+import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
+import React from "react";
 
-export default function Settings() {
+export default async function AdminSettings() {
+  const session = await getServerSession(authOptions);
+
+  if (session?.user.role === "admin") {
+    return redirect("/settings/admin");
+  }
   return (
-    <section className=" min-h-full flex items-center justify-center">
-      All subject page
-    </section>
+    <Container>
+      <> test</>
+    </Container>
   );
 }

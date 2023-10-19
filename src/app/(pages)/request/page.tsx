@@ -1,17 +1,20 @@
+import ClassesRequest from "@/Components/Classes/ClassesRequest/ClassesRequest";
+import Container from "@/Components/Global/Container";
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import React from "react";
 
-export default async function ManageUser() {
+export default async function Request() {
   const session = await getServerSession(authOptions);
 
   if (session?.user.role === "user") {
     redirect("/classes");
   }
+
   return (
-    <section className=" flex min-h-full items-center justify-center">
-      Manage user page
-    </section>
+    <Container>
+      <ClassesRequest />
+    </Container>
   );
 }

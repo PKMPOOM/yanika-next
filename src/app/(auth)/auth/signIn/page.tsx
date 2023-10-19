@@ -1,10 +1,13 @@
 import React from "react";
-import SignInForm from "@/Components/auth/SignInForm";
 import { Playfair_Display } from "next/font/google";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
+import dynamic from "next/dynamic";
+const SignInForm = dynamic(() => import("@/Components/auth/SignInForm"), {
+  ssr: false,
+});
 
 const playfair_Display = Playfair_Display({
   subsets: ["latin"],
@@ -22,11 +25,10 @@ export default async function SignIn() {
     redirect("/");
   }
   return (
-    <main className=" h-screen gap-6 flex items-start justify-center">
+    <main className=" h-screen gap-6 flex items-start justify-center overflow-hidden">
       <div className=" relative flex w-3/5 h-full bg-gradient-to-r from-emerald-500 to-emerald-400 text-white justify-center items-center">
         <div className=" absolute top-8 left-8">
           <p className={`${playfair_Display.className} text-6xl  top-8 left-8`}>
-            {/* Yanika */}
             Meenites
           </p>
           <p className={`text-base font-light  bottom-8 left-8`}>
@@ -34,7 +36,7 @@ export default async function SignIn() {
           </p>
         </div>
       </div>
-      <div className=" w-2/5 h-full px-10 flex pt-[15vh]">
+      <div className=" w-2/5 px-10 flex h-screen pt-[15vh]">
         <SignInForm />
       </div>
     </main>

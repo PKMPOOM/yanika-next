@@ -9,13 +9,12 @@ import {
   Modal,
   Row,
   Select,
-  SelectProps,
   Typography,
   Upload,
   UploadProps,
   theme,
 } from "antd";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { SubjectPageContext } from "./AllSubjects";
 import {
   LoadingOutlined,
@@ -26,7 +25,6 @@ import WideBTNSpan from "../Global/WideBTNSpan";
 import axios from "axios";
 import { gradesOption } from "@/constant/Grades";
 import { z } from "zod";
-import { RcFile } from "antd/es/upload";
 import { editSubjectSchema } from "@/interface/payload_validator";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { subjectFullTypes } from "@/interface/interface";
@@ -73,19 +71,12 @@ function EditSubjectModal({
     return res.data.subject;
   };
 
-  const {
-    data: SubjectsData,
-    isLoading,
-    isFetched,
-  } = useQuery<subjectFullTypes>({
+  const { data: SubjectsData, isFetched } = useQuery<subjectFullTypes>({
     queryKey: ["Subject", activeSubject],
     queryFn: fetchSubjectData,
     refetchOnWindowFocus: false,
     enabled: activeSubject !== undefined,
   });
-
-  console.log("is fetch", isFetched);
-  console.log("data", SubjectsData);
 
   if (isFetched && IsEditing === false) {
     setIsEditing(true);
@@ -98,8 +89,8 @@ function EditSubjectModal({
       single_price: SubjectsData?.single_price,
       group_price: SubjectsData?.group_price,
     });
-    if (SubjectsData?.img_url) {
-      setUrl(SubjectsData?.img_url);
+    if (SubjectsData?.image_url) {
+      setUrl(SubjectsData?.image_url);
     }
   }
 
@@ -107,7 +98,7 @@ function EditSubjectModal({
     name: "file",
     maxCount: 1,
     showUploadList: false,
-    beforeUpload(file, FileList) {
+    beforeUpload(file) {
       if (!file.type.includes("image/")) {
         setError("Please upload image file");
         console.log("error");
@@ -126,20 +117,26 @@ function EditSubjectModal({
       // Save file to state
       return true;
     },
-    action: `${process.env.NEXTAUTH_URL}/api/subject/${activeSubject}/upload}`,
+
+    action: `/api/subject/${activeSubject}/upload`,
     onChange(info) {
+      console.log(info);
+
       setUploading(true);
-      if (info.file.status !== "uploading") {
+      if (info.file.status === "uploading") {
         console.log("uploading");
       }
       if (info.file.status === "done") {
         console.log(info);
         setUploading(false);
-        setUrl(info.file.response.URL);
+        console.log(info.file.response.Url);
+
+        setUrl(info.file.response.Url);
       } else if (info.file.status === "error") {
         console.log(info.file.response.error);
         setUploading(false);
-        setError(info.file.response.error);
+        setError(info.file.response.error.error);
+        console.log(Error);
       }
     },
   };
@@ -156,10 +153,12 @@ function EditSubjectModal({
     setActiveSubject(undefined);
     setEditSubjectModalOpen(false);
     setIsEditing(false);
+    setUrl(undefined);
+    queryClient.invalidateQueries(["Subject", activeSubject]);
   };
 
   const editSubjectDetail = async (
-    event: z.infer<typeof editSubjectSchema>
+    event: z.infer<typeof editSubjectSchema>,
   ) => {
     setLoading(true);
     await axios
@@ -172,7 +171,6 @@ function EditSubjectModal({
         queryClient.invalidateQueries(["SubjectList"]);
         queryClient.invalidateQueries(["Subject", activeSubject]);
       });
-    console.log(event);
 
     setLoading(false);
   };
@@ -244,9 +242,9 @@ function EditSubjectModal({
                 noStyle
               >
                 <Dragger {...props} disabled={Uploading}>
-                  <div className="  flex flex-col gap-1 justify-center items-center h-24 ">
+                  <div className="  flex h-24 flex-col items-center justify-center gap-1 ">
                     {Uploading ? (
-                      <div className=" bg-white/40 inset-0 z-10 absolute flex justify-center items-center">
+                      <div className=" absolute inset-0 z-10 flex items-center justify-center bg-white/40">
                         <LoadingOutlined
                           style={{ color: token.colorPrimary, fontSize: 50 }}
                         />
@@ -303,9 +301,9 @@ function EditSubjectModal({
             </Form.Item>
 
             <Form.Item style={FormItemStyle}>
-              <div className="w-3/5 flex justify-between items-center">
+              <div className="flex w-3/5 items-center justify-between">
                 <Text>1-1 price</Text>
-                <div className=" flex gap-2 items-center">
+                <div className=" flex items-center gap-2">
                   <Form.Item
                     name="single_price"
                     rules={[
@@ -331,9 +329,9 @@ function EditSubjectModal({
             </Form.Item>
 
             <Form.Item>
-              <div className="  w-3/5 flex justify-between items-center">
+              <div className="  flex w-3/5 items-center justify-between">
                 <Text>Price per student</Text>
-                <div className=" flex gap-2 items-center">
+                <div className=" flex items-center gap-2">
                   <Form.Item
                     name="group_price"
                     rules={[
@@ -391,7 +389,7 @@ function EditSubjectModal({
             </Form.Item>
           </Col>
         </Row>
-        <div className=" flex gap-2 justify-end w-full">
+        <div className=" flex w-full justify-end gap-2">
           <Button htmlType="reset" onClick={onCancel} type="text">
             Cancel
           </Button>

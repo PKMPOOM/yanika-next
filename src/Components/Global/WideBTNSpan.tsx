@@ -1,7 +1,15 @@
-import React from "react";
+import React, { HTMLProps } from "react";
 
-function WideBTNSpan({ children }: { children: React.ReactNode }) {
-  return <span className=" px-5">{children}</span>;
+type Type = {
+  children: React.ReactNode;
+} & HTMLProps<HTMLDivElement>;
+
+function WideBTNSpan({ children, ...props }: Type) {
+  return (
+    <div {...props} className=" px-5">
+      {children}
+    </div>
+  );
 }
 
 export default WideBTNSpan;

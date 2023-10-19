@@ -10,12 +10,4 @@ export default async function Home() {
   } else {
     redirect("/classes");
   }
-
-  // return (
-  //   <main className="flex min-h-full flex-col items-center">
-  //     <div className=" w-full max-w-7xl py-4 outline-red-400 outline">
-  //       <p className=" text-4xl">Welcome {session?.user.name}</p>
-  //     </div>
-  //   </main>
-  // );
 }

@@ -1,9 +1,11 @@
 import React from "react";
-import { Col, ConfigProvider, Row, Statistic } from "antd";
-import themeConfig from "@/theme/themeConfig";
+import { Col, Row } from "antd";
 import Statistics from "@/Components/Dashboard/Statistics";
 import ClassLists from "@/Components/Dashboard/ClassLists";
 import Container from "@/Components/Global/Container";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
+import { redirect } from "next/navigation";
 
 export const metadata = {
   title: "Dashboard",
@@ -11,21 +13,25 @@ export const metadata = {
 };
 
 export default async function Dashboard() {
+  const session = await getServerSession(authOptions);
+
+  if (session?.user.role === "user") {
+    redirect("/classes");
+  }
+
   return (
-    <ConfigProvider theme={themeConfig}>
-      <Container>
-        <Row gutter={16}>
-          <Col span={16}>
-            <div className=" flex flex-col gap-6 min-h-[50vh]">
-              <Statistics />
-              <div className=" bg-red-100 flex-1">graph</div>
-            </div>
-          </Col>
-          <Col span={8}>
-            <ClassLists />
-          </Col>
-        </Row>
-      </Container>
-    </ConfigProvider>
+    <Container>
+      <Row gutter={16}>
+        <Col span={16}>
+          <div className=" flex min-h-[50vh] flex-col gap-6">
+            <Statistics />
+            <div className=" flex-1 bg-red-100">graph</div>
+          </div>
+        </Col>
+        <Col span={8}>
+          <ClassLists />
+        </Col>
+      </Row>
+    </Container>
   );
 }
