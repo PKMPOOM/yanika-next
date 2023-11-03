@@ -11,6 +11,7 @@ import { LuTrash } from "react-icons/lu";
 import { SiGooglecalendar } from "react-icons/si";
 const { Title } = Typography;
 import { FcGoogle } from "react-icons/fc";
+import { RetweetOutlined } from "@ant-design/icons";
 
 export type IntegrationsResponse = {
   googleAuthUserData: GoogleAuthUserData;
@@ -108,9 +109,17 @@ const Integrations = () => {
               </p>
             </div>
           </div>
-          <Button danger icon={<LuTrash />}>
-            Delete
-          </Button>
+          <div className=" flex gap-2">
+            <Button
+              icon={<RetweetOutlined />}
+              onClick={() => connectToGoogle()}
+            >
+              Reconnect to Google
+            </Button>
+            <Button danger icon={<LuTrash />}>
+              Delete
+            </Button>
+          </div>
         </div>
       ) : (
         <Button
