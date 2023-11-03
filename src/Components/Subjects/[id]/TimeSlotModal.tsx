@@ -19,7 +19,7 @@ function TimeSlotModal() {
   const {
     TimeSlotModalOpen,
     setTimeSlotModalOpen,
-    SelectedClass,
+    // SelectedClass,
     SelectedDateTime,
     setSelectedDateTime,
     api,
@@ -82,7 +82,7 @@ function TimeSlotModal() {
 
     const Payload = {
       SelectedDateTime: newArray,
-      SelectedClass,
+      // SelectedClass,
     };
 
     await axios
@@ -110,8 +110,6 @@ function TimeSlotModal() {
       });
 
     queryClient.invalidateQueries(["Timeslot"]);
-
-    // then alert new success modal => close modal
   };
 
   return (

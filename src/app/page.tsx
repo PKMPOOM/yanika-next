@@ -8,6 +8,6 @@ export default async function Home() {
   if (session && session.user.role === "admin") {
     redirect("/dashboard");
   } else {
-    redirect("/classes");
+    redirect("/subjects");
   }
 }

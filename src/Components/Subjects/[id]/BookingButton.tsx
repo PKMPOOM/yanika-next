@@ -2,9 +2,10 @@
 
 import { Button, notification } from "antd";
 import React, { createContext, useState } from "react";
-import TimeSlotModal from "./TimeSlotModal";
 import type { DayList, TimeList } from "@/interface/timeslot_interface";
 import { NotificationInstance } from "antd/es/notification/interface";
+import TimeSelectModal from "./TimeSelectModal";
+import { classType, useBookingModalStore } from "@/store/BookingModalStore";
 type Price = {
   groupPrice: number;
   singlePrice: number;
@@ -20,21 +21,17 @@ type selectedDateTime = {
 type TimeSlotContext = {
   TimeSlotModalOpen: boolean;
   setTimeSlotModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  SelectedClass: classType;
-  setSelectedClass: React.Dispatch<React.SetStateAction<classType>>;
+
   SelectedDateTime: selectedDateTime[];
   setSelectedDateTime: React.Dispatch<React.SetStateAction<selectedDateTime[]>>;
   api: NotificationInstance;
+  SelectTime: TimeList[] | undefined;
+  setSelectTime: React.Dispatch<React.SetStateAction<TimeList[] | undefined>>;
+  SelectedDay: DayList | undefined;
+  setSelectedDay: React.Dispatch<React.SetStateAction<DayList | undefined>>;
 };
 
 export const timeSlotContext = createContext({} as TimeSlotContext);
-
-type classType = {
-  classType: "group" | "single";
-  classPrice: number;
-  subjectID: string;
-  subjectName?: string;
-};
 
 function BookingButton({
   groupPrice,
@@ -43,22 +40,28 @@ function BookingButton({
   subjectName,
 }: Price) {
   const [api, contextHolder] = notification.useNotification();
-
   const [TimeSlotModalOpen, setTimeSlotModalOpen] = useState(false);
-  const [SelectedClass, setSelectedClass] = useState<classType>({
-    classType: "single",
-    classPrice: 0,
-    subjectID: subjectID,
-  });
+
   const [SelectedDateTime, setSelectedDateTime] = useState<selectedDateTime[]>(
     [],
   );
+  const [SelectTime, setSelectTime] = useState<TimeList[] | undefined>(
+    undefined,
+  );
+  const [SelectedDay, setSelectedDay] = useState<DayList | undefined>(
+    undefined,
+  );
 
-  const openModal = () => {
-    setTimeSlotModalOpen(true);
+  const [setModalOpen, setSelectedClass] = useBookingModalStore((state) => [
+    state.setModalOpen,
+    state.setSelectedClass,
+  ]);
+
+  const openModal = (classType: classType["classType"]) => {
+    setModalOpen(true);
     setSelectedClass({
-      classType: "single",
-      classPrice: singlePrice,
+      classType: classType,
+      classPrice: classType === "group" ? groupPrice : singlePrice,
       subjectID,
       subjectName: subjectName,
     });
@@ -67,20 +70,28 @@ function BookingButton({
   const contextValue = {
     TimeSlotModalOpen,
     setTimeSlotModalOpen,
-    SelectedClass,
     setSelectedClass,
     SelectedDateTime,
     setSelectedDateTime,
     api,
+    SelectTime,
+    setSelectTime,
+    SelectedDay,
+    setSelectedDay,
   };
 
   return (
     <timeSlotContext.Provider value={contextValue}>
       {contextHolder}
-      <div className=" flex flex-col gap-4">
+      <div className=" flex flex-col gap-4 rounded-lg border border-emerald-500 bg-emerald-50 p-4">
+        <p className=" text-lg font-semibold">Book this subject</p>
         {groupPrice > 0 && (
           <div className=" flex items-center gap-4">
-            <Button size="large" type="primary" onClick={openModal}>
+            <Button
+              size="large"
+              type="primary"
+              onClick={() => openModal("group")}
+            >
               {groupPrice} thb/hour
             </Button>
             <div className=" flex gap-2">
@@ -92,12 +103,16 @@ function BookingButton({
           </div>
         )}
         <div className=" flex items-center gap-4">
-          <Button size="large" onClick={openModal}>
+          <Button
+            size="large"
+            onClick={() => openModal("single")}
+            type={groupPrice > 0 ? "default" : "primary"}
+          >
             {singlePrice} thb/hour
           </Button>
           <p>1-1 class </p>
         </div>
-        <TimeSlotModal />
+        <TimeSelectModal />
       </div>
     </timeSlotContext.Provider>
   );

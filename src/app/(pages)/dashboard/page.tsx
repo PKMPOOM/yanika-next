@@ -16,7 +16,7 @@ export default async function Dashboard() {
   const session = await getServerSession(authOptions);
 
   if (session?.user.role === "user") {
-    redirect("/classes");
+    redirect("/subjects");
   }
 
   return (

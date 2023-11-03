@@ -10,3 +10,16 @@ export const timeToRange = {
   five_six: "17 - 18",
   NA: "NA",
 };
+
+export const timeToPosition = {
+  nine_ten: 0,
+  ten_eleven: 1,
+  eleven_twelve: 2,
+  twelve_one: 3,
+  one_two: 4,
+  two_three: 5,
+  three_four: 6,
+  four_five: 7,
+  five_six: 8,
+  NA: null,
+};

@@ -1,0 +1,116 @@
+"use client";
+
+import Container from "@/Components/Global/Container";
+import Loader from "@/Components/Global/Loader";
+import { TodayClasses } from "@/Components/TimeTable/TimeTable";
+import TimeTableCard from "@/Components/TimeTable/TimeTableCard";
+import { formattedUppercase } from "@/lib/formattedUppercase";
+import { HomeOutlined } from "@ant-design/icons";
+import { useQuery } from "@tanstack/react-query";
+import { Breadcrumb, Button } from "antd";
+import axios from "axios";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+
+interface PageProps {
+  params: {
+    day: string;
+  };
+}
+
+const SingleDayPage = ({ params }: PageProps) => {
+  const { data: session } = useSession();
+  const { day: dayID } = params;
+
+  const fetchData = async () => {
+    const res = await axios.get(`/api/calendar/time_table/${dayID}`);
+
+    return res.data;
+  };
+
+  const { data: todayClass } = useQuery<TodayClasses[]>({
+    queryFn: fetchData,
+    queryKey: ["todayClass", dayID],
+    refetchOnWindowFocus: false,
+  });
+
+  const TIMEGRIDHEIGHT = 110;
+
+  if (!session) {
+    return <Loader />;
+  }
+
+  if (session.user.role === "user") {
+    redirect("/subjects");
+  }
+
+  if (!todayClass) {
+    return <Loader />;
+  }
+
+  return (
+    <Container>
+      <div className=" mb-4 flex justify-between">
+        <Breadcrumb
+          items={[
+            {
+              title: (
+                <Link href="/">
+                  <HomeOutlined /> Dashboard
+                </Link>
+              ),
+            },
+            {
+              title: <Link href="/time_table">Time Table</Link>,
+            },
+            {
+              title: <>{formattedUppercase(dayID)}</>,
+            },
+          ]}
+        />
+      </div>
+
+      <div className=" flex items-baseline justify-between gap-2">
+        <p>{formattedUppercase(dayID)} </p>
+        <Button>Schedule all comfirmed class</Button>
+      </div>
+
+      <div className=" relative mt-6 flex h-[calc(100vh-200px)] flex-col items-start">
+        {Array(10)
+          .fill(null)
+          .map((_, index) => (
+            <div
+              key={index}
+              style={{
+                marginBottom: `${TIMEGRIDHEIGHT}px`,
+              }}
+              className="group relative flex w-full justify-end "
+            >
+              <div className=" absolute flex w-full">
+                <div className=" top-2 flex w-[5%] -translate-y-[10px]">
+                  <p>{index + 9} Hrs.</p>
+                </div>
+                <div className=" bottom-0 h-1 w-[95%] border-t border-slate-300 "></div>
+              </div>
+            </div>
+          ))}
+
+        {todayClass.map((item) => {
+          return (
+            <TimeTableCard
+              TIMEGRIDHEIGHT={TIMEGRIDHEIGHT}
+              day={dayID}
+              item={item}
+              key={item.id}
+              LEFTOFSET={64}
+              singleDay
+            />
+          );
+        })}
+      </div>
+    </Container>
+  );
+};
+
+export default SingleDayPage;

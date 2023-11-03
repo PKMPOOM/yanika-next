@@ -7,7 +7,7 @@ export default async function ManageUser() {
   const session = await getServerSession(authOptions);
 
   if (session?.user.role === "user") {
-    redirect("/classes");
+    redirect("/subjects");
   }
   return (
     <section className=" flex min-h-full items-center justify-center">

@@ -109,10 +109,9 @@ const page = async ({ params }: PageProps) => {
             <p className=" font-semibold">Course Outline</p>
             <ul>
               {formatedCourseOutline.map((item, index) => (
-                <li
-                  key={item + index}
-                  className=" mb-2 flex gap-2 text-base"
-                >{`${index + 1}.) ${item}`}</li>
+                <li key={item + index} className=" mb-2 flex gap-2 text-sm">{`${
+                  index + 1
+                }.) ${item}`}</li>
               ))}
             </ul>
 

@@ -264,6 +264,8 @@ function EditSubjectModal({
                         }}
                         alt="subject image"
                         src={Url}
+                        width={100}
+                        height={100}
                       />
                     ) : (
                       <>

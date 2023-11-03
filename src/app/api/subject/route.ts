@@ -18,10 +18,10 @@ export async function POST(req: Request) {
     return new Response("Success create new subject", { status: 200 });
   } catch (error) {
     if (error instanceof ZodError) {
-      console.log(error);
+      console.log(JSON.stringify(error, null, 2));
       return new Response("Invalid body", { status: 422 });
     }
-    console.log(error);
+    console.log(JSON.stringify(error, null, 2));
     return new Response("Internal server error", { status: 500 });
   }
 }
@@ -131,11 +131,11 @@ export async function GET() {
     return NextResponse.json({ subjectList: filteredGrades }, { status: 200 });
   } catch (error) {
     if (error instanceof ZodError) {
-      console.log(error);
+      console.log(JSON.stringify(error, null, 2));
 
       return new Response("Invalid body", { status: 422 });
     }
-    console.log(error);
+    console.log(JSON.stringify(error, null, 2));
     return new Response("Internal server error", { status: 500 });
   }
 }

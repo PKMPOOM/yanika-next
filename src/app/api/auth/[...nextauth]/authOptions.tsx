@@ -5,6 +5,7 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "@/lib/db";
 import { compare } from "bcrypt";
 import { systemRoles } from "@/interface/interface";
+// import GoogleProvider from "next-auth/providers/google";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
@@ -61,6 +62,12 @@ export const authOptions: NextAuthOptions = {
       clientId: process.env.LINE_CLIENT_ID as string,
       clientSecret: process.env.LINE_CLIENT_SECRET as string,
     }),
+
+    // GoogleProvider({
+    //   clientId: process.env.GOOGLE_CLIENT_ID!,
+    //   clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    // }),
+
     CredentialsProvider({
       name: "Credentials",
 
@@ -86,7 +93,7 @@ export const authOptions: NextAuthOptions = {
 
         const isPasswordValid = await compare(
           credentials.password,
-          user.password
+          user.password,
         );
 
         if (!isPasswordValid) {

@@ -39,10 +39,10 @@ export async function PUT(
     return new Response("OK", { status: 200 });
   } catch (error) {
     if (error instanceof ZodError) {
-      console.log(error);
+      console.log(JSON.stringify(error, null, 2));
       return new Response("Invalid body", { status: 422 });
     }
-    console.log(error);
+    console.log(JSON.stringify(error, null, 2));
     return new Response("Internal server error", { status: 500 });
   }
 }
@@ -63,7 +63,7 @@ export async function GET(_: Request, { params }: { params: { id: string } }) {
     if (error instanceof ZodError) {
       return new Response("Invalid body", { status: 422 });
     }
-    console.log(error);
+    console.log(JSON.stringify(error, null, 2));
     return new Response("Internal server error", { status: 500 });
   }
 }
@@ -85,10 +85,10 @@ export async function DELETE(
     return new Response("DELETED", { status: 200 });
   } catch (error) {
     if (error instanceof ZodError) {
-      console.log(error);
+      console.log(JSON.stringify(error, null, 2));
       return new Response("Invalid body", { status: 422 });
     }
-    console.log(error);
+    console.log(JSON.stringify(error, null, 2));
     return new Response("Internal server error", { status: 500 });
   }
 }

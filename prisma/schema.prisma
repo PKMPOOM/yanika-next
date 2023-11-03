@@ -28,6 +28,24 @@ model Account {
   @@unique([provider, providerAccountId])
 }
 
+model GoogleToken {
+  access_token   String       @id @default(cuid())
+  refresh_token  String       @unique
+  scope          String
+  token_type     String
+  id_token       String
+  expiry_date    String
+  expire_at      DateTime     @default(now()) @db.Timestamp()
+  Integrations   Integrations @relation(fields: [integrationsId], references: [id])
+  integrationsId String       @unique
+}
+
+model Integrations {
+  id                    String       @id @default(uuid())
+  GoogleToken           GoogleToken?
+  GoogleCalendarConnect Boolean      @default(false)
+}
+
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
@@ -86,6 +104,7 @@ model Subject {
   userId         String?
   RequestedClass RequestedClass[]
   TimeSlot       TimeSlot[]
+  NewTimeSlot    NewTimeSlot[]
 
   @@index([id])
 }
@@ -169,13 +188,37 @@ enum TimeSlots {
 }
 
 model Day {
-  id        Days       @unique @default(NA)
-  name      Days       @default(NA)
-  index     Int        @default(autoincrement())
-  time_slot TimeSlot[]
+  id          Days          @unique @default(NA)
+  name        Days          @default(NA)
+  index       Int           @default(autoincrement())
+  time_slot   TimeSlot[]
+  NewTimeSlot NewTimeSlot[]
 
   @@id([id])
   @@index([id])
+}
+
+model NewTimeSlot {
+  id                String      @unique @default(uuid())
+  index             Int         @default(autoincrement())
+  start_time        DateTime    @default(now())
+  parsed_start_time String      @default("")
+  duration          Float       @default(1.0)
+  Day               Day         @relation(fields: [dayId], references: [id])
+  dayId             Days
+  subject           Subject?    @relation(fields: [subjectId], references: [id])
+  subjectId         String?
+  userBooked        String[]
+  accept            Boolean     @default(false)
+  bookingType       BookingType @default(single)
+  totalPrice        Int         @default(0)
+  isScheduled       Boolean     @default(false)
+  meetingLink       String?
+}
+
+enum BookingType {
+  single
+  group
 }
 
 enum Days {

@@ -2,56 +2,63 @@ import { prisma } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { ZodError } from "zod";
 import { authOptions } from "../../auth/[...nextauth]/authOptions";
-import { requestClassSchema } from "@/interface/payload_validator";
-import type { DayList } from "@/interface/timeslot_interface";
-
-type requestDBschema = {
-  day: DayList;
-  timeSlotId: string;
-  subjectId: string;
-  userId: string;
-}[];
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    return new Response("Unauthorized", { status: 401 });
+    return new Response("Unauthenticated", { status: 401 });
   }
 
   const { data } = await req.json();
   const userID = session.user.id;
+  const email = session.user.email;
 
   try {
-    const { SelectedClass, SelectedDateTime } = requestClassSchema.parse(data);
+    const {
+      classDuration,
+      parsed_start_time,
+      startTime,
+      selectedDay,
+      SelectedClass,
+    } = data;
 
-    let POSTData: requestDBschema = [];
-
-    SelectedDateTime.forEach((item) => {
-      item.time.forEach((time) => {
-        const data = {
-          day: item.day,
-          timeSlotId: `${item.day}_${time}`,
-          subjectId: SelectedClass.subjectID,
-          userId: userID,
-        };
-        POSTData.push(data);
-      });
+    console.log({
+      classDuration,
+      parsed_start_time,
+      startTime,
+      selectedDay,
+      SelectedClass,
     });
 
-    await prisma.requestedClass.createMany({
-      data: POSTData,
+    await prisma.newTimeSlot.create({
+      data: {
+        start_time: startTime,
+        parsed_start_time: parsed_start_time,
+        duration: classDuration,
+        userBooked: [email ? email : userID],
+        bookingType: SelectedClass.classType,
+        totalPrice: SelectedClass.classPrice * classDuration,
+        Day: {
+          connect: {
+            id: selectedDay,
+          },
+        },
+        subject: {
+          connect: {
+            id: SelectedClass.subjectID,
+          },
+        },
+      },
     });
 
     return new Response("OK", { status: 200 });
   } catch (error) {
     if (error instanceof ZodError) {
-      console.log(error);
-
+      console.log(JSON.stringify(error, null, 2));
       return new Response("Bad request", { status: 400 });
     }
-    console.log(error);
-
+    console.log(JSON.stringify(error, null, 2));
     return new Response("Internal server error", { status: 500 });
   }
 }
