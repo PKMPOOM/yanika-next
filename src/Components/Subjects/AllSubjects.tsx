@@ -75,8 +75,9 @@ function AllSubjects() {
   }
 
   return (
+    // sm:bg-red-50 md:bg-yellow-50 lg:bg-blue-50 xl:bg-emerald-50 2xl:bg-orange-50
     <SubjectPageContext.Provider value={SubjectPageContextValue}>
-      <div className="  flex flex-col gap-6">
+      <div className="  flex flex-col gap-6 ">
         <div className=" flex gap-2 ">
           <Input.Search
             value={SearchKey}
@@ -106,7 +107,7 @@ function AllSubjects() {
             return (
               <div key={grade.id} className=" mb-4 flex flex-col gap-2 ">
                 <p className=" font-bold">{grade.name}</p>
-                <div className=" grid grid-cols-4 gap-4 ">
+                <div className=" grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {grade.subjects.map((items) => (
                     <Subject key={items.id} subject={items} />
                   ))}

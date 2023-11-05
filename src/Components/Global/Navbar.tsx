@@ -130,6 +130,8 @@ function Navbar() {
     setDrawwerOpen(false);
   };
 
+  console.log(currentPath);
+
   return (
     <div className=" relative">
       <nav className=" flex h-10  w-full items-center justify-center overflow-y-hidden border-b border-slate-200  ">
@@ -345,7 +347,7 @@ function Navbar() {
         </div>
       </nav>
 
-      {session && !session?.user.email && currentPath !== "/settings/admin" && (
+      {session && !session?.user.email && currentPath !== "/settings" && (
         <div className="absolute -bottom-10 z-20 flex w-screen justify-center bg-red-400">
           <div className="  flex h-10 w-full max-w-7xl items-center justify-between px-8 xl:px-0">
             <p className=" text-white">
