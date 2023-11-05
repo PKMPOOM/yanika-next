@@ -34,11 +34,16 @@ export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
-    jwt: async ({ token, user }) => {
+    jwt: async ({ token, user, session, trigger }) => {
       const db_user = user;
+
       if (user) {
         token.id = db_user.id;
         token.role = db_user.role;
+      }
+
+      if (trigger === "update" && session?.email) {
+        token.email = session.email;
       }
 
       return token;
