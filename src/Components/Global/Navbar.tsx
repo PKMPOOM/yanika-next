@@ -77,7 +77,7 @@ const navMenu: navMenuTypes[] = [
     role: ["user", "admin"],
   },
   {
-    name: "settings",
+    name: "Settings",
     id: "settings",
     href: "/settings",
     role: ["user"],
@@ -133,10 +133,10 @@ function Navbar() {
   console.log(currentPath);
 
   return (
-    <div className=" relative">
-      <nav className=" flex h-10  w-full items-center justify-center overflow-y-hidden border-b border-slate-200  ">
+    <>
+      <nav className=" relative flex h-10  w-full items-center justify-center overflow-y-hidden border-b border-slate-200  ">
         <div className=" flex w-full max-w-7xl items-center justify-between px-8 xl:px-0">
-          <Link href={isAdmin ? "/dashboard" : "/classes"}>
+          <Link href={isAdmin ? "/dashboard" : "/subjects"}>
             <div className=" w-24">
               <Meenites />
             </div>
@@ -258,70 +258,41 @@ function Navbar() {
                         </p>
                       </div>
                     </div>
+                  </div>
+
+                  <Divider />
+
+                  <div className=" flex flex-col items-start  ">
+                    {navMenu
+                      .filter((item) => item.role.includes(session?.user.role))
+                      .map((item) => (
+                        <div
+                          key={item.id}
+                          onClick={() => {
+                            drawerNavigate(item.href);
+                          }}
+                          className=" flex h-14 w-full cursor-pointer items-center border-b   "
+                        >
+                          <div className="justify-start text-lg font-semibold">
+                            <p>{item.name}</p>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+
+                  <div className="  mt-7 flex flex-col gap-2">
                     <Button
+                      type="primary"
                       onClick={() => {
                         signOut();
                       }}
+                      size="large"
                       icon={<LogoutOutlined />}
                       danger
                     >
                       Sign out
                     </Button>
                   </div>
-
-                  <Divider />
-
-                  <Button
-                    onClick={() => {
-                      isAdmin
-                        ? router.push("/settings/admin")
-                        : router.push("/settings");
-                      setDrawwerOpen(false);
-                    }}
-                    size="middle"
-                  >
-                    <p>Settings</p>
-                  </Button>
-
-                  <ul className=" flex flex-col items-start gap-3  ">
-                    {navMenu
-                      .filter((item) => item.role.includes(session?.user.role))
-                      .map((item) => (
-                        // <Link
-                        //   key={item.id}
-                        //   href={item.href}
-                        //   className=" w-full"
-                        // >
-                        <li key={item.id} className=" w-full ">
-                          <Button
-                            size="large"
-                            onClick={() => {
-                              drawerNavigate(item.href);
-                            }}
-                            type={
-                              currentPath.includes(item.href)
-                                ? // item.href === currentPath
-                                  "primary"
-                                : "text"
-                            }
-                          >
-                            <p
-                              className={` mb1 ${
-                                currentPath.includes(item.href)
-                                  ? // item.href === currentPath
-                                    "font-semibold text-emerald-500"
-                                  : ""
-                              } `}
-                            >
-                              {" "}
-                              {item.name}
-                            </p>
-                          </Button>
-                        </li>
-                        // </Link>
-                      ))}
-                    <li></li>
-                  </ul>
                 </div>
               ) : (
                 <div className=" flex items-center gap-5">
@@ -359,7 +330,7 @@ function Navbar() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }
 

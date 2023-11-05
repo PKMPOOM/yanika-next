@@ -1,6 +1,5 @@
 import { PrismaClient } from "@prisma/client";
 import { hash } from "bcrypt";
-import dayjs from "dayjs";
 import { v4 as uuid } from "uuid";
 const prisma = new PrismaClient();
 
@@ -29,17 +28,6 @@ async function main() {
       { id: "friday", name: "friday" },
       { id: "saturday", name: "saturday" },
       { id: "sunday", name: "sunday" },
-    ],
-    skipDuplicates: true,
-  });
-
-  await prisma.newTimeSlot.createMany({
-    data: [
-      {
-        id: "9",
-        dayId: "monday",
-        start_time: dayjs().set("day", 0).set("h", 9).toISOString(),
-      },
     ],
     skipDuplicates: true,
   });

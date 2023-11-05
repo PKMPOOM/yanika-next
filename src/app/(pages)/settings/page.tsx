@@ -22,7 +22,7 @@ export default function AdminSettings() {
     emailform.setFieldsValue({
       email: session?.user.email,
     });
-  }, [session]);
+  }, [session, emailform]);
 
   if (status === "loading") {
     return <Loader />;

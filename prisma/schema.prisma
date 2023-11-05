@@ -56,20 +56,20 @@ model Session {
 }
 
 model User {
-  id            String           @id @default(cuid())
+  id            String        @id @default(cuid())
   name          String?
-  email         String?          @unique
+  email         String?       @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
   // other than nextauth
-  password      String           @default("")
-  role          role             @default(user)
+  password      String        @default("")
+  role          role          @default(user)
   classes       Classes[]
   subject       Subject[]
-  request_class RequestedClass[]
-  TimeSlot      TimeSlot[]
+  // TimeSlot      TimeSlot[]
+  NewTimeSlot   NewTimeSlot[]
 
   @@index([email])
 }
@@ -88,22 +88,20 @@ model VerificationToken {
 }
 
 model Subject {
-  id             String           @id @default(cuid())
-  name           String           @default("")
-  description    String           @default("")
-  image_url      String           @default("")
-  course_outline String           @default("")
-  group_price    Int              @default(0)
-  single_price   Int              @default(200)
-  created_date   DateTime         @default(now())
-  update_at      DateTime         @updatedAt
+  id             String        @id @default(cuid())
+  name           String        @default("")
+  description    String        @default("")
+  image_url      String        @default("")
+  course_outline String        @default("")
+  group_price    Int           @default(0)
+  single_price   Int           @default(200)
+  created_date   DateTime      @default(now())
+  update_at      DateTime      @updatedAt
   tags           String[]
   Classes        Classes[]
-  grade          Grades           @default(school_1)
-  User           User?            @relation(fields: [userId], references: [id])
+  grade          Grades        @default(school_1)
+  User           User?         @relation(fields: [userId], references: [id])
   userId         String?
-  RequestedClass RequestedClass[]
-  TimeSlot       TimeSlot[]
   NewTimeSlot    NewTimeSlot[]
 
   @@index([id])
@@ -141,39 +139,6 @@ model Classes {
   @@index([id])
 }
 
-model RequestedClass {
-  id         String    @unique @default(uuid())
-  day        Days      @default(NA)
-  requestAt  DateTime  @default(now())
-  accepted   Boolean   @default(false)
-  subject    Subject   @relation(fields: [subjectId], references: [id])
-  subjectId  String
-  User       User      @relation(fields: [userId], references: [id])
-  userId     String
-  TimeSlot   TimeSlot? @relation(fields: [timeSlotId], references: [id])
-  timeSlotId String?
-
-  @@id([id])
-  @@index([id])
-}
-
-model TimeSlot {
-  id             String           @unique @default(uuid())
-  index          Int              @default(autoincrement())
-  start_time     TimeSlots        @default(NA)
-  available      Boolean          @default(true)
-  Day            Day              @relation(fields: [dayId], references: [id])
-  dayId          Days
-  user           User?            @relation(fields: [userId], references: [id])
-  userId         String?
-  subject        Subject?         @relation(fields: [subjectId], references: [id])
-  subjectId      String?
-  requestedClass RequestedClass[]
-
-  @@id([id])
-  @@index([id])
-}
-
 enum TimeSlots {
   NA
   nine_ten
@@ -191,7 +156,6 @@ model Day {
   id          Days          @unique @default(NA)
   name        Days          @default(NA)
   index       Int           @default(autoincrement())
-  time_slot   TimeSlot[]
   NewTimeSlot NewTimeSlot[]
 
   @@id([id])
@@ -214,6 +178,8 @@ model NewTimeSlot {
   totalPrice        Int         @default(0)
   isScheduled       Boolean     @default(false)
   meetingLink       String?
+  user              User        @relation(fields: [userId], references: [id])
+  userId            String
 }
 
 enum BookingType {

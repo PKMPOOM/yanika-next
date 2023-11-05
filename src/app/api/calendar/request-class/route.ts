@@ -39,6 +39,11 @@ export async function POST(req: Request) {
         userBooked: [email ? email : userID],
         bookingType: SelectedClass.classType,
         totalPrice: SelectedClass.classPrice * classDuration,
+        user: {
+          connect: {
+            id: userID,
+          },
+        },
         Day: {
           connect: {
             id: selectedDay,
