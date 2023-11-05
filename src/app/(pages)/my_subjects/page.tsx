@@ -9,6 +9,12 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import React from "react";
 import { EyeOutlined } from "@ant-design/icons";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
+
 export default async function MySubjects() {
   const session = await getServerSession(authOptions);
 
@@ -41,6 +47,8 @@ export default async function MySubjects() {
       },
     },
   });
+  // let offset = new Date().getTimezoneOffset();
+  // console.log("offset");
 
   return (
     <Container>
@@ -58,6 +66,9 @@ export default async function MySubjects() {
               ? dayjs(timeSlot.start_time).add(7, "day")
               : dayjs(timeSlot.start_time);
             let endTime = startTime.add(timeSlot.duration, "hour");
+            // const d1 = dayjs.tz(timeSlot.start_time, "Asia/Bangkok");
+
+            // console.log(d1);
 
             return (
               <div
@@ -111,9 +122,11 @@ export default async function MySubjects() {
                 {timeSlot.isScheduled && (
                   <div className=" mt-3 flex flex-col gap-1 rounded border border-emerald-500 bg-emerald-100 p-2 text-sm">
                     {` Next class on 
-                    ${dayjs(startTime).format("DD MMM H:mm")}  - ${dayjs(
-                      endTime,
-                    ).format("H:mm")}`}
+                    ${dayjs
+                      .tz(startTime, "Asia/Bangkok")
+                      .format("DD MMM H:mm")}  - ${dayjs
+                      .tz(endTime, "Asia/Bangkok")
+                      .format("H:mm")}`}
                     <Button>Join with Google meet </Button>
                   </div>
                 )}
