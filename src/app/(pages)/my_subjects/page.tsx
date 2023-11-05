@@ -47,8 +47,8 @@ export default async function MySubjects() {
       },
     },
   });
-  // let offset = new Date().getTimezoneOffset();
-  // console.log("offset");
+
+  const tz = "Asia/Bangkok";
 
   return (
     <Container>
@@ -66,9 +66,6 @@ export default async function MySubjects() {
               ? dayjs(timeSlot.start_time).add(7, "day")
               : dayjs(timeSlot.start_time);
             let endTime = startTime.add(timeSlot.duration, "hour");
-            // const d1 = dayjs.tz(timeSlot.start_time, "Asia/Bangkok");
-
-            // console.log(d1);
 
             return (
               <div
@@ -97,7 +94,8 @@ export default async function MySubjects() {
                     <p className=" font-semibold">{timeSlot.subject?.name}</p>
                     <div className=" text-sm">
                       <p className="">
-                        {dayjs(timeSlot.start_time).format("dddd H:mm")} Hrs.
+                        {dayjs.tz(timeSlot.start_time, tz).format("dddd H:mm")}{" "}
+                        Hrs.
                       </p>
                       <p>
                         <span className=" font-semibold">
@@ -122,10 +120,8 @@ export default async function MySubjects() {
                 {timeSlot.isScheduled && (
                   <div className=" mt-3 flex flex-col gap-1 rounded border border-emerald-500 bg-emerald-100 p-2 text-sm">
                     {` Next class on 
-                    ${dayjs
-                      .tz(startTime, "Asia/Bangkok")
-                      .format("DD MMM H:mm")}  - ${dayjs
-                      .tz(endTime, "Asia/Bangkok")
+                    ${dayjs.tz(startTime, tz).format("DD MMM H:mm")}  - ${dayjs
+                      .tz(endTime, tz)
                       .format("H:mm")}`}
                     <Button>Join with Google meet </Button>
                   </div>
