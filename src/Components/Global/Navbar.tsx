@@ -12,18 +12,18 @@ import {
   Button,
   ConfigProvider,
   Divider,
+  Drawer,
   Dropdown,
   Skeleton,
   Tag,
   theme,
 } from "antd";
 import { signOut, useSession } from "next-auth/react";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import React from "react";
-import test from "../../../public/meen.svg";
-
+import React, { useState } from "react";
+import Meenites from "../../../public/meen.svg";
+import { MenuOutlined } from "@ant-design/icons";
 const items: MenuProps["items"] = [
   {
     key: "settings",
@@ -92,6 +92,7 @@ const navMenu: navMenuTypes[] = [
 
 function Navbar() {
   const { data: session } = useSession();
+  const [DrawwerOpen, setDrawwerOpen] = useState(false);
   const currentPath = usePathname();
   const router = useRouter();
 
@@ -120,48 +121,181 @@ function Navbar() {
     }
   };
 
-  return (
-    <ConfigProvider
-      theme={{
-        token: {
-          colorPrimary: "#fff",
-          colorPrimaryHover: "#ecfdf5",
-          colorBgTextHover: "#ecfdf5",
-        },
-      }}
-    >
-      <div className=" relative">
-        <nav className=" flex h-10  w-full items-center justify-center overflow-y-hidden border-b border-slate-200  ">
-          <div className=" flex w-full max-w-7xl items-center justify-between px-8 xl:px-0">
-            <Link href={isAdmin ? "/dashboard" : "/classes"}>
-              <Image
-                priority
-                src={test}
-                width={80}
-                height={20}
-                style={{
-                  overflow: "hidden",
-                }}
-                alt="Follow us on Twitter"
-              />
-            </Link>
+  const onClose = () => {
+    setDrawwerOpen(false);
+  };
 
-            {session?.user ? (
-              <>
-                <ul className=" flex items-center gap-3 ">
-                  {session.user.role === "admin" && (
+  const drawerNavigate = (href: string) => {
+    router.push(href);
+    setDrawwerOpen(false);
+  };
+
+  return (
+    <div className=" relative">
+      <nav className=" flex h-10  w-full items-center justify-center overflow-y-hidden border-b border-slate-200  ">
+        <div className=" flex w-full max-w-7xl items-center justify-between px-8 xl:px-0">
+          <Link href={isAdmin ? "/dashboard" : "/classes"}>
+            <div className=" w-24">
+              <Meenites />
+            </div>
+          </Link>
+          <ConfigProvider
+            theme={{
+              token: {
+                colorPrimary: "#fff",
+                colorPrimaryHover: "#ecfdf5",
+                colorBgTextHover: "#ecfdf5",
+              },
+            }}
+          >
+            <div className=" hidden md:flex">
+              {session?.user ? (
+                <>
+                  <ul className=" flex items-center gap-3 ">
+                    {session.user.role === "admin" && (
+                      <li>
+                        <Tag>Admin</Tag>
+                      </li>
+                    )}
+                    {navMenu
+                      .filter((item) => item.role.includes(session?.user.role))
+                      .map((item) => (
+                        <Link key={item.id} href={item.href}>
+                          <li>
+                            <Button
+                              // shape="round"
+                              size="small"
+                              type={
+                                currentPath.includes(item.href)
+                                  ? // item.href === currentPath
+                                    "primary"
+                                  : "text"
+                              }
+                            >
+                              <p
+                                className={` mb1 ${
+                                  currentPath.includes(item.href)
+                                    ? // item.href === currentPath
+                                      "font-semibold text-emerald-500"
+                                    : ""
+                                } `}
+                              >
+                                {" "}
+                                {item.name}
+                              </p>
+                            </Button>
+                          </li>
+                        </Link>
+                      ))}
                     <li>
-                      <Tag>Admin</Tag>
+                      <Dropdown
+                        placement="bottomRight"
+                        menu={{ items, onClick: onDropdownClick }}
+                        dropdownRender={(menu) => (
+                          <div style={contentStyle}>
+                            <div style={{ padding: "10px 16px" }}>
+                              <p>@{session?.user?.name}</p>
+                              <p className=" text-xs text-slate-500">
+                                {session?.user?.email ?? "No email added"}
+                              </p>
+                            </div>
+                            <Divider style={{ margin: 0 }} />
+
+                            {React.cloneElement(menu as React.ReactElement, {
+                              style: menuStyle,
+                            })}
+                          </div>
+                        )}
+                      >
+                        <Avatar
+                          style={{
+                            backgroundColor: "#10b981",
+                            cursor: "pointer",
+                          }}
+                          src={session?.user.image}
+                          icon={<UserOutlined />}
+                        />
+                      </Dropdown>
                     </li>
-                  )}
-                  {navMenu
-                    .filter((item) => item.role.includes(session?.user.role))
-                    .map((item) => (
-                      <Link key={item.id} href={item.href}>
-                        <li>
+                  </ul>
+                </>
+              ) : (
+                <div className=" flex items-center gap-5">
+                  <Skeleton.Button active={true} size={"small"} />
+                  <Skeleton.Button active={true} size={"small"} />
+                  <Skeleton.Button active={true} size={"small"} />
+                  <Skeleton.Button active={true} size={"small"} />
+                  <Skeleton.Avatar active={true} size={"default"} />
+                </div>
+              )}
+            </div>
+            <Drawer
+              title="Menu"
+              placement="right"
+              onClose={onClose}
+              // open={true}
+              open={DrawwerOpen}
+            >
+              {session?.user ? (
+                <div className=" flex flex-col">
+                  <div className=" flex items-center justify-between gap-2 ">
+                    <div className=" flex items-center gap-2">
+                      <Avatar
+                        style={{
+                          backgroundColor: "#10b981",
+                          cursor: "pointer",
+                        }}
+                        src={session?.user.image}
+                        icon={<UserOutlined />}
+                      />
+
+                      <div className="px-2">
+                        <p>@{session?.user?.name}</p>
+                        <p className=" text-xs text-slate-500">
+                          {session?.user?.email ?? "No email added"}
+                        </p>
+                      </div>
+                    </div>
+                    <Button
+                      onClick={() => {
+                        signOut();
+                      }}
+                      icon={<LogoutOutlined />}
+                      danger
+                    >
+                      Sign out
+                    </Button>
+                  </div>
+
+                  <Divider />
+
+                  <Button
+                    onClick={() => {
+                      isAdmin
+                        ? router.push("/settings/admin")
+                        : router.push("/settings");
+                      setDrawwerOpen(false);
+                    }}
+                    size="middle"
+                  >
+                    <p>Settings</p>
+                  </Button>
+
+                  <ul className=" flex flex-col items-start gap-3  ">
+                    {navMenu
+                      .filter((item) => item.role.includes(session?.user.role))
+                      .map((item) => (
+                        // <Link
+                        //   key={item.id}
+                        //   href={item.href}
+                        //   className=" w-full"
+                        // >
+                        <li key={item.id} className=" w-full ">
                           <Button
-                            // shape="round"
-                            size="small"
+                            size="large"
+                            onClick={() => {
+                              drawerNavigate(item.href);
+                            }}
                             type={
                               currentPath.includes(item.href)
                                 ? // item.href === currentPath
@@ -182,68 +316,48 @@ function Navbar() {
                             </p>
                           </Button>
                         </li>
-                      </Link>
-                    ))}
-                  <li>
-                    <Dropdown
-                      placement="bottomRight"
-                      menu={{ items, onClick: onDropdownClick }}
-                      dropdownRender={(menu) => (
-                        <div style={contentStyle}>
-                          <div style={{ padding: "10px 16px" }}>
-                            <p>@{session?.user?.name}</p>
-                            <p className=" text-xs text-slate-500">
-                              {session?.user?.email ?? "No email added"}
-                            </p>
-                          </div>
-                          <Divider style={{ margin: 0 }} />
+                        // </Link>
+                      ))}
+                    <li></li>
+                  </ul>
+                </div>
+              ) : (
+                <div className=" flex items-center gap-5">
+                  <Skeleton.Button active={true} size={"small"} />
+                  <Skeleton.Button active={true} size={"small"} />
+                  <Skeleton.Button active={true} size={"small"} />
+                  <Skeleton.Button active={true} size={"small"} />
+                  <Skeleton.Avatar active={true} size={"default"} />
+                </div>
+              )}
+            </Drawer>
+          </ConfigProvider>
 
-                          {React.cloneElement(menu as React.ReactElement, {
-                            style: menuStyle,
-                          })}
-                        </div>
-                      )}
-                    >
-                      <Avatar
-                        style={{
-                          backgroundColor: "#10b981",
-                          cursor: "pointer",
-                        }}
-                        src={session?.user.image}
-                        icon={<UserOutlined />}
-                      />
-                    </Dropdown>
-                  </li>
-                </ul>
-              </>
-            ) : (
-              <div className=" flex items-center gap-5">
-                <Skeleton.Button active={true} size={"small"} />
-                <Skeleton.Button active={true} size={"small"} />
-                <Skeleton.Button active={true} size={"small"} />
-                <Skeleton.Button active={true} size={"small"} />
-                <Skeleton.Avatar active={true} size={"default"} />
-              </div>
-            )}
+          <div className=" md:hidden">
+            <Button
+              onClick={() => {
+                setDrawwerOpen(true);
+              }}
+              icon={<MenuOutlined />}
+              type="primary"
+            ></Button>
           </div>
-        </nav>
+        </div>
+      </nav>
 
-        {session &&
-          !session?.user.email &&
-          currentPath !== "/settings/admin" && (
-            <div className="absolute -bottom-10 z-20 flex w-screen justify-center bg-red-400">
-              <div className="  flex h-10 w-full max-w-7xl items-center justify-between px-8 xl:px-0">
-                <p className=" text-white">
-                  No email added{" "}
-                  <span>
-                    <Link href={"/settings"}>Add email</Link>
-                  </span>
-                </p>
-              </div>
-            </div>
-          )}
-      </div>
-    </ConfigProvider>
+      {session && !session?.user.email && currentPath !== "/settings/admin" && (
+        <div className="absolute -bottom-10 z-20 flex w-screen justify-center bg-red-400">
+          <div className="  flex h-10 w-full max-w-7xl items-center justify-between px-8 xl:px-0">
+            <p className=" text-white">
+              No email added{" "}
+              <span>
+                <Link href={"/settings"}>Add email</Link>
+              </span>
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
