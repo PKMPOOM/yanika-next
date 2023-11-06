@@ -1,13 +1,14 @@
-import "@/app/globals.css";
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import StyledComponentsRegistry from "../lib/AntdRegistry";
-import AuthProvider from "@/context/AuthProvider";
 import Navbar from "@/Components/Global/Navbar";
-import { getServerSession } from "next-auth";
-import { authOptions } from "./api/auth/[...nextauth]/authOptions";
-import { ConfigProvider } from "antd";
+import "@/app/globals.css";
+import AuthProvider from "@/context/AuthProvider";
 import themeConfig from "@/theme/themeConfig";
+import { ConfigProvider } from "antd";
+import type { Metadata } from "next";
+import { getServerSession } from "next-auth";
+import { Inter } from "next/font/google";
+import Script from "next/script";
+import StyledComponentsRegistry from "../lib/AntdRegistry";
+import { authOptions } from "./api/auth/[...nextauth]/authOptions";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,6 +26,7 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
+      <Script src="https://d.line-scdn.net/liff/1.0/sdk.js" />
       <body className={inter.className}>
         <AuthProvider>
           <StyledComponentsRegistry>

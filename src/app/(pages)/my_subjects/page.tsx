@@ -117,13 +117,19 @@ export default async function MySubjects() {
                   </Link>
                 </div>
 
-                {timeSlot.isScheduled && (
+                {timeSlot.isScheduled && timeSlot.meetingLink && (
                   <div className=" mt-3 flex flex-col gap-1 rounded border border-emerald-500 bg-emerald-100 p-2 text-sm">
                     {` Next class on 
                     ${dayjs.tz(startTime, tz).format("DD MMM H:mm")}  - ${dayjs
                       .tz(endTime, tz)
                       .format("H:mm")}`}
-                    <Button>Join with Google meet </Button>
+                    <Link
+                      href={timeSlot.meetingLink}
+                      target="_blank"
+                      style={{ width: "100%" }}
+                    >
+                      <Button block>Join with Google meet </Button>
+                    </Link>
                   </div>
                 )}
               </div>

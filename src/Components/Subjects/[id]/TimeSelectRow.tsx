@@ -47,8 +47,8 @@ function TimeSelectRow({ timeSlot }: timeSlot) {
         className={` mb-2 flex items-center  justify-between gap-2 rounded-md border  p-2 outline-none 
       transition-all duration-300 `}
       >
-        <p className=" w-1/12 "></p>
-        <div className="flex w-11/12 justify-between">
+        <p className="hidden sm:flex sm:w-1/12 "></p>
+        <div className="flex w-full justify-between sm:w-11/12">
           {Object.keys(DateTimeMap).map((_, index) => {
             const startTime = 9;
             const hours = Math.floor(startTime + index / 2);
@@ -61,7 +61,9 @@ function TimeSelectRow({ timeSlot }: timeSlot) {
                   className=" group relative flex h-5 w-4 justify-center rounded "
                   key={time}
                 >
-                  {time}
+                  <span>{hours}</span>
+                  <span className="hidden sm:flex ">:{minutes}</span>
+                  {/* {testTime} */}
                 </div>
               );
             }
@@ -78,12 +80,13 @@ function TimeSelectRow({ timeSlot }: timeSlot) {
                 // opacity: selectedDay === day.name ? 1 : 0.2,
               }
             }
-            className={` mb-2 flex items-center  justify-between gap-2 rounded-md border p-2 
-            outline-none transition-all duration-300 `}
+            className={` mb-2 flex flex-col items-center justify-between  gap-2 rounded-md border p-2 outline-none 
+            transition-all duration-300 sm:flex-row `}
           >
-            <p className=" w-1/12 ">{formattedUppercase(day.name)}</p>
+            <p className=" w-full sm:w-1/12 ">{formattedUppercase(day.name)}</p>
+
             <div
-              className={`relative flex w-11/12 items-center justify-between bg-emerald-50`}
+              className={`relative flex w-full items-center justify-between bg-emerald-50 sm:w-11/12`}
             >
               {/* selected bar */}
               {day.name === selectedDay && startTime !== undefined && (

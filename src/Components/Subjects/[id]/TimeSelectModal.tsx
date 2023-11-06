@@ -74,8 +74,6 @@ function TimeSelectModal() {
     });
   };
 
-  console.log(SelectedClass);
-
   const requestClass = async () => {
     console.log({
       startTime,
@@ -132,32 +130,36 @@ function TimeSelectModal() {
       footer={null}
       width={formStep === 1 ? "1000px" : "500px"}
     >
-      <Title level={3}>Select date & times</Title>
+      <div className=" mb-4 flex  flex-col items-start  sm:flex-row sm:items-center sm:gap-4">
+        <Title level={3}>Select date & times</Title>
+        <div className=" flex gap-2">
+          <div className="flex items-center gap-2">
+            <div className=" h-3 w-3  rounded-full bg-orange-400"></div>
+            <div>Request</div>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className=" h-3 w-3  rounded-full bg-rose-400"></div>
+            <div>Booked</div>
+          </div>
+        </div>
+      </div>
 
       <div className=" flex flex-col gap-3">
         {formStep === 1 ? (
           <>
-            <div className=" flex justify-between">
-              <div className=" flex gap-2 rounded-md  border bg-slate-50/50  p-2">
+            <div className=" flex flex-col justify-between gap-2">
+              <div className=" flex flex-col gap-2 rounded-md  border bg-slate-50/50  p-2">
                 <p>Class Duration</p>
                 <Radio.Group
                   defaultValue={classDuration}
                   onChange={(e) => setClassDuration(e.target.value)}
                 >
-                  <Radio value={1}>1 Hour</Radio>
-                  <Radio value={1.5}>1.30 Hours</Radio>
-                  <Radio value={2}>2 Hours</Radio>
+                  <div className=" flex flex-col gap-2 sm:flex-row">
+                    <Radio value={1}>1 Hour</Radio>
+                    <Radio value={1.5}>1.30 Hours</Radio>
+                    <Radio value={2}>2 Hours</Radio>
+                  </div>
                 </Radio.Group>
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <div className=" h-3 w-3  rounded-full bg-orange-400"></div>
-                  <div>Request by others</div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className=" h-3 w-3  rounded-full bg-rose-400"></div>
-                  <div>Booked by others</div>
-                </div>
               </div>
             </div>
             <TimeSelectRow timeSlot={TimeSlotState} />
@@ -167,46 +169,130 @@ function TimeSelectModal() {
         )}
       </div>
 
-      <div className=" mt-5 flex w-full justify-end gap-2">
+      <div className=" mt-5 flex w-full flex-col justify-between gap-2 sm:flex-row">
         <Button htmlType="reset" onClick={onCancel} type="text">
           Cancel
         </Button>
 
-        {formStep > 1 && (
-          <Button
-            onClick={() => {
-              setFormStep(1);
-            }}
-          >
-            <WideBTNSpan className=" flex items-center gap-2 px-20 text-white">
-              <p>Back</p>
-            </WideBTNSpan>
-          </Button>
-        )}
+        <div className=" flex flex-col gap-2 sm:flex-row">
+          {formStep > 1 && (
+            <Button
+              onClick={() => {
+                setFormStep(1);
+              }}
+            >
+              <WideBTNSpan className=" flex items-center gap-2 px-20 text-white">
+                <p>Back</p>
+              </WideBTNSpan>
+            </Button>
+          )}
 
-        {formStep === 1 ? (
-          <Button
-            // disabled={SelectedDateTime.length === 0}
-            onClick={() => {
-              setFormStep(2);
-            }}
-          >
-            <WideBTNSpan className=" flex items-center gap-2 px-20 text-white">
-              <p>Next</p>
-            </WideBTNSpan>
-          </Button>
-        ) : (
-          <Button
-            loading={Loading}
-            onClick={requestClass}
-            type="primary"
-            // disabled={SelectedDateTime.length === 0}
-          >
-            <WideBTNSpan>Request</WideBTNSpan>
-          </Button>
-        )}
+          {formStep === 1 ? (
+            <Button
+              disabled={startTime === undefined}
+              onClick={() => {
+                setFormStep(2);
+              }}
+            >
+              <WideBTNSpan className=" flex items-center gap-2 px-20 text-white">
+                <p>Next</p>
+              </WideBTNSpan>
+            </Button>
+          ) : (
+            <Button
+              loading={Loading}
+              onClick={requestClass}
+              type="primary"
+              // disabled={SelectedDateTime.length === 0}
+            >
+              <WideBTNSpan>Request</WideBTNSpan>
+            </Button>
+          )}
+        </div>
       </div>
     </Modal>
+    // <Modal
+    //   open={modalOpen}
+    //   onCancel={onCancel}
+    //   //   onCancel={onCancel}
+    //   footer={null}
+    //   width={formStep === 1 ? "1000px" : "500px"}
+    // >
+    //   <Title level={3}>Select date & times</Title>
+
+    //   <div className=" flex flex-col gap-3">
+    //     {formStep === 1 ? (
+    //       <>
+    //         <div className=" flex justify-between">
+    //           <div className=" flex gap-2 rounded-md  border bg-slate-50/50  p-2">
+    //             <p>Class Duration</p>
+    //             <Radio.Group
+    //               defaultValue={classDuration}
+    //               onChange={(e) => setClassDuration(e.target.value)}
+    //             >
+    //               <Radio value={1}>1 Hour</Radio>
+    //               <Radio value={1.5}>1.30 Hours</Radio>
+    //               <Radio value={2}>2 Hours</Radio>
+    //             </Radio.Group>
+    //           </div>
+    //           <div>
+    //             <div className="flex items-center gap-2">
+    //               <div className=" h-3 w-3  rounded-full bg-orange-400"></div>
+    //               <div>Request by others</div>
+    //             </div>
+    //             <div className="flex items-center gap-2">
+    //               <div className=" h-3 w-3  rounded-full bg-rose-400"></div>
+    //               <div>Booked by others</div>
+    //             </div>
+    //           </div>
+    //         </div>
+    //         <TimeSelectRow timeSlot={TimeSlotState} />
+    //       </>
+    //     ) : (
+    //       <ClassRequestSumarry />
+    //     )}
+    //   </div>
+
+    //   <div className=" mt-5 flex w-full justify-end gap-2">
+    //     <Button htmlType="reset" onClick={onCancel} type="text">
+    //       Cancel
+    //     </Button>
+
+    //     {formStep > 1 && (
+    //       <Button
+    //         onClick={() => {
+    //           setFormStep(1);
+    //         }}
+    //       >
+    //         <WideBTNSpan className=" flex items-center gap-2 px-20 text-white">
+    //           <p>Back</p>
+    //         </WideBTNSpan>
+    //       </Button>
+    //     )}
+
+    //     {formStep === 1 ? (
+    //       <Button
+    //         // disabled={SelectedDateTime.length === 0}
+    //         onClick={() => {
+    //           setFormStep(2);
+    //         }}
+    //       >
+    //         <WideBTNSpan className=" flex items-center gap-2 px-20 text-white">
+    //           <p>Next</p>
+    //         </WideBTNSpan>
+    //       </Button>
+    //     ) : (
+    //       <Button
+    //         loading={Loading}
+    //         onClick={requestClass}
+    //         type="primary"
+    //         // disabled={SelectedDateTime.length === 0}
+    //       >
+    //         <WideBTNSpan>Request</WideBTNSpan>
+    //       </Button>
+    //     )}
+    //   </div>
+    // </Modal>
   );
 }
 

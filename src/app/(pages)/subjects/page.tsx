@@ -10,7 +10,7 @@ export const metadata = {
 export default async function Subjects() {
   return (
     <Container>
-      <div className=" flex flex-col gap-6">
+      <div className="flex flex-col gap-6 ">
         <div>
           <p className=" rounded-lg bg-gradient-to-r from-emerald-500 to-emerald-400 p-6 text-3xl text-white">
             All subjects
