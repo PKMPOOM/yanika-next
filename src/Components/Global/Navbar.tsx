@@ -141,6 +141,9 @@ function Navbar() {
                 <Meenites />
               </div>
             </Link>
+            <div className=" z-50 -translate-x-1/2 rounded-md border border-rose-500 bg-rose-100 p-1 text-xs text-rose-500">
+              Under development
+            </div>
             <ConfigProvider
               theme={{
                 token: {

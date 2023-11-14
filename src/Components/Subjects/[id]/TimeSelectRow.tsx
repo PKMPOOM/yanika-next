@@ -1,221 +1,219 @@
-import { AVAILABLEDAYS } from "@/constant/AvailableDateTime";
-import type { DayList } from "@/interface/timeslot_interface";
-import { formattedUppercase } from "@/lib/formattedUppercase";
 import {
-  DateTimeMap,
   DayMap,
+  NewDateTimeMap,
   NewDays,
   useBookingModalStore,
 } from "@/store/BookingModalStore";
 import dayjs, { Dayjs } from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
+import SelectDateTimeCard from "./SelectDateTimeCard";
 dayjs.extend(isBetween);
 
-type timeSlot = {
+const TIMEGRIDHEIGHT = 40;
+
+type TimeSlotProps = {
   timeSlot: NewDays[] | undefined;
 };
 
-function TimeSelectRow({ timeSlot }: timeSlot) {
-  const [startTime, classDuration, setSelectDateTime, selectedDay] =
+function TimeSelectRow({ timeSlot }: TimeSlotProps) {
+  const [startTime, setSelectedDay, setStartTime, currentDay] =
     useBookingModalStore((state) => [
       state.startTime,
-      state.classDuration,
-      state.setSelectDateTime,
-      state.selectedDay,
+      state.setSelectedDay,
+      state.setStartTime,
+      state.currentDay,
     ]);
 
-  const filteredDayAvailable = timeSlot?.filter((item) =>
-    AVAILABLEDAYS.some((day) => item.name.includes(day)),
-  );
+  const todayData = timeSlot?.find((item) => item.name.includes(currentDay));
 
-  const handleSelectDateTime = ({
-    Day,
-    Time,
-  }: {
-    Day: DayList;
-    Time: Dayjs;
-  }) => {
-    setSelectDateTime({
-      Day: Day,
-      Time: Time,
-    });
+  const setSelectTime = (currentTime: Dayjs) => {
+    setStartTime(currentTime);
+    setSelectedDay(currentDay);
   };
 
   return (
-    <div>
-      <div
-        className={` mb-2 flex items-center  justify-between gap-2 rounded-md border  p-2 outline-none 
-      transition-all duration-300 `}
-      >
-        <p className="hidden sm:flex sm:w-1/12 "></p>
-        <div className="flex w-full justify-between sm:w-11/12">
-          {Object.keys(DateTimeMap).map((_, index) => {
-            const startTime = 9;
-            const hours = Math.floor(startTime + index / 2);
-            const minutes = index % 2 === 0 ? "00" : "30";
-            const time = `${hours}:${minutes}`;
+    <div
+      style={{
+        height: `${TIMEGRIDHEIGHT * 9}px`,
+        overflowY: "scroll",
+      }}
+      className=" relative pt-2"
+    >
+      {/* time grid */}
+      {Object.keys(NewDateTimeMap).map((time, index) => {
+        const dateTimeMap = NewDateTimeMap[time];
+        const zero = dateTimeMap.m === 0;
+        const hours = dateTimeMap.hour;
+        const minutes = dateTimeMap.m;
+        const dayjsToday = DayMap[currentDay];
 
-            if (minutes === "00") {
-              return (
-                <div
-                  className=" group relative flex h-5 w-4 justify-center rounded "
-                  key={time}
-                >
-                  <span>{hours}</span>
-                  <span className="hidden sm:flex ">:{minutes}</span>
-                  {/* {testTime} */}
-                </div>
-              );
-            }
-          })}
-        </div>
-      </div>
+        const currentTime = dayjs()
+          .set("day", dayjsToday)
+          .set("hour", hours)
+          .set("m", minutes)
+          .set("second", 0);
 
-      {filteredDayAvailable?.map((day) => {
+        // const newData = todayData?.NewTimeSlot.map((item) => {
+        //   const startTime = dayjs(item.start_time);
+        //   const endTime = startTime.add(item.duration, "hour");
+
+        //   const isBetween = currentTime.isBetween(
+        //     startTime,
+        //     endTime,
+        //     "hour",
+        //     "[]",
+        //   );
+
+        //   return {
+        //     isBetween,
+        //     startTime,
+        //     endTime,
+        //     currentTime,
+        //   };
+        // });
+
         return (
           <div
-            key={day.name}
-            style={
-              {
-                // opacity: selectedDay === day.name ? 1 : 0.2,
-              }
-            }
-            className={` mb-2 flex flex-col items-center justify-between  gap-2 rounded-md border p-2 outline-none 
-            transition-all duration-300 sm:flex-row `}
+            key={index}
+            style={{
+              height: `${TIMEGRIDHEIGHT}px`,
+            }}
+            className="group flex  w-full justify-end  "
           >
-            <p className=" w-full sm:w-1/12 ">{formattedUppercase(day.name)}</p>
-
-            <div
-              className={`relative flex w-full items-center justify-between bg-emerald-50 sm:w-11/12`}
-            >
-              {/* selected bar */}
-              {day.name === selectedDay && startTime !== undefined && (
-                <div
-                  style={{
-                    width: `calc(11.5*${classDuration}%)`,
-                    marginLeft: `calc(11*${
-                      DateTimeMap[startTime.format("H:mm")].index - 1
-                    }%)`,
-                  }}
-                  className=" absolute z-10 h-1 bg-emerald-400"
-                ></div>
-              )}
-
-              {/* booked Bar */}
-              {day.NewTimeSlot.map((timeslot) => (
-                <div
-                  key={timeslot.id}
-                  style={{
-                    width: `calc(11*${timeslot.duration}%)`,
-                    marginLeft: `calc(11*${
-                      DateTimeMap[dayjs(timeslot.start_time).format("H:mm")]
-                        .index - 1
-                    }%)`,
-                  }}
-                  className={` absolute left-[4px] z-[5] h-7 rounded border ${
-                    timeslot.accept
-                      ? "border-rose-500 bg-rose-200"
-                      : "border-orange-500 bg-orange-200"
-                  } `}
-                >
-                  {}
-                </div>
-              ))}
-
-              {/* Table selector */}
-              {Object.keys(DateTimeMap).map((item, index) => {
-                const hours = DateTimeMap[item].hour;
-                const minutes = DateTimeMap[item].m;
-                const dayjsToday = DayMap[day.name];
-
-                const currentTime = dayjs()
-                  .set("day", dayjsToday)
-                  .set("hour", hours)
-                  .set("m", minutes);
-
-                const endTime = startTime?.add(classDuration, "hour");
-
-                const isBetweenRange = currentTime.isBetween(
-                  startTime,
-                  endTime,
-                  "m",
-                  "[]",
-                );
-
-                // const isBooked = day.NewTimeSlot['']
-                const AddBG = isBetweenRange && day.name === selectedDay;
-
-                switch (minutes) {
-                  case 0:
-                    // 00 square mark
+            <div className=" absolute flex h-8 w-full justify-between ">
+              <div className=" top-2 flex w-[10%] -translate-y-[10px] ">
+                {zero && (
+                  <p className=" flex gap-1">
+                    <span>{time} </span>
+                    <span className="hidden lg:block">Hrs.</span>
+                  </p>
+                )}
+              </div>
+              <div
+                className={` group relative box-content w-full cursor-pointer rounded-md border-t-4   ${
+                  zero
+                    ? "border-emerald-100 bg-emerald-50/50 hover:border-emerald-300 hover:bg-emerald-50 active:bg-emerald-100"
+                    : "border-slate-100 bg-slate-50/50 hover:border-slate-300 hover:bg-slate-50 active:bg-slate-100"
+                }`}
+                onClick={() => {
+                  setSelectTime(currentTime);
+                }}
+              >
+                {time === dayjs(startTime).format("H:mm") && (
+                  <SelectDateTimeCard TIMEGRIDHEIGHT={TIMEGRIDHEIGHT} />
+                )}
+                {todayData?.NewTimeSlot.map((timeslot) => {
+                  if (dayjs(timeslot.start_time).format("H:mm") === time) {
                     return (
                       <div
-                        key={day.name + index}
-                        className=" group relative z-10 flex h-5 w-3 justify-center   "
-                        onClick={() => {
-                          handleSelectDateTime({
-                            Day: day.name,
-                            Time: currentTime,
-                          });
+                        onClick={(e) => e.stopPropagation()}
+                        key={timeslot.id}
+                        style={{
+                          width: `100%`,
+                          top: "-4px",
+                          height: `${TIMEGRIDHEIGHT * 2 * timeslot.duration}px`,
+                          right: 0,
                         }}
+                        className={` absolute top-0 z-[5] flex h-7 cursor-not-allowed items-center justify-center rounded border ${
+                          timeslot.accept
+                            ? "border-rose-500 bg-rose-200"
+                            : "border-orange-500 bg-orange-200"
+                        } `}
                       >
-                        <div
-                          key={day.name + index}
-                          className={`z-40 w-36 cursor-pointer rounded-sm ${
-                            AddBG ? "bg-emerald-400" : "bg-emerald-100"
-                          } group-hover:bg-emerald-500`}
-                        ></div>
+                        {timeslot.accept ? <p> Booked</p> : <p> Requested</p>}
                       </div>
                     );
-
-                  default:
-                    // .30 dot mark
-                    return (
-                      <div
-                        key={day.name + index + "tick"}
-                        className={`group relative z-30 flex  items-center justify-center  `}
-                        onClick={() => {
-                          handleSelectDateTime({
-                            Day: day.name,
-                            Time: currentTime,
-                          });
-                        }}
-                      >
-                        <div
-                          className={`h-3  w-3 cursor-pointer rounded-full ${
-                            AddBG ? "bg-emerald-400" : "bg-emerald-100"
-                          } group-hover:bg-emerald-500`}
-                        ></div>
-                      </div>
-                    );
-                }
-              })}
+                  }
+                })}
+              </div>
             </div>
           </div>
         );
       })}
-      {/* <pre>{JSON.stringify(filteredDayAvailable, null, 2)}</pre> */}
     </div>
   );
+  // return (
+  //   <div
+  //     style={{
+  //       height: `${TIMEGRIDHEIGHT * 9}px`,
+  //       overflowY: "scroll",
+  //     }}
+  //     className=" relative pt-2"
+  //   >
+  //     {/* time grid */}
+  //     {Object.keys(NewDateTimeMap).map((time, index) => {
+  //       const dateTimeMap = NewDateTimeMap[time];
+  //       const zero = dateTimeMap.m === 0;
+  //       const hours = dateTimeMap.hour;
+  //       const minutes = dateTimeMap.m;
+  //       const dayjsToday = DayMap[currentDay];
+
+  //       const currentTime = dayjs()
+  //         .set("day", dayjsToday)
+  //         .set("hour", hours)
+  //         .set("m", minutes);
+
+  //       return (
+  //         <div
+  //           key={index}
+  //           style={{
+  //             height: `${TIMEGRIDHEIGHT}px`,
+  //           }}
+  //           className="group flex  w-full justify-end  "
+  //         >
+  //           <div className=" absolute flex h-8 w-full justify-between ">
+  //             <div className=" top-2 flex w-[10%] -translate-y-[10px] ">
+  //               {zero && (
+  //                 <p className=" flex gap-1">
+  //                   <span>{time} </span>
+  //                   <span className="hidden lg:block">Hrs.</span>
+  //                 </p>
+  //               )}
+  //             </div>
+  //             <div
+  //               className={` group relative box-content w-full cursor-pointer rounded-md border-t-4   ${
+  //                 zero
+  //                   ? "border-emerald-100 bg-emerald-50/50 hover:border-emerald-300 hover:bg-emerald-50 active:bg-emerald-100"
+  //                   : "border-slate-100 bg-slate-50/50 hover:border-slate-300 hover:bg-slate-50 active:bg-slate-100"
+  //               }`}
+  //               onClick={() => {
+  //                 setSelectTime(currentTime);
+  //               }}
+  //             >
+  //               {time === dayjs(startTime).format("H:mm") && (
+  //                 <SelectDateTimeCard TIMEGRIDHEIGHT={TIMEGRIDHEIGHT} />
+  //               )}
+
+  //               {todayData?.NewTimeSlot.map((timeslot) => {
+  //                 if (dayjs(timeslot.start_time).format("H:mm") === time) {
+  //                   return (
+  //                     <div
+  //                       onClick={(e) => e.stopPropagation()}
+  //                       key={timeslot.id}
+  //                       style={{
+  //                         width: `100%`,
+  //                         top: "-4px",
+  //                         height: `${TIMEGRIDHEIGHT * 2 * timeslot.duration}px`,
+  //                         right: 0,
+  //                       }}
+  //                       className={` absolute top-0 z-[5] flex h-7 cursor-not-allowed items-center justify-center rounded border ${
+  //                         timeslot.accept
+  //                           ? "border-rose-500 bg-rose-200"
+  //                           : "border-orange-500 bg-orange-200"
+  //                       } `}
+  //                     >
+  //                       {timeslot.accept ? <p> Booked</p> : <p> Requested</p>}
+  //                     </div>
+  //                   );
+  //                 }
+  //               })}
+  //             </div>
+  //           </div>
+  //         </div>
+  //       );
+  //     })}
+  //   </div>
+  // );
 }
 
 export default TimeSelectRow;
-
-// {day.time_slot.map((time) => {
-//     const isSelected = SelectedDateTime.some(
-//       (item) =>
-//         item.day === day.name && item.time === time.start_time,
-//     );
-
-//     const formattedTime = timeToRange[time.start_time];
-//     const isBooked = time.bookingData !== null;
-//     const isRequested = time.requestedClass > 0;
-//     const lunchBreak = time.start_time === "twelve_one";
-
-//     return (
-//       <div key={time.start_time} className=" h-5  bg-red-500">
-//         {/* <pre>{JSON.stringify(time, null, 2)}</pre> */}
-//         {formattedTime}
-//       </div>
-//     );
-//   })}

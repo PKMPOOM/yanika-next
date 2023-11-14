@@ -38,6 +38,7 @@ const TimeTableCard = ({
   singleDay = false,
 }: Props) => {
   const [AcceptLoading, setAcceptLoading] = useState(false);
+
   const topOfset =
     TIMEGRIDHEIGHT *
       (DateTimeMap[dayjs(item.start_time).format("H:mm")].index - 1) +

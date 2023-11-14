@@ -4,7 +4,7 @@ import AllSubjects from "@/Components/Subjects/AllSubjects";
 
 export const metadata = {
   title: "Subjects",
-  description: "Yanika classroom management",
+  description: "Meenites classroom management",
 };
 
 export default async function Subjects() {

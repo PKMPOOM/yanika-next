@@ -26,7 +26,6 @@ const page = async ({ params }: PageProps) => {
   if (!subject) {
     return <>404</>;
   }
-
   const recomendedSubject = await prisma.subject.findMany({
     where: {
       id: {
@@ -94,17 +93,26 @@ const page = async ({ params }: PageProps) => {
               }
             />
           </div>
-          <div className=" flex w-full flex-col  items-start gap-4">
-            <div className=" flex flex-col gap-2 text-3xl font-semibold">
-              <div>{subject.name}</div>
-              <div className=" text-sm">| {formatedGrade}</div>
+          <div className=" flex w-full flex-col  items-start gap-4 ">
+            <div className=" flex w-full  gap-3  sm:flex-row sm:justify-between md:flex-col md:items-start lg:flex-row ">
+              <div className=" flex flex-col gap-2 text-3xl ">
+                <div className=" font-semibold">{subject.name}</div>
+                <div className=" text-sm font-semibold">| {formatedGrade}</div>
+                <div className=" flex flex-wrap gap-y-2 ">
+                  {subject.tags.map((item) => (
+                    <Tag key={item}>{item}</Tag>
+                  ))}
+                </div>
+              </div>
+
+              <BookingButton
+                subjectID={subject.id}
+                groupPrice={subject.group_price}
+                singlePrice={subject.single_price}
+                subjectName={subject.name}
+              />
             </div>
 
-            <div className=" flex flex-wrap gap-y-2 ">
-              {subject.tags.map((item) => (
-                <Tag key={item}>{item}</Tag>
-              ))}
-            </div>
             <p>{subject.description}</p>
 
             <p className=" font-semibold">Course Outline</p>
@@ -115,13 +123,6 @@ const page = async ({ params }: PageProps) => {
                 }.) ${item}`}</li>
               ))}
             </ul>
-
-            <BookingButton
-              subjectID={subject.id}
-              groupPrice={subject.group_price}
-              singlePrice={subject.single_price}
-              subjectName={subject.name}
-            />
           </div>
         </div>
         <h1 className=" text-2xl font-semibold">Other subjects</h1>

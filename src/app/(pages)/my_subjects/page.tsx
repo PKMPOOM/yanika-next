@@ -135,7 +135,6 @@ export default async function MySubjects() {
               </div>
             );
           })}
-          {/* <pre>{JSON.stringify(myBookedSuybject, null, 2)}</pre> */}
         </div>
       )}
     </Container>

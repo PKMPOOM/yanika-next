@@ -8,7 +8,6 @@ export const Daylist = z.union([
   z.literal("friday"),
   z.literal("saturday"),
   z.literal("sunday"),
-  z.literal("NA"),
 ]);
 
 export type DayList = z.infer<typeof Daylist>;
@@ -23,7 +22,6 @@ export const TimeList = z.union([
   z.literal("three_four"),
   z.literal("four_five"),
   z.literal("five_six"),
-  z.literal("NA"),
 ]);
 
 export type TimeList = z.infer<typeof TimeList>;

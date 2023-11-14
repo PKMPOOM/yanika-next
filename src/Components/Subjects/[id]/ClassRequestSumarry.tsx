@@ -2,25 +2,45 @@
 
 import { formattedUppercase } from "@/lib/formattedUppercase";
 import { useBookingModalStore } from "@/store/BookingModalStore";
-import { Button, Form, Input } from "antd";
+import { Button, Form, Input, Space } from "antd";
 import dayjs from "dayjs";
 import { DeleteOutlined } from "@ant-design/icons";
 
 const ClassRequestSumarry = () => {
-  const [SelectedClass, selectedDay, startTime, classDuration] =
-    useBookingModalStore((state) => [
-      state.SelectedClass,
-      state.selectedDay,
-      state.startTime,
-      state.classDuration,
-    ]);
+  const [
+    SelectedClass,
+    selectedDay,
+    startTime,
+    classDuration,
+    addOnStudent,
+    removeAddOnStudent,
+    addAddOnStudent,
+  ] = useBookingModalStore((state) => [
+    state.SelectedClass,
+    state.selectedDay,
+    state.startTime,
+    state.classDuration,
+
+    state.addOnStudent,
+    state.removeAddOnStudent,
+    state.addAddOnStudent,
+  ]);
+
+  const [form] = Form.useForm();
 
   if (!SelectedClass) {
     return <>No classs selected</>;
   }
 
   const onFinish = (values: any) => {
-    console.log("Received values of form:", values);
+    const { student_email } = values;
+    const isExisted = addOnStudent.includes(student_email);
+    if (isExisted) {
+      console.log("error");
+    } else {
+      addAddOnStudent(student_email);
+      form.resetFields();
+    }
   };
 
   return (
@@ -67,60 +87,61 @@ const ClassRequestSumarry = () => {
           //todo add each submit have email validation
            */}
           <div className=" my-3 flex flex-col gap-2">
-            <div className=" flex items-center justify-between  gap-2">
-              <p className=" text-sm">mockemail@gmail.com</p>
-              <Button
-                size="small"
-                icon={<DeleteOutlined />}
-                danger
-                type="primary"
-              />
-            </div>
-            <div className=" flex items-center justify-between  gap-2">
-              <p className=" text-sm">mockemail@gmail.com</p>
-              <Button
-                size="small"
-                icon={<DeleteOutlined />}
-                danger
-                type="primary"
-              />
-            </div>
-            <div className=" flex items-center justify-between  gap-2">
-              <p className=" text-sm">mockemail@gmail.com</p>
-              <Button
-                size="small"
-                icon={<DeleteOutlined />}
-                danger
-                type="primary"
-              />
-            </div>
+            {addOnStudent.length > 0 ? (
+              addOnStudent.map((student_email) => (
+                <div
+                  key={student_email}
+                  className=" flex items-center justify-between  gap-2"
+                >
+                  <p className=" text-sm">{student_email}</p>
+                  <Button
+                    size="small"
+                    icon={<DeleteOutlined />}
+                    danger
+                    type="primary"
+                    onClick={() => {
+                      removeAddOnStudent(student_email);
+                    }}
+                  />
+                </div>
+              ))
+            ) : (
+              <div>Class group require at least 2 more students</div>
+            )}
           </div>
-          <Form name="test" onFinish={onFinish}>
+
+          <Form form={form} onFinish={onFinish}>
             <Form.Item
               rules={[
                 { required: true, message: "email cannot be blank" },
                 {
-                  pattern: /\w{5,}@gmail.com$/gm,
+                  pattern: /\w{4,}@gmail.com$/gm,
                   message: "Please use gmail",
                 },
+                () => ({
+                  validator(_, value) {
+                    const isExisted = addOnStudent.includes(value);
+                    if (!isExisted) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(
+                      new Error("This email is already added"),
+                    );
+                  },
+                }),
               ]}
-              name={"student_name"}
+              name={"student_email"}
             >
-              <div className=" flex gap-2 bg-red-50">
+              <Space.Compact block>
                 <Input placeholder="email" />
                 <Button htmlType="submit" type="primary">
                   Add
                 </Button>
-              </div>
+              </Space.Compact>
             </Form.Item>
           </Form>
         </div>
       )}
-
-      <div>
-        notes
-        <Input.TextArea />
-      </div>
     </div>
   );
 };

@@ -27,8 +27,6 @@ type TimeSlotContext = {
   api: NotificationInstance;
   SelectTime: TimeList[] | undefined;
   setSelectTime: React.Dispatch<React.SetStateAction<TimeList[] | undefined>>;
-  SelectedDay: DayList | undefined;
-  setSelectedDay: React.Dispatch<React.SetStateAction<DayList | undefined>>;
 };
 
 export const timeSlotContext = createContext({} as TimeSlotContext);
@@ -46,9 +44,6 @@ function BookingButton({
     [],
   );
   const [SelectTime, setSelectTime] = useState<TimeList[] | undefined>(
-    undefined,
-  );
-  const [SelectedDay, setSelectedDay] = useState<DayList | undefined>(
     undefined,
   );
 
@@ -76,8 +71,6 @@ function BookingButton({
     api,
     SelectTime,
     setSelectTime,
-    SelectedDay,
-    setSelectedDay,
   };
 
   return (
