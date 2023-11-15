@@ -133,7 +133,7 @@ function Navbar() {
 
   return (
     <>
-      <div className="border-b ">
+      <div className="fixed top-0 z-50 w-full border-b bg-white">
         <Container margin={false}>
           <div className="flex h-10 items-center justify-between overflow-hidden ">
             <Link href={isAdmin ? "/dashboard" : "/subjects"}>
@@ -141,9 +141,9 @@ function Navbar() {
                 <Meenites />
               </div>
             </Link>
-            <div className=" z-50 -translate-x-1/2 rounded-md border border-rose-500 bg-rose-100 p-1 text-xs text-rose-500">
+            {/* <div className=" z-50 -translate-x-1/2 rounded-md border border-rose-500 bg-rose-100 p-1 text-xs text-rose-500">
               Under development
-            </div>
+            </div> */}
             <ConfigProvider
               theme={{
                 token: {

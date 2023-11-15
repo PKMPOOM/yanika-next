@@ -1,5 +1,15 @@
 "use client";
 
+import { gradesOption } from "@/constant/Grades";
+import { subjectFullTypes } from "@/interface/interface";
+import { editSubjectSchema } from "@/interface/payload_validator";
+import {
+  ExclamationCircleFilled,
+  LoadingOutlined,
+  UploadOutlined,
+} from "@ant-design/icons";
+import { BlockNoteEditor } from "@blocknote/core";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Button,
   Col,
@@ -14,21 +24,20 @@ import {
   UploadProps,
   theme,
 } from "antd";
-import React, { useContext, useState } from "react";
-import { SubjectPageContext } from "./AllSubjects";
-import {
-  LoadingOutlined,
-  ExclamationCircleFilled,
-  UploadOutlined,
-} from "@ant-design/icons";
-import WideBTNSpan from "../Global/WideBTNSpan";
 import axios from "axios";
-import { gradesOption } from "@/constant/Grades";
-import { z } from "zod";
-import { editSubjectSchema } from "@/interface/payload_validator";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { subjectFullTypes } from "@/interface/interface";
 import Image from "next/image";
+import { useContext, useEffect, useState } from "react";
+import { z } from "zod";
+import WideBTNSpan from "../Global/WideBTNSpan";
+import { SubjectPageContext } from "./AllSubjects";
+import "@blocknote/core/style.css";
+import {
+  BlockNoteView,
+  Theme,
+  lightDefaultTheme,
+  useBlockNote,
+} from "@blocknote/react";
+import { useSession } from "next-auth/react";
 
 const { Text } = Typography;
 
@@ -49,11 +58,38 @@ const selectMenu = [
   { value: "Thai", label: "Thai" },
 ];
 
+const blockTheme = {
+  ...lightDefaultTheme,
+  componentStyles: (theme) => ({
+    // Adds basic styling to the editor.
+    Editor: {
+      backgroundColor: theme.colors.editor.background,
+      borderRadius: theme.borderRadius,
+      border: `1px solid ${theme.colors.border}`,
+      // boxShadow: `0 2px 4px ${theme.colors.shadow}`,
+    },
+    // Makes all hovered dropdown & menu items blue.
+    Menu: {
+      ".mantine-Menu-item[data-hovered], .mantine-Menu-item:hover": {
+        backgroundColor: "#34d399",
+      },
+    },
+    Toolbar: {
+      ".mantine-Menu-dropdown": {
+        ".mantine-Menu-item:hover": {
+          backgroundColor: "blue",
+        },
+      },
+    },
+  }),
+} satisfies Theme;
+
 function EditSubjectModal({
   activeSubject,
 }: {
   activeSubject: string | undefined;
 }) {
+  const { data: session } = useSession();
   const [form] = Form.useForm();
   const { EditSubjectModalOpen, setEditSubjectModalOpen, setActiveSubject } =
     useContext(SubjectPageContext);
@@ -62,38 +98,58 @@ function EditSubjectModal({
   const [Url, setUrl] = useState<string | undefined>("");
   const [Loading, setLoading] = useState(false);
   const [IsEditing, setIsEditing] = useState(false);
-
   const { token } = useToken();
-
   const queryClient = useQueryClient();
+
+  const isAdmin = session?.user.role === "admin";
 
   const fetchSubjectData = async () => {
     const res = await axios.get(`/api/subject/${activeSubject}`);
     return res.data.subject;
   };
 
-  const { data: SubjectsData, isFetched } = useQuery<subjectFullTypes>({
+  const { data: SubjectsData } = useQuery<subjectFullTypes>({
     queryKey: ["Subject", activeSubject],
     queryFn: fetchSubjectData,
     refetchOnWindowFocus: false,
     enabled: activeSubject !== undefined,
   });
 
-  if (isFetched && IsEditing === false) {
-    setIsEditing(true);
-    form.setFieldsValue({
-      subject_name: SubjectsData?.name,
-      tags: SubjectsData?.tags,
-      description: SubjectsData?.description,
-      grade: SubjectsData?.grade,
-      course_outline: SubjectsData?.course_outline,
-      single_price: SubjectsData?.single_price,
-      group_price: SubjectsData?.group_price,
-    });
-    if (SubjectsData?.image_url) {
-      setUrl(SubjectsData?.image_url);
+  // const localStorageKey = `editorContent${activeSubject}`;
+  // const initialContent: string | null = localStorage.getItem(localStorageKey);
+  const editor: BlockNoteEditor = useBlockNote({
+    // initialContent: initialContent ? JSON.parse(initialContent) : undefined,
+    editable: isAdmin,
+    onEditorContentChange: (editor) => {
+      localStorage.setItem(
+        `editorContent`,
+        JSON.stringify(editor.topLevelBlocks),
+      );
+    },
+  });
+
+  useEffect(() => {
+    if (SubjectsData && IsEditing === false) {
+      setIsEditing(true);
+      form.setFieldsValue({
+        subject_name: SubjectsData.name,
+        tags: SubjectsData.tags,
+        description: SubjectsData.description,
+        grade: SubjectsData.grade,
+        course_outline: SubjectsData.course_outline,
+        single_price: SubjectsData.single_price,
+        group_price: SubjectsData.group_price,
+      });
+      if (SubjectsData.image_url) {
+        setUrl(SubjectsData.image_url);
+      }
+      editor.insertBlocks(
+        JSON.parse(SubjectsData.course_outline),
+        editor.getTextCursorPosition().block,
+        "before",
+      );
     }
-  }
+  }, [SubjectsData]);
 
   const props: UploadProps = {
     name: "file",
@@ -155,23 +211,30 @@ function EditSubjectModal({
     setEditSubjectModalOpen(false);
     setIsEditing(false);
     setUrl(undefined);
+    editor.removeBlocks(editor.topLevelBlocks);
     queryClient.invalidateQueries(["Subject", activeSubject]);
   };
 
   const editSubjectDetail = async (
     event: z.infer<typeof editSubjectSchema>,
   ) => {
+    const payload = {
+      ...event,
+      blockNoteData: JSON.stringify(editor.topLevelBlocks),
+    };
+
     setLoading(true);
-    await axios
-      .put(`/api/subject/${activeSubject}`, { data: event })
-      .then(() => {
-        onCancel();
-      })
-      .finally(() => {
-        setIsEditing(false);
-        queryClient.invalidateQueries(["SubjectList"]);
-        queryClient.invalidateQueries(["Subject", activeSubject]);
+    try {
+      await axios.put(`/api/subject/${activeSubject}`, {
+        ...payload,
       });
+      onCancel();
+      setIsEditing(false);
+      queryClient.invalidateQueries(["SubjectList"]);
+      queryClient.invalidateQueries(["Subject", activeSubject]);
+    } catch (error) {
+      console.log(error);
+    }
 
     setLoading(false);
   };
@@ -200,7 +263,7 @@ function EditSubjectModal({
         }}
       >
         <Row gutter={16}>
-          <Col span={12}>
+          <Col span={8}>
             <Form.Item
               rules={[
                 {
@@ -305,7 +368,7 @@ function EditSubjectModal({
             </Form.Item>
 
             <Form.Item style={FormItemStyle}>
-              <div className="flex w-3/5 items-center justify-between">
+              <div className="flex w-full items-center justify-between ">
                 <Text>1-1 price</Text>
                 <div className=" flex items-center gap-2">
                   <Form.Item
@@ -333,7 +396,7 @@ function EditSubjectModal({
             </Form.Item>
 
             <Form.Item>
-              <div className="  flex w-3/5 items-center justify-between">
+              <div className="  flex  w-full items-center justify-between ">
                 <Text>Price per student</Text>
                 <div className=" flex items-center gap-2">
                   <Form.Item
@@ -361,7 +424,7 @@ function EditSubjectModal({
               <Text type="secondary">Input 0 if group class not available</Text>
             </Form.Item>
           </Col>
-          <Col span={12}>
+          <Col span={16}>
             <Form.Item
               name={"grade"}
               style={FormItemStyle}
@@ -375,22 +438,16 @@ function EditSubjectModal({
             >
               <Select showSearch options={gradesOption} />
             </Form.Item>
-            <Form.Item
-              name={"course_outline"}
-              style={FormItemStyle}
-              label="Course outline"
-              rules={[
-                {
-                  required: true,
-                  message: "Course outline cannot be empty",
-                },
-              ]}
-            >
-              <Input.TextArea
-                autoSize={{ minRows: 22, maxRows: 50 }}
-                placeholder="Course outline"
+            Course outline
+            <div className=" max-h-[600px] overflow-auto">
+              <BlockNoteView
+                editor={editor}
+                theme={blockTheme}
+                onChange={() => {
+                  console.log(editor);
+                }}
               />
-            </Form.Item>
+            </div>
           </Col>
         </Row>
         <div className=" flex w-full justify-end gap-2">

@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Modal, Radio, Typography } from "antd";
+import { Button, Modal, Typography } from "antd";
 import { useContext, useEffect, useState } from "react";
 
 import WideBTNSpan from "@/Components/Global/WideBTNSpan";
@@ -132,7 +132,7 @@ function TimeSelectModal() {
       onCancel={onCancel}
       style={{ top: 20 }}
       footer={null}
-      width={formStep === 1 ? "1000px" : "500px"}
+      width={formStep === 1 ? "100%" : "500px"}
     >
       <div className=" mb-4 flex  flex-col items-start  sm:flex-row sm:items-center sm:gap-4">
         <Title level={3}>Select date & times</Title>
@@ -153,21 +153,6 @@ function TimeSelectModal() {
       <div className=" flex flex-col gap-3">
         {formStep === 1 ? (
           <>
-            <div className=" flex flex-col justify-between gap-2">
-              <div className=" flex flex-col gap-2 rounded-md  border bg-slate-50/50  p-2">
-                <p>Class Duration</p>
-                <Radio.Group
-                  defaultValue={classDuration}
-                  onChange={(e) => setClassDuration(e.target.value)}
-                >
-                  <div className=" flex flex-col gap-2 sm:flex-row">
-                    <Radio value={1}>1 Hour</Radio>
-                    <Radio value={1.5}>1.30 Hours</Radio>
-                    <Radio value={2}>2 Hours</Radio>
-                  </div>
-                </Radio.Group>
-              </div>
-            </div>
             <div className=" mb-4 flex gap-2 ">
               <DaySelectionButton />
             </div>

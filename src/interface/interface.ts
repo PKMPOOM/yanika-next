@@ -41,7 +41,7 @@ export type subjectListTypes = z.infer<typeof subjectListSchema>;
 
 export const subjectExtraSchema = z.object({
   image_url: z.string().nullable(),
-  course_outline: z.string().nullable(),
+  course_outline: z.string(),
   group_price: z.number().nullable(),
   single_price: z.number().nullable(),
 });

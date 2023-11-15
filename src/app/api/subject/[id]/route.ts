@@ -1,7 +1,6 @@
 import { prisma } from "@/lib/db";
-import { ZodError } from "zod";
-import { editSubjectSchema } from "@/interface/payload_validator";
 import { NextRequest, NextResponse } from "next/server";
+import { ZodError } from "zod";
 
 // edit subject information
 export async function PUT(
@@ -10,16 +9,16 @@ export async function PUT(
 ) {
   try {
     const id = params.id;
-    const { data } = await req.json();
+    const data = await req.json();
     const {
-      grade,
-      group_price,
-      single_price,
       subject_name,
-      course_outline,
-      description,
       tags,
-    } = editSubjectSchema.parse(data);
+      description,
+      single_price,
+      group_price,
+      grade,
+      blockNoteData,
+    } = data;
 
     await prisma.subject.update({
       where: {
@@ -28,7 +27,7 @@ export async function PUT(
       data: {
         name: subject_name,
         description: description,
-        course_outline: course_outline,
+        course_outline: blockNoteData,
         grade: grade,
         group_price: (group_price && group_price) || 0,
         single_price,

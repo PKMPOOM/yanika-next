@@ -15,8 +15,8 @@ export default function DaySelectionButton() {
 
   return (
     <div className=" w-full">
-      <Container margin={false}>
-        <div className="hidden w-full items-center justify-center gap-4 sm:flex ">
+      <Container nopadding margin={false}>
+        <div className="hidden w-full items-center justify-start gap-4 sm:flex ">
           <Segmented
             onChange={(e) => setCurrentDay(AVAILABLEDAYS.indexOf(e as DayList))}
             value={currentDay}

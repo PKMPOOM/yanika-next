@@ -53,25 +53,6 @@ function TimeSelectRow({ timeSlot }: TimeSlotProps) {
           .set("m", minutes)
           .set("second", 0);
 
-        // const newData = todayData?.NewTimeSlot.map((item) => {
-        //   const startTime = dayjs(item.start_time);
-        //   const endTime = startTime.add(item.duration, "hour");
-
-        //   const isBetween = currentTime.isBetween(
-        //     startTime,
-        //     endTime,
-        //     "hour",
-        //     "[]",
-        //   );
-
-        //   return {
-        //     isBetween,
-        //     startTime,
-        //     endTime,
-        //     currentTime,
-        //   };
-        // });
-
         return (
           <div
             key={index}
@@ -80,17 +61,20 @@ function TimeSelectRow({ timeSlot }: TimeSlotProps) {
             }}
             className="group flex  w-full justify-end  "
           >
-            <div className=" absolute flex h-8 w-full justify-between ">
-              <div className=" top-2 flex w-[10%] -translate-y-[10px] ">
+            <div className=" absolute flex h-9 w-full justify-between ">
+              <div className=" top-2 flex w-[10%]  ">
                 {zero && (
-                  <p className=" flex gap-1">
-                    <span>{time} </span>
-                    <span className="hidden lg:block">Hrs.</span>
+                  <p className=" flex">
+                    <span>{time.split(":")[0]} </span>
+
+                    <span className="hidden md:block">
+                      :{time.split(":")[1]} Hrs.
+                    </span>
                   </p>
                 )}
               </div>
               <div
-                className={` group relative box-content w-full cursor-pointer rounded-md border-t-4   ${
+                className={` group relative box-content w-full cursor-pointer rounded-md border-t-4 transition-all  duration-200   ${
                   zero
                     ? "border-emerald-100 bg-emerald-50/50 hover:border-emerald-300 hover:bg-emerald-50 active:bg-emerald-100"
                     : "border-slate-100 bg-slate-50/50 hover:border-slate-300 hover:bg-slate-50 active:bg-slate-100"
@@ -99,6 +83,10 @@ function TimeSelectRow({ timeSlot }: TimeSlotProps) {
                   setSelectTime(currentTime);
                 }}
               >
+                <div className=" hidden h-full items-center justify-center  text-emerald-400 group-hover:flex">
+                  {time}
+                </div>
+
                 {time === dayjs(startTime).format("H:mm") && (
                   <SelectDateTimeCard TIMEGRIDHEIGHT={TIMEGRIDHEIGHT} />
                 )}
@@ -114,13 +102,17 @@ function TimeSelectRow({ timeSlot }: TimeSlotProps) {
                           height: `${TIMEGRIDHEIGHT * 2 * timeslot.duration}px`,
                           right: 0,
                         }}
-                        className={` absolute top-0 z-[5] flex h-7 cursor-not-allowed items-center justify-center rounded border ${
+                        className={` absolute top-0 z-[5] box-border flex h-7 cursor-not-allowed items-center justify-center rounded-md border-2  ${
                           timeslot.accept
-                            ? "border-rose-500 bg-rose-200"
-                            : "border-orange-500 bg-orange-200"
+                            ? " border-white bg-rose-100 "
+                            : " border-white bg-orange-100 "
                         } `}
                       >
-                        {timeslot.accept ? <p> Booked</p> : <p> Requested</p>}
+                        {timeslot.accept ? (
+                          <p className=" text-rose-500"> Booked</p>
+                        ) : (
+                          <p className=" text-orange-500"> Requested</p>
+                        )}
                       </div>
                     );
                   }
@@ -132,88 +124,6 @@ function TimeSelectRow({ timeSlot }: TimeSlotProps) {
       })}
     </div>
   );
-  // return (
-  //   <div
-  //     style={{
-  //       height: `${TIMEGRIDHEIGHT * 9}px`,
-  //       overflowY: "scroll",
-  //     }}
-  //     className=" relative pt-2"
-  //   >
-  //     {/* time grid */}
-  //     {Object.keys(NewDateTimeMap).map((time, index) => {
-  //       const dateTimeMap = NewDateTimeMap[time];
-  //       const zero = dateTimeMap.m === 0;
-  //       const hours = dateTimeMap.hour;
-  //       const minutes = dateTimeMap.m;
-  //       const dayjsToday = DayMap[currentDay];
-
-  //       const currentTime = dayjs()
-  //         .set("day", dayjsToday)
-  //         .set("hour", hours)
-  //         .set("m", minutes);
-
-  //       return (
-  //         <div
-  //           key={index}
-  //           style={{
-  //             height: `${TIMEGRIDHEIGHT}px`,
-  //           }}
-  //           className="group flex  w-full justify-end  "
-  //         >
-  //           <div className=" absolute flex h-8 w-full justify-between ">
-  //             <div className=" top-2 flex w-[10%] -translate-y-[10px] ">
-  //               {zero && (
-  //                 <p className=" flex gap-1">
-  //                   <span>{time} </span>
-  //                   <span className="hidden lg:block">Hrs.</span>
-  //                 </p>
-  //               )}
-  //             </div>
-  //             <div
-  //               className={` group relative box-content w-full cursor-pointer rounded-md border-t-4   ${
-  //                 zero
-  //                   ? "border-emerald-100 bg-emerald-50/50 hover:border-emerald-300 hover:bg-emerald-50 active:bg-emerald-100"
-  //                   : "border-slate-100 bg-slate-50/50 hover:border-slate-300 hover:bg-slate-50 active:bg-slate-100"
-  //               }`}
-  //               onClick={() => {
-  //                 setSelectTime(currentTime);
-  //               }}
-  //             >
-  //               {time === dayjs(startTime).format("H:mm") && (
-  //                 <SelectDateTimeCard TIMEGRIDHEIGHT={TIMEGRIDHEIGHT} />
-  //               )}
-
-  //               {todayData?.NewTimeSlot.map((timeslot) => {
-  //                 if (dayjs(timeslot.start_time).format("H:mm") === time) {
-  //                   return (
-  //                     <div
-  //                       onClick={(e) => e.stopPropagation()}
-  //                       key={timeslot.id}
-  //                       style={{
-  //                         width: `100%`,
-  //                         top: "-4px",
-  //                         height: `${TIMEGRIDHEIGHT * 2 * timeslot.duration}px`,
-  //                         right: 0,
-  //                       }}
-  //                       className={` absolute top-0 z-[5] flex h-7 cursor-not-allowed items-center justify-center rounded border ${
-  //                         timeslot.accept
-  //                           ? "border-rose-500 bg-rose-200"
-  //                           : "border-orange-500 bg-orange-200"
-  //                       } `}
-  //                     >
-  //                       {timeslot.accept ? <p> Booked</p> : <p> Requested</p>}
-  //                     </div>
-  //                   );
-  //                 }
-  //               })}
-  //             </div>
-  //           </div>
-  //         </div>
-  //       );
-  //     })}
-  //   </div>
-  // );
 }
 
 export default TimeSelectRow;

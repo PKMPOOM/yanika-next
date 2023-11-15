@@ -32,7 +32,7 @@ export default async function RootLayout({
           <StyledComponentsRegistry>
             <ConfigProvider theme={themeConfig}>
               {session && <Navbar />}
-
+              df
               {children}
             </ConfigProvider>
           </StyledComponentsRegistry>
