@@ -176,8 +176,11 @@ model NewTimeSlot {
   accept            Boolean     @default(false)
   bookingType       BookingType @default(single)
   totalPrice        Int         @default(0)
+  // schedule part
   isScheduled       Boolean     @default(false)
+  scheduleDateTime  DateTime?
   meetingLink       String?
+  eventID           String?
   user              User        @relation(fields: [userId], references: [id])
   userId            String
 }
