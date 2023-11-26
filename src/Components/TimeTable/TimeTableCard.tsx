@@ -1,6 +1,6 @@
 "use client";
 
-import { DateTimeMap } from "@/store/BookingModalStore";
+// import { NewDateTimeMap } from "@/store/BookingModalStore";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button, ConfigProvider } from "antd";
 import axios from "axios";
@@ -11,6 +11,7 @@ import { LuExternalLink } from "react-icons/lu";
 import DescValue from "../Global/DescValue";
 import { TodayClasses } from "./TimeTable";
 import { GoogleOutlined } from "@ant-design/icons";
+import { formattedUppercase } from "@/lib/formattedUppercase";
 
 type RequestSchema = {
   timeSlotId: string;
@@ -38,175 +39,234 @@ const TimeTableCard = ({
   singleDay = false,
 }: Props) => {
   const [AcceptLoading, setAcceptLoading] = useState(false);
-
-  const topOfset =
-    TIMEGRIDHEIGHT *
-      (DateTimeMap[dayjs(item.start_time).format("H:mm")].index - 1) +
-    "px";
-
+  const [ScheduleEventLoading, setScheduleEventLoading] = useState(false);
   const queryClient = useQueryClient();
-
-  const heigthOfset = `${TIMEGRIDHEIGHT * item.duration - 16}px`;
-  const width = `calc(${(100 / 7).toFixed(2)}% - 16px)`;
-
+  const customHeight = `${TIMEGRIDHEIGHT * 2 * item.duration}px`;
   const isAccept = item.accept;
+
+  const isDayPassed = dayjs().isAfter(dayjs(item.start_time), "day");
 
   const acceptClass = async (id: string) => {
     setAcceptLoading(true);
     try {
-      await axios.put(`/api/calendar/time_table/${id}`);
+      const response = await axios.put(`/api/calendar/time_table/${id}`);
+      await axios.post(`/api/calendar/line/${response.data}`, {
+        subjectName: item.subject?.name,
+        day: formattedUppercase(item.dayId),
+        startTime: item.parsed_start_time,
+        reason: "accepted",
+      });
+
       queryClient.invalidateQueries(["todayClass", day]);
+
       setAcceptLoading(false);
     } catch (error) {
       console.log(error);
       setAcceptLoading(false);
     }
   };
-  const isPassed = dayjs().isAfter(dayjs(item.start_time));
 
-  const scheduleClass = async (params: RequestSchema) => {
-    const response = await axios.post("/api/google/event", {
-      ...params,
-    });
+  const rejectClass = async (id: string) => {
+    setAcceptLoading(true);
+    try {
+      const response = await axios.delete(`/api/calendar/time_table/${id}`);
+      await axios.post(`/api/calendar/line/${response.data}`, {
+        subjectName: item.subject?.name,
+        day: formattedUppercase(item.dayId),
+        startTime: item.parsed_start_time,
+        reason: "rejected",
+      });
 
-    console.log(response);
-    queryClient.invalidateQueries(["todayClass", day]);
+      queryClient.invalidateQueries(["todayClass", day]);
+
+      setAcceptLoading(false);
+    } catch (error) {
+      console.log(error);
+      setAcceptLoading(false);
+    }
   };
 
-  // console.log(dayjs().isAfter(dayjs(item.start_time)));
+  const scheduleClass = async (params: RequestSchema) => {
+    setScheduleEventLoading(true);
+    try {
+      const response = await axios.post("/api/google/event", {
+        ...params,
+      });
+
+      console.log(response);
+      queryClient.invalidateQueries(["todayClass", day]);
+    } catch (error) {
+      console.log(error);
+    }
+    setScheduleEventLoading(false);
+  };
 
   return (
     <div
       key={item.id}
       style={{
-        width: singleDay ? "94%" : width,
-        top: topOfset,
-        height: heigthOfset,
+        width: singleDay ? "100%" : undefined,
+        height: customHeight,
         left: LEFTOFSET && `${LEFTOFSET}px`,
       }}
-      className="absolute z-10 flex overflow-hidden p-2"
+      className=" z-10 flex"
     >
-      <div
-        className={`relative flex w-full flex-col gap-2 overflow-hidden rounded  border  p-2 text-slate-900 ${
-          item.accept
-            ? "border-emerald-500 bg-emerald-50"
-            : "border-orange-500 bg-orange-50"
-        }`}
-      >
-        <Link href={`/time_table/${day}/${item.id}`} className=" ">
-          <div
-            className={`group flex items-center justify-between overflow-y-hidden font-semibold text-slate-900 ${
-              isAccept ? "hover:text-emerald-500" : "hover:text-orange-500"
-            }`}
-          >
-            <div>{item.subject?.name}</div>
-            <div className=" -translate-x-1 transition-all duration-150 group-hover:translate-x-0 ">
-              <LuExternalLink />
-            </div>
-          </div>
-        </Link>
-
-        {singleDay ? (
-          <div className=" flex flex-col gap-2 text-sm ">
-            <div className=" flex gap-2">
-              <p>Students</p>
-              <ul>
-                {item.userBooked.map((user, index) => (
-                  <li key={user}>
-                    {index + 1}. {user}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <DescValue
-              textSize="sm"
-              keyValue="Duration"
-              value={`${item.duration} Hours`}
-            />
-            <Link
-              href={`/subjects/${item.subjectId}`}
-              target="_blank"
-              className=" group flex items-center gap-2 text-slate-800"
+      <div className=" box-border flex min-h-full flex-1 p-1">
+        <div
+          className={`relative box-border flex w-full flex-1 flex-col gap-2 overflow-hidden rounded  border p-2   text-slate-900 ${
+            item.accept
+              ? "border-emerald-500 bg-emerald-50"
+              : "border-orange-500 bg-orange-50"
+          }`}
+        >
+          <Link href={`/time_table/${day}/${item.id}`} className=" ">
+            <div
+              className={`group flex items-center justify-between overflow-y-hidden font-semibold text-slate-900 ${
+                isAccept ? "hover:text-emerald-500" : "hover:text-orange-500"
+              }`}
             >
-              <p className=" group-hover:text-emerald-500">Subject Details</p>
-              <div className=" -translate-x-1 transition-all duration-150 group-hover:translate-x-0 group-hover:text-emerald-500">
+              <div>{item.subject?.name}</div>
+              <div className=" -translate-x-1 transition-all duration-150 group-hover:translate-x-0 ">
                 <LuExternalLink />
               </div>
-            </Link>
-          </div>
-        ) : (
-          <div className=" text-xs">{item.userBooked.length} student</div>
-        )}
-
-        {/* settings */}
-        {singleDay && !isAccept && (
-          <div className="absolute bottom-2 right-2 flex gap-2">
-            <Button danger>Reject</Button>
-            <Button
-              loading={AcceptLoading}
-              type="primary"
-              onClick={() => {
-                acceptClass(item.id);
-              }}
-            >
-              Accept
-            </Button>
-          </div>
-        )}
-
-        {singleDay && isAccept && !item.isScheduled && (
-          <div className="absolute bottom-2 right-2 flex items-center gap-2 ">
-            <p className=" text-sm"> Schedule for</p>
-            <Button
-              onClick={() => {
-                scheduleClass({
-                  class_duration: item.duration,
-                  isPassed,
-                  students: item.userBooked,
-                  subjectId: item.subjectId!,
-                  start_time: item.start_time as Dayjs,
-                  subject_name: item.subject?.name!,
-                  timeSlotId: item.id,
-                });
-              }}
-            >
-              {isPassed ? (
-                <>next {dayjs(item.start_time).format("dddd on H:mm")}</>
-              ) : (
-                <> {dayjs(item.start_time).format("dddd H:mm")}</>
-              )}
-            </Button>
-          </div>
-        )}
-
-        {singleDay && isAccept && item.isScheduled && (
-          <div className="absolute bottom-2 right-2 flex items-center gap-2 text-sm">
-            <div className=" flex gap-1">
-              <p className=" "> Scheduled on</p>
-              {isPassed ? (
-                <p>next {dayjs(item.start_time).format("dddd on H:mm")}</p>
-              ) : (
-                <p> {dayjs(item.start_time).format("dddd H:mm")}</p>
-              )}
             </div>
-            <Link href={item.meetingLink} target="_blank">
-              <ConfigProvider
-                theme={{
-                  token: {
-                    colorPrimary: "#1677ff",
-                  },
+          </Link>
+
+          {!singleDay && (
+            <div className=" ">
+              <DescValue
+                keyValue="Scheduled"
+                value={item.isScheduled ? "Yes" : "No"}
+                textSize="sm"
+              />
+
+              <DescValue
+                keyValue="student"
+                value={item.userBooked.length.toString()}
+                textSize="sm"
+              />
+            </div>
+          )}
+
+          {singleDay && (
+            <div className=" flex flex-col gap-2 text-sm ">
+              <div className=" flex gap-2">
+                <p>Students</p>
+                <ul>
+                  {item.userBooked.map((user, index) => (
+                    <li key={user}>
+                      {index + 1}. {user}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <DescValue
+                textSize="sm"
+                keyValue="Duration"
+                value={`${item.duration} Hours`}
+              />
+              <Link
+                href={`/subjects/${item.subjectId}`}
+                target="_blank"
+                className=" group flex items-center gap-2  text-slate-800"
+              >
+                <p className=" group-hover:text-emerald-500">Subject Details</p>
+                <div className=" -translate-x-1 transition-all duration-150 group-hover:translate-x-0 group-hover:text-emerald-500">
+                  <LuExternalLink />
+                </div>
+              </Link>
+            </div>
+          )}
+
+          {singleDay && !isAccept && (
+            <div className="absolute bottom-2 right-2 flex gap-2">
+              <Button
+                danger
+                onClick={() => {
+                  rejectClass(item.id);
                 }}
               >
-                <Button icon={<GoogleOutlined />} type="primary">
-                  Open Google Meet
-                </Button>
-              </ConfigProvider>
-            </Link>
+                Reject
+              </Button>
+              <Button
+                loading={AcceptLoading}
+                type="primary"
+                onClick={() => {
+                  acceptClass(item.id);
+                }}
+              >
+                Accept
+              </Button>
+            </div>
+          )}
 
-            <Button danger>Cancel this class</Button>
-          </div>
-        )}
+          {singleDay && isAccept && !item.isScheduled && (
+            <div className="absolute bottom-2 right-2 flex items-center gap-2 ">
+              <p className=" text-sm"> Schedule for</p>
+              <Button
+                loading={ScheduleEventLoading}
+                onClick={() => {
+                  scheduleClass({
+                    class_duration: item.duration,
+                    isPassed: isDayPassed,
+                    students: item.userBooked,
+                    subjectId: item.subjectId!,
+                    start_time: item.start_time as Dayjs,
+                    subject_name: item.subject?.name!,
+                    timeSlotId: item.id,
+                  });
+                }}
+              >
+                {isDayPassed ? (
+                  <>next {dayjs(item.start_time).format("dddd on H:mm")}</>
+                ) : (
+                  <> {dayjs(item.start_time).format("dddd H:mm")}</>
+                )}
+              </Button>
+            </div>
+          )}
+
+          {singleDay && isAccept && item.isScheduled && (
+            <div className="absolute bottom-2 right-2 flex items-center gap-2 text-sm">
+              <div className=" flex gap-1">
+                {isDayPassed ? (
+                  <p>
+                    {`Next week ${dayjs(item.start_time)
+                      .add(7, "day")
+                      .format("DD MMM | H:mm")}-${dayjs(item.start_time)
+                      .add(7, "day")
+                      .add(item.duration, "hour")
+                      .format("H:mm")}`}
+                  </p>
+                ) : (
+                  <p>
+                    {`${dayjs(item.start_time).format("DD MMM | H:mm")}-${dayjs(
+                      item.start_time,
+                    )
+                      .add(item.duration, "hour")
+                      .format("H:mm")}`}
+                  </p>
+                )}
+              </div>
+              <Link href={item.meetingLink} target="_blank">
+                <ConfigProvider
+                  theme={{
+                    token: {
+                      colorPrimary: "#1677ff",
+                    },
+                  }}
+                >
+                  <Button icon={<GoogleOutlined />} type="primary">
+                    Open Google Meet
+                  </Button>
+                </ConfigProvider>
+              </Link>
+
+              <Button danger>Cancel this class</Button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
