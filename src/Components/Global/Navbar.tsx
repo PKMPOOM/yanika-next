@@ -46,12 +46,12 @@ const menuStyle: React.CSSProperties = {
 };
 
 const navMenu: navMenuTypes[] = [
-  {
-    name: "Dashboard",
-    id: "dashboard",
-    href: "/dashboard",
-    role: ["admin"],
-  },
+  // {
+  //   name: "Dashboard",
+  //   id: "dashboard",
+  //   href: "/dashboard",
+  //   role: ["admin"],
+  // },
   {
     name: "Time Table",
     id: "time_table",
