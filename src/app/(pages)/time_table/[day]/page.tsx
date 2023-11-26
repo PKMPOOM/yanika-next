@@ -5,10 +5,12 @@ import Loader from "@/Components/Global/Loader";
 import { TodayClasses } from "@/Components/TimeTable/TimeTable";
 import TimeTableCard from "@/Components/TimeTable/TimeTableCard";
 import { formattedUppercase } from "@/lib/formattedUppercase";
+import { NewDateTimeMap } from "@/store/BookingModalStore";
 import { HomeOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
 import { Breadcrumb, Button } from "antd";
 import axios from "axios";
+import dayjs from "dayjs";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -35,7 +37,7 @@ const SingleDayPage = ({ params }: PageProps) => {
     refetchOnWindowFocus: false,
   });
 
-  const TIMEGRIDHEIGHT = 110;
+  const TIMEGRIDHEIGHT = 50;
 
   if (!session) {
     return <Loader />;
@@ -48,6 +50,8 @@ const SingleDayPage = ({ params }: PageProps) => {
   if (!todayClass) {
     return <Loader />;
   }
+
+  const objectKeys = Object.keys(NewDateTimeMap);
 
   return (
     <Container>
@@ -77,7 +81,7 @@ const SingleDayPage = ({ params }: PageProps) => {
       </div>
 
       <div className=" relative mt-6 flex h-[calc(100vh-200px)] flex-col items-start">
-        {Array(10)
+        {/* {Array(10)
           .fill(null)
           .map((_, index) => (
             <div
@@ -94,18 +98,57 @@ const SingleDayPage = ({ params }: PageProps) => {
                 <div className=" bottom-0 h-1 w-[95%] border-t border-slate-300 "></div>
               </div>
             </div>
-          ))}
+          ))} */}
 
-        {todayClass.map((item) => {
+        {objectKeys.map((time, index) => {
+          const dateTimeMap = NewDateTimeMap[time];
+          const zero = dateTimeMap.m === 0;
+
           return (
-            <TimeTableCard
-              TIMEGRIDHEIGHT={TIMEGRIDHEIGHT}
-              day={dayID}
-              item={item}
-              key={item.id}
-              LEFTOFSET={64}
-              singleDay
-            />
+            <div
+              key={dateTimeMap.hour + index}
+              style={{
+                minHeight: `${TIMEGRIDHEIGHT}px`,
+                height: `${TIMEGRIDHEIGHT}px`,
+                boxSizing: "border-box",
+              }}
+              className="group/box relative flex w-full justify-end   "
+            >
+              <div className="  flex w-full ">
+                <div className=" top-2 flex w-[5%] -translate-y-[10px] group-first/box:translate-y-0">
+                  {zero && (
+                    <p className=" flex">
+                      <span>{time}</span>
+                    </p>
+                  )}
+                </div>
+                <div
+                  className={` flex h-1 w-[95%] grid-cols-7  border-t ${
+                    zero ? "border-slate-300" : " border-slate-200"
+                  }  `}
+                >
+                  {todayClass.map((item) => {
+                    const parsedStartTime = dayjs(item.start_time).format(
+                      "H:m",
+                    );
+                    const eventstart = `${dateTimeMap.hour}:${dateTimeMap.m}`;
+                    const CurrentHourEvent = parsedStartTime === eventstart;
+
+                    if (CurrentHourEvent) {
+                      return (
+                        <TimeTableCard
+                          singleDay
+                          TIMEGRIDHEIGHT={TIMEGRIDHEIGHT}
+                          day={dayID}
+                          item={item}
+                          key={item.id}
+                        />
+                      );
+                    }
+                  })}
+                </div>
+              </div>
+            </div>
           );
         })}
       </div>

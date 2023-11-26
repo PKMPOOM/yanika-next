@@ -1,5 +1,3 @@
-// import ClassesRequest from "@/Components/Classes/ClassesRequest/ClassesRequest";
-// import ClassesRequest from "@/Components/Classes/ClassesRequest/ClassesRequest";
 import Container from "@/Components/Global/Container";
 import TimeTable from "@/Components/TimeTable/TimeTable";
 import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
@@ -16,7 +14,6 @@ export default async function Request() {
 
   return (
     <Container>
-      {/* <ClassesRequest /> */}
       <TimeTable />
     </Container>
   );
