@@ -6,7 +6,7 @@ export default async function Home() {
   const session = await getServerSession(authOptions);
 
   if (session && session.user.role === "admin") {
-    redirect("/dashboard");
+    redirect("/time_table");
   } else {
     redirect("/subjects");
   }
