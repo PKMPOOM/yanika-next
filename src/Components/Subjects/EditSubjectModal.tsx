@@ -3,12 +3,18 @@
 import { gradesOption } from "@/constant/Grades";
 import { subjectFullTypes } from "@/interface/interface";
 import { editSubjectSchema } from "@/interface/payload_validator";
+import Editor from "@/lib/Editor";
 import {
   ExclamationCircleFilled,
   LoadingOutlined,
   UploadOutlined,
 } from "@ant-design/icons";
-import { BlockNoteEditor } from "@blocknote/core";
+import {
+  // Block ,
+  BlockNoteEditor,
+} from "@blocknote/core";
+import "@blocknote/core/style.css";
+import { useBlockNote } from "@blocknote/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Button,
@@ -25,19 +31,12 @@ import {
   theme,
 } from "antd";
 import axios from "axios";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { useContext, useEffect, useState } from "react";
 import { z } from "zod";
 import WideBTNSpan from "../Global/WideBTNSpan";
 import { SubjectPageContext } from "./AllSubjects";
-import "@blocknote/core/style.css";
-import {
-  BlockNoteView,
-  Theme,
-  lightDefaultTheme,
-  useBlockNote,
-} from "@blocknote/react";
-import { useSession } from "next-auth/react";
 
 const { Text } = Typography;
 
@@ -57,32 +56,6 @@ const selectMenu = [
   { value: "English", label: "English" },
   { value: "Thai", label: "Thai" },
 ];
-
-const blockTheme = {
-  ...lightDefaultTheme,
-  componentStyles: (theme) => ({
-    // Adds basic styling to the editor.
-    Editor: {
-      backgroundColor: theme.colors.editor.background,
-      borderRadius: theme.borderRadius,
-      border: `1px solid ${theme.colors.border}`,
-      // boxShadow: `0 2px 4px ${theme.colors.shadow}`,
-    },
-    // Makes all hovered dropdown & menu items blue.
-    Menu: {
-      ".mantine-Menu-item[data-hovered], .mantine-Menu-item:hover": {
-        backgroundColor: "#34d399",
-      },
-    },
-    Toolbar: {
-      ".mantine-Menu-dropdown": {
-        ".mantine-Menu-item:hover": {
-          backgroundColor: "blue",
-        },
-      },
-    },
-  }),
-} satisfies Theme;
 
 function EditSubjectModal({
   activeSubject,
@@ -117,8 +90,8 @@ function EditSubjectModal({
 
   // const localStorageKey = `editorContent${activeSubject}`;
   // const initialContent: string | null = localStorage.getItem(localStorageKey);
+  // initialContent: initialContent ? JSON.parse(initialContent) : undefined,
   const editor: BlockNoteEditor = useBlockNote({
-    // initialContent: initialContent ? JSON.parse(initialContent) : undefined,
     editable: isAdmin,
     onEditorContentChange: (editor) => {
       localStorage.setItem(
@@ -127,6 +100,10 @@ function EditSubjectModal({
       );
     },
   });
+  // const getBlocks = async (data: string) => {
+  //   const blocks: Block[] = await editor.HTMLToBlocks(data);
+  //   editor.replaceBlocks(editor.topLevelBlocks, blocks);
+  // };
 
   useEffect(() => {
     if (SubjectsData && IsEditing === false) {
@@ -143,11 +120,10 @@ function EditSubjectModal({
       if (SubjectsData.image_url) {
         setUrl(SubjectsData.image_url);
       }
-      editor.insertBlocks(
-        JSON.parse(SubjectsData.course_outline),
-        editor.getTextCursorPosition().block,
-        "before",
-      );
+
+      // if (SubjectsData.course_outline) {
+      //   getBlocks(SubjectsData.course_outline);
+      // }
     }
   }, [SubjectsData]);
 
@@ -215,12 +191,16 @@ function EditSubjectModal({
     queryClient.invalidateQueries(["Subject", activeSubject]);
   };
 
+  //todo fix this
   const editSubjectDetail = async (
     event: z.infer<typeof editSubjectSchema>,
   ) => {
+    const localBlocksContent: string | null =
+      localStorage.getItem("editorContent");
+
     const payload = {
       ...event,
-      blockNoteData: JSON.stringify(editor.topLevelBlocks),
+      blockNoteData: localBlocksContent,
     };
 
     setLoading(true);
@@ -238,6 +218,10 @@ function EditSubjectModal({
 
     setLoading(false);
   };
+
+  if (!SubjectsData) {
+    return null;
+  }
 
   return (
     <Modal
@@ -439,14 +423,13 @@ function EditSubjectModal({
               <Select showSearch options={gradesOption} />
             </Form.Item>
             Course outline
-            <div className=" max-h-[600px] overflow-auto">
-              <BlockNoteView
-                editor={editor}
-                theme={blockTheme}
-                onChange={() => {
-                  console.log(editor);
-                }}
-              />
+            <div
+              style={{
+                border: `1px solid ${token.colorBorder}`,
+              }}
+              className="  max-h-[600px] overflow-auto rounded-md pb-2"
+            >
+              <Editor data={SubjectsData?.course_outline} editable={true} />
             </div>
           </Col>
         </Row>

@@ -1,13 +1,13 @@
 import Container from "@/Components/Global/Container";
-import { prisma } from "@/lib/db";
-import { Tag, Breadcrumb } from "antd";
-import Image from "next/image";
-import Link from "next/link";
-import React from "react";
-import { HomeOutlined } from "@ant-design/icons";
 import Subject from "@/Components/Subjects/Subject";
 import BookingButton from "@/Components/Subjects/[id]/BookingButton";
-import CourseOutlineDisplay from "@/Components/Subjects/[id]/CourseOutlineDisplay";
+import { prisma } from "@/lib/db";
+import { HomeOutlined } from "@ant-design/icons";
+import { Breadcrumb, Tag } from "antd";
+import dynamic from "next/dynamic";
+import Image from "next/image";
+import Link from "next/link";
+const Editor = dynamic(() => import("@/lib/Editor"), { ssr: false });
 
 interface PageProps {
   params: {
@@ -114,7 +114,8 @@ const page = async ({ params }: PageProps) => {
 
             <p className=" font-semibold">Course Outline</p>
 
-            <CourseOutlineDisplay data={subject.course_outline} />
+            {/* <CourseOutlineDisplay data={subject.course_outline} /> */}
+            <Editor data={subject.course_outline} />
           </div>
         </div>
         <h1 className=" text-2xl font-semibold">Other subjects</h1>
