@@ -4,20 +4,50 @@ import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 
 // edit subject information
-export async function PUT(_: Request, { params }: { params: { id: string } }) {
+export async function DELETE(
+  _: Request,
+  { params }: { params: { id: string } },
+) {
   try {
     const id = params.id;
 
-    console.log(id);
+    const [bookedUserID] = await prisma.$transaction([
+      prisma.newTimeSlot.findUnique({
+        where: {
+          id,
+        },
+        select: {
+          userId: true,
+        },
+      }),
 
-    await prisma.newTimeSlot.update({
-      where: { id },
-      data: {
-        accept: true,
+      prisma.newTimeSlot.delete({
+        where: { id },
+      }),
+    ]);
+
+    if (!bookedUserID) {
+      return new Response("Not found", { status: 404 });
+    }
+
+    const LineUserid = await prisma.user.findUnique({
+      where: {
+        id: bookedUserID.userId,
+      },
+      select: {
+        accounts: {
+          select: {
+            providerAccountId: true,
+          },
+        },
       },
     });
 
-    return new Response("OK", { status: 200 });
+    if (!LineUserid) {
+      return new Response("LineUserid Not found", { status: 404 });
+    }
+
+    return NextResponse.json(LineUserid.accounts[0].providerAccountId);
   } catch (error) {
     if (error instanceof ZodError) {
       console.log(JSON.stringify(error, null, 2));
@@ -27,6 +57,61 @@ export async function PUT(_: Request, { params }: { params: { id: string } }) {
     return new Response("Internal server error", { status: 500 });
   }
 }
+
+export async function PUT(_: Request, { params }: { params: { id: string } }) {
+  try {
+    const id = params.id;
+
+    const [bookedUserID] = await prisma.$transaction([
+      prisma.newTimeSlot.findUnique({
+        where: {
+          id,
+        },
+        select: {
+          userId: true,
+        },
+      }),
+
+      prisma.newTimeSlot.update({
+        where: { id },
+        data: {
+          accept: true,
+        },
+      }),
+    ]);
+
+    if (!bookedUserID) {
+      return new Response("Not found", { status: 404 });
+    }
+
+    const LineUserid = await prisma.user.findUnique({
+      where: {
+        id: bookedUserID.userId,
+      },
+      select: {
+        accounts: {
+          select: {
+            providerAccountId: true,
+          },
+        },
+      },
+    });
+
+    if (!LineUserid) {
+      return new Response("LineUserid Not found", { status: 404 });
+    }
+
+    return NextResponse.json(LineUserid.accounts[0].providerAccountId);
+  } catch (error) {
+    if (error instanceof ZodError) {
+      console.log(JSON.stringify(error, null, 2));
+      return new Response("Invalid body", { status: 422 });
+    }
+    console.log(JSON.stringify(error, null, 2));
+    return new Response("Internal server error", { status: 500 });
+  }
+}
+
 export async function GET(_: Request, { params }: { params: { id: string } }) {
   try {
     const id = params.id;
@@ -57,13 +142,6 @@ export async function GET(_: Request, { params }: { params: { id: string } }) {
         },
       },
     });
-
-    // await prisma.newTimeSlot.update({
-    //   where: { id },
-    //   data: {
-    //     accept: true,
-    //   },
-    // });
 
     return NextResponse.json([...todayClass]);
   } catch (error) {
