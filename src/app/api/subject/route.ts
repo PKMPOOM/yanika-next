@@ -8,14 +8,15 @@ export async function POST(req: Request) {
   try {
     const { data } = await req.json();
     const { grade, subject_name } = createSubjectSchema.parse(data);
-    await prisma.subject.create({
+    const subject = await prisma.subject.create({
       data: {
         name: subject_name,
         grade: grade,
       },
     });
 
-    return new Response("Success create new subject", { status: 200 });
+    return NextResponse.json({ id: subject.id }, { status: 200 });
+    // return new Response("Success create new subject", { status: 200 });
   } catch (error) {
     if (error instanceof ZodError) {
       console.log(JSON.stringify(error, null, 2));
