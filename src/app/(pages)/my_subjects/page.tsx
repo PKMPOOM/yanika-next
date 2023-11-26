@@ -14,6 +14,7 @@ import timezone from "dayjs/plugin/timezone";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
+const tz = "Asia/Bangkok";
 
 export default async function MySubjects() {
   const session = await getServerSession(authOptions);
@@ -47,8 +48,6 @@ export default async function MySubjects() {
       },
     },
   });
-
-  const tz = "Asia/Bangkok";
 
   return (
     <Container>
