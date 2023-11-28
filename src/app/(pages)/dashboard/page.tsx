@@ -9,7 +9,7 @@ import { redirect } from "next/navigation";
 
 export const metadata = {
   title: "Dashboard",
-  description: "Yanika classroom management",
+  description: "Meenites classroom management",
 };
 
 export default async function Dashboard() {

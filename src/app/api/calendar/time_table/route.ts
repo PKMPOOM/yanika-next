@@ -16,7 +16,7 @@ export async function GET() {
   }
 
   try {
-    const response = await prisma.newTimeSlot.findMany({
+    const response = await prisma.timeSlot.findMany({
       include: {
         subject: {
           select: {

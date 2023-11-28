@@ -7,6 +7,11 @@ import { NextResponse } from "next/server";
 import { v4 as uuid } from "uuid";
 import { ZodError } from "zod";
 import { authOptions } from "../../auth/[...nextauth]/authOptions";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 type RequestSchema = {
   timeSlotId: string;
@@ -77,6 +82,7 @@ export async function POST(req: Request) {
 
     auth2Client.setCredentials({ refresh_token: refresh_token });
     const calendar = google.calendar("v3");
+
     const response = await calendar.events.insert({
       auth: auth2Client,
       calendarId: "primary",
@@ -101,20 +107,20 @@ export async function POST(req: Request) {
     });
 
     if (response.status === 200) {
-      await prisma.newTimeSlot.update({
+      await prisma.timeSlot.update({
         where: {
           id: timeSlotId,
         },
         data: {
           isScheduled: true,
           meetingLink: response.data.hangoutLink,
+          eventID: response.data.id,
+          start_time: dayjs(response.data.start?.dateTime).toISOString(),
+          scheduleDateTime: dayjs(response.data.start?.dateTime).toISOString(),
         },
       });
     }
 
-    // response.data.hangoutLink
-
-    // return NextResponse.json({});
     return NextResponse.json({ data: response.data });
   } catch (error) {
     if (error instanceof ZodError) {

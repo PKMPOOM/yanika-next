@@ -1,15 +1,15 @@
 "use client";
 
 import { Button, Form, Input, Modal, Select } from "antd";
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { SubjectPageContext } from "./AllSubjects";
 
-import WideBTNSpan from "../Global/WideBTNSpan";
-import axios from "axios";
 import { gradesOption } from "@/constant/Grades";
-import { z } from "zod";
 import { editSubjectSchema } from "@/interface/payload_validator";
 import { useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
+import { z } from "zod";
+import WideBTNSpan from "../Global/WideBTNSpan";
 
 const FormItemStyle = {
   marginBottom: 8,
@@ -17,8 +17,12 @@ const FormItemStyle = {
 
 function NewSubjectModal() {
   const [form] = Form.useForm();
-  const { CreateSubjectModalOpen, setCreateSubjectModalOpen } =
-    useContext(SubjectPageContext);
+  const {
+    CreateSubjectModalOpen,
+    setCreateSubjectModalOpen,
+    setActiveSubject,
+    setEditSubjectModalOpen,
+  } = useContext(SubjectPageContext);
 
   const [Loading, setLoading] = useState(false);
 
@@ -31,15 +35,17 @@ function NewSubjectModal() {
 
   const createNewSubject = async (data: z.infer<typeof editSubjectSchema>) => {
     setLoading(true);
-    await axios
-      .post("/api/subject", { data })
-      .then(() => {
-        onCancel();
-        setLoading(false);
-      })
-      .finally(() => {
-        queryClient.invalidateQueries(["SubjectList"]);
-      });
+
+    try {
+      const response = await axios.post("/api/subject", { data });
+      onCancel();
+      setLoading(false);
+      setEditSubjectModalOpen(true);
+      setActiveSubject(response.data.id);
+      queryClient.invalidateQueries(["SubjectList"]);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -78,7 +84,7 @@ function NewSubjectModal() {
           <Select showSearch options={gradesOption} />
         </Form.Item>
 
-        <div className=" flex gap-2 justify-end w-full mt-5">
+        <div className=" mt-5 flex w-full justify-end gap-2">
           <Button htmlType="reset" onClick={onCancel} type="text">
             Cancel
           </Button>

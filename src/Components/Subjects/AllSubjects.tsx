@@ -3,7 +3,7 @@
 import type { gradeTypes } from "@/interface/interface";
 import React, { createContext, useState } from "react";
 import Subject from "./Subject";
-import { Button, Input } from "antd";
+import { Button, Empty, Input } from "antd";
 import Loader from "../Global/Loader";
 import EditSubjectModal from "./EditSubjectModal";
 import WideBTNSpan from "../Global/WideBTNSpan";
@@ -22,6 +22,7 @@ type SubjectPageContext = {
 };
 
 export const SubjectPageContext = createContext({} as SubjectPageContext);
+//todo redo responsive => mobile
 
 function AllSubjects() {
   const { data: session } = useSession();
@@ -47,11 +48,19 @@ function AllSubjects() {
     return res.data.subjectList;
   };
 
-  const { data: SubjectsData, isLoading } = useQuery<gradeTypes[]>({
+  const { data: SubjectsData } = useQuery<gradeTypes[]>({
     queryKey: ["SubjectList"],
     queryFn: fetchData,
     refetchOnWindowFocus: false,
   });
+
+  if (!SubjectsData) {
+    return <Loader />;
+  }
+
+  if (!session?.user) {
+    return <Loader />;
+  }
 
   const filteredSubjectList = SubjectsData?.map((school) => ({
     ...school,
@@ -69,13 +78,9 @@ function AllSubjects() {
     }),
   }));
 
-  if (!session?.user) {
-    return <Loader />;
-  }
-
   return (
     <SubjectPageContext.Provider value={SubjectPageContextValue}>
-      <div className="  flex flex-col gap-6">
+      <div className="  flex flex-col gap-6 ">
         <div className=" flex gap-2 ">
           <Input.Search
             value={SearchKey}
@@ -98,22 +103,26 @@ function AllSubjects() {
           )}
         </div>
 
-        {isLoading && <Loader />}
-
-        {filteredSubjectList?.map((grade) => {
-          if (grade.subjects.length > 0) {
-            return (
-              <div key={grade.id} className=" mb-4 flex flex-col gap-2 ">
-                <p className=" font-bold">{grade.name}</p>
-                <div className=" grid grid-cols-4 gap-4 ">
-                  {grade.subjects.map((items) => (
-                    <Subject key={items.id} subject={items} />
-                  ))}
+        {filteredSubjectList && filteredSubjectList?.length > 0 ? (
+          filteredSubjectList.map((grade) => {
+            if (grade.subjects.length > 0) {
+              return (
+                <div key={grade.id} className=" mb-4 flex flex-col gap-2 ">
+                  <p className=" font-bold">{grade.name}</p>
+                  <div className=" grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                    {grade.subjects.map((items) => (
+                      <Subject key={items.id} subject={items} />
+                    ))}
+                  </div>
                 </div>
-              </div>
-            );
-          }
-        })}
+              );
+            }
+          })
+        ) : (
+          <>
+            <Empty />
+          </>
+        )}
       </div>
       <EditSubjectModal activeSubject={ActiveSubject} />
       <NewSubjectModal />

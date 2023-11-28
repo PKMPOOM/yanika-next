@@ -69,3 +69,14 @@ video {
 .google-map * {
   border-style: none;
 }
+
+/* scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  background-color: #f5f5f5;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: #c7c7c7;
+}

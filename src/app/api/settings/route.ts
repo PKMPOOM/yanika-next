@@ -1,21 +1,25 @@
 import { prisma } from "@/lib/db";
+import "dayjs/locale/th";
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 
-export async function GET() {
+export async function POST(req: Request) {
   try {
-    const response = await prisma.requestedClass.findMany({
-      orderBy: {
-        day: "asc",
+    const { email, id } = await req.json();
+    console.log(email, id);
+
+    await prisma.user.update({
+      where: {
+        id,
+      },
+      data: {
+        email: email,
       },
     });
 
-    console.log(response);
-
-    return NextResponse.json(response);
+    return NextResponse.json({});
   } catch (error) {
     if (error instanceof ZodError) {
-      console.log(JSON.stringify(error, null, 2));
       return new Response("Invalid body", { status: 422 });
     }
     console.log(JSON.stringify(error, null, 2));

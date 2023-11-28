@@ -1,4 +1,5 @@
 import Container from "@/Components/Global/Container";
+import DescValue from "@/Components/Global/DescValue";
 import { prisma } from "@/lib/db";
 import { formattedUppercase } from "@/lib/formattedUppercase";
 import { HomeOutlined } from "@ant-design/icons";
@@ -14,10 +15,10 @@ interface PageProps {
   };
 }
 
-const page = async ({ params }: PageProps) => {
+const Page = async ({ params }: PageProps) => {
   const { id } = params;
 
-  const data = await prisma.newTimeSlot.findUnique({
+  const ClassData = await prisma.timeSlot.findUnique({
     where: {
       id,
     },
@@ -27,10 +28,14 @@ const page = async ({ params }: PageProps) => {
     },
   });
 
-  if (!data) {
+  if (!ClassData) {
     redirect("/404");
   }
-
+  const classHours = `${dayjs(ClassData.start_time).format("H:mm")}-${dayjs(
+    ClassData.start_time,
+  )
+    .add(ClassData.duration, "hour")
+    .format("H:mm")} Hrs.`;
   return (
     <Container>
       <div className=" mb-4 flex justify-between">
@@ -48,26 +53,28 @@ const page = async ({ params }: PageProps) => {
             },
             {
               title: (
-                <Link href={`/time_table/${data.dayId}`}>
-                  {formattedUppercase(data.dayId)}
+                <Link href={`/time_table/${ClassData.dayId}`}>
+                  {formattedUppercase(ClassData.dayId)}
                 </Link>
               ),
             },
             {
-              title: `${dayjs(data.start_time).format("H:mm")}-${dayjs(
-                data.start_time,
-              )
-                .add(data.duration, "hour")
-                .format("H:mm")} Hrs.`,
+              title: classHours,
             },
           ]}
         />
       </div>
-      Meeting link: blablabla.ggmeet.com
-      <div></div>
-      <pre>{JSON.stringify(data, null, 2)}</pre>
+      <h1 className=" text-xl font-semibold">
+        {ClassData.subject?.name} class
+      </h1>
+      <DescValue keyValue="Class Duration" value={classHours} />
+      <DescValue keyValue="Income" value={`${ClassData.totalPrice} Thb`} />
+      {ClassData.userBooked}
+      {/* <pre className=" max-w-6xl overflow-x-scroll">
+        {JSON.stringify(ClassData, null, 2)}
+      </pre> */}
     </Container>
   );
 };
 
-export default page;
+export default Page;

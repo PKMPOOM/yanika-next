@@ -2,23 +2,50 @@
 
 import { formattedUppercase } from "@/lib/formattedUppercase";
 import { useBookingModalStore } from "@/store/BookingModalStore";
-import { Input } from "antd";
+import { Button, Form, Input, Space } from "antd";
 import dayjs from "dayjs";
+import { DeleteOutlined } from "@ant-design/icons";
 
 const ClassRequestSumarry = () => {
-  const [SelectedClass, selectedDay, startTime, classDuration] =
-    useBookingModalStore((state) => [
-      state.SelectedClass,
-      state.selectedDay,
-      state.startTime,
-      state.classDuration,
-    ]);
+  const [
+    SelectedClass,
+    selectedDay,
+    startTime,
+    classDuration,
+    addOnStudent,
+    removeAddOnStudent,
+    addAddOnStudent,
+  ] = useBookingModalStore((state) => [
+    state.SelectedClass,
+    state.selectedDay,
+    state.startTime,
+    state.classDuration,
+
+    state.addOnStudent,
+    state.removeAddOnStudent,
+    state.addAddOnStudent,
+  ]);
+
+  const [form] = Form.useForm();
+
   if (!SelectedClass) {
     return <>No classs selected</>;
   }
+
+  const onFinish = (values: any) => {
+    const { student_email } = values;
+    const isExisted = addOnStudent.includes(student_email);
+    if (isExisted) {
+      console.log("error");
+    } else {
+      addAddOnStudent(student_email);
+      form.resetFields();
+    }
+  };
+
   return (
     <div className=" flex flex-col gap-4 ">
-      <div className=" mb-8 mt-4  flex gap-x-16 ">
+      <div className=" mb-2 mt-4  flex gap-x-16 ">
         <div className=" flex flex-col  text-sm">
           <p className=" text-slate-500">Class booked</p>
           <p className=" text-2xl">{SelectedClass.subjectName}</p>
@@ -35,11 +62,6 @@ const ClassRequestSumarry = () => {
                 {dayjs(startTime).format("H:mm")}-
                 {dayjs(startTime).add(classDuration, "hour").format("H:mm")}
               </div>
-              {/* {SelectedDateTime.map(({ day, time }) => (
-                <div className=" text-lg font-semibold" key={`${day + time}`}>
-                  {formattedUppercase(day)} {timeToRange[time]} Hrs.
-                </div>
-              ))} */}
             </div>
           </div>
 
@@ -48,7 +70,6 @@ const ClassRequestSumarry = () => {
 
             <p>
               <span className=" text-lg font-semibold">
-                {" "}
                 {SelectedClass.classPrice * classDuration} Thb
               </span>
             </p>
@@ -59,10 +80,68 @@ const ClassRequestSumarry = () => {
           </div>
         </div>
       </div>
-      <div>
-        notes
-        <Input.TextArea />
-      </div>
+      {SelectedClass.classType === "group" && (
+        <div className=" w-full ">
+          {/* 
+          //todo add basicform and push students list to store 
+          //todo add each submit have email validation
+           */}
+          <div className=" my-3 flex flex-col gap-2">
+            {addOnStudent.length > 0 ? (
+              addOnStudent.map((student_email) => (
+                <div
+                  key={student_email}
+                  className=" flex items-center justify-between  gap-2"
+                >
+                  <p className=" text-sm">{student_email}</p>
+                  <Button
+                    size="small"
+                    icon={<DeleteOutlined />}
+                    danger
+                    type="primary"
+                    onClick={() => {
+                      removeAddOnStudent(student_email);
+                    }}
+                  />
+                </div>
+              ))
+            ) : (
+              <div>Class group require at least 2 more students</div>
+            )}
+          </div>
+
+          <Form form={form} onFinish={onFinish}>
+            <Form.Item
+              rules={[
+                { required: true, message: "email cannot be blank" },
+                {
+                  pattern: /\w{4,}@gmail.com$/gm,
+                  message: "Please use gmail",
+                },
+                () => ({
+                  validator(_, value) {
+                    const isExisted = addOnStudent.includes(value);
+                    if (!isExisted) {
+                      return Promise.resolve();
+                    }
+                    return Promise.reject(
+                      new Error("This email is already added"),
+                    );
+                  },
+                }),
+              ]}
+              name={"student_email"}
+            >
+              <Space.Compact block>
+                <Input placeholder="email" />
+                <Button htmlType="submit" type="primary">
+                  Add
+                </Button>
+              </Space.Compact>
+            </Form.Item>
+          </Form>
+        </div>
+      )}
     </div>
   );
 };

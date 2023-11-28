@@ -14,25 +14,25 @@ import { FcGoogle } from "react-icons/fc";
 import { RetweetOutlined } from "@ant-design/icons";
 
 export type IntegrationsResponse = {
-  googleAuthUserData: GoogleAuthUserData;
-  integrationData: IntegrationData;
-};
-
-export type GoogleAuthUserData = {
-  id: string;
-  email: string;
-  verified_email: boolean;
-  name: string;
-  given_name: string;
-  family_name: string;
-  picture: string;
-  locale: string;
-};
-
-export type IntegrationData = {
-  id: string;
   GoogleCalendarConnect: boolean;
+  GoogleToken: { email: string };
 };
+
+// export type GoogleAuthUserData = {
+//   id: string;
+//   email: string;
+//   verified_email: boolean;
+//   name: string;
+//   given_name: string;
+//   family_name: string;
+//   picture: string;
+//   locale: string;
+// };
+
+// export type IntegrationData = {
+//   id: string;
+//   GoogleCalendarConnect: boolean;
+// };
 
 const Integrations = () => {
   const { data: session } = useSession();
@@ -73,6 +73,7 @@ const Integrations = () => {
   const connectToGoogle = async () => {
     setLoading(true);
     googleLogin();
+    setLoading(false);
   };
 
   if (!session) {
@@ -83,13 +84,14 @@ const Integrations = () => {
     return <Loader />;
   }
 
-  const { googleAuthUserData, integrationData } = integrationsSettings;
+  const { GoogleCalendarConnect, GoogleToken } = integrationsSettings;
 
   return (
     <div>
       <Title level={4}> Connected Calendar</Title>
       {/* integrationData.GoogleCalendarConnect */}
-      {integrationData.GoogleCalendarConnect ? (
+
+      {GoogleCalendarConnect ? (
         <div className=" flex items-center justify-between rounded-lg border border-slate-300 p-4">
           <div
             style={{
@@ -104,9 +106,7 @@ const Integrations = () => {
             />
             <div>
               <p className=" text-lg">Google</p>
-              <p className=" text-sm text-slate-400">
-                {googleAuthUserData.email}
-              </p>
+              <p className=" text-sm text-slate-400">{GoogleToken.email}</p>
             </div>
           </div>
           <div className=" flex gap-2">

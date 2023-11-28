@@ -31,7 +31,7 @@ export async function POST(req: Request) {
       SelectedClass,
     });
 
-    await prisma.newTimeSlot.create({
+    await prisma.timeSlot.create({
       data: {
         start_time: startTime,
         parsed_start_time: parsed_start_time,
@@ -39,6 +39,11 @@ export async function POST(req: Request) {
         userBooked: [email ? email : userID],
         bookingType: SelectedClass.classType,
         totalPrice: SelectedClass.classPrice * classDuration,
+        user: {
+          connect: {
+            id: userID,
+          },
+        },
         Day: {
           connect: {
             id: selectedDay,
