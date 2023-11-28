@@ -2,7 +2,7 @@
 
 import Container from "@/Components/Global/Container";
 import Loader from "@/Components/Global/Loader";
-import { NewTimeSlot } from "@/store/BookingModalStore";
+import { TimeSlot } from "@/store/BookingModalStore";
 import { useQuery } from "@tanstack/react-query";
 import { Calendar } from "antd";
 import axios from "axios";
@@ -20,7 +20,7 @@ export default function Classes() {
     return res.data;
   };
 
-  const { data: todayClass } = useQuery<NewTimeSlot[]>({
+  const { data: todayClass } = useQuery<TimeSlot[]>({
     queryFn: fetchData,
     queryKey: ["myClassCalendar"],
     refetchOnWindowFocus: false,
