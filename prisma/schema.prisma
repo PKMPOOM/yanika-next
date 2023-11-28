@@ -56,20 +56,20 @@ model Session {
 }
 
 model User {
-  id            String        @id @default(cuid())
+  id            String     @id @default(cuid())
   name          String?
-  email         String?       @unique
+  email         String?    @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
   // other than nextauth
-  password      String        @default("")
-  role          role          @default(user)
+  password      String     @default("")
+  role          role       @default(user)
   classes       Classes[]
   subject       Subject[]
   // TimeSlot      TimeSlot[]
-  NewTimeSlot   NewTimeSlot[]
+  time_slot     TimeSlot[]
 
   @@index([email])
 }
@@ -88,21 +88,21 @@ model VerificationToken {
 }
 
 model Subject {
-  id             String        @id @default(cuid())
-  name           String        @default("")
-  description    String        @default("")
-  image_url      String        @default("")
-  course_outline String        @default("")
-  group_price    Int           @default(0)
-  single_price   Int           @default(200)
-  created_date   DateTime      @default(now())
-  update_at      DateTime      @updatedAt
+  id             String     @id @default(cuid())
+  name           String     @default("")
+  description    String     @default("")
+  image_url      String     @default("")
+  course_outline String     @default("")
+  group_price    Int        @default(0)
+  single_price   Int        @default(200)
+  created_date   DateTime   @default(now())
+  update_at      DateTime   @updatedAt
   tags           String[]
   Classes        Classes[]
-  grade          Grades        @default(school_1)
-  User           User?         @relation(fields: [userId], references: [id])
+  grade          Grades     @default(school_1)
+  User           User?      @relation(fields: [userId], references: [id])
   userId         String?
-  NewTimeSlot    NewTimeSlot[]
+  time_slot      TimeSlot[]
 
   @@index([id])
 }
@@ -153,16 +153,16 @@ enum TimeSlots {
 }
 
 model Day {
-  id          Days          @unique @default(NA)
-  name        Days          @default(NA)
-  index       Int           @default(autoincrement())
-  NewTimeSlot NewTimeSlot[]
+  id        Days       @unique @default(NA)
+  name      Days       @default(NA)
+  index     Int        @default(autoincrement())
+  time_slot TimeSlot[]
 
   @@id([id])
   @@index([id])
 }
 
-model NewTimeSlot {
+model TimeSlot {
   id                String      @unique @default(uuid())
   index             Int         @default(autoincrement())
   start_time        DateTime    @default(now())
