@@ -14,50 +14,38 @@ export async function GET(_: Request, { params }: { params: { id: string } }) {
       return new Response("Unauthenticated", { status: 401 });
     }
 
-    let response;
-    switch (session.user.role) {
-      case "admin":
-        const allUserCalendar = await prisma.timeSlot.findMany({
+    const userData = await prisma.user.findUnique({
+      where: {
+        id: id,
+      },
+      include: {
+        accounts: {
+          select: {
+            provider: true,
+            type: true,
+            scope: true,
+            providerAccountId: true,
+          },
+        },
+        time_slot: {
           include: {
             subject: {
               select: {
                 id: true,
                 name: true,
+                grade: true,
+                group_price: true,
+                single_price: true,
+                image_url: true,
+                update_at: true,
               },
             },
           },
-          orderBy: {
-            Day: {
-              index: "asc",
-            },
-          },
-        });
-        response = allUserCalendar;
-        break;
-      case "user":
-        const singleUserCalendar = await prisma.timeSlot.findMany({
-          where: {
-            userId: id,
-          },
-          include: {
-            subject: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
-          },
-          orderBy: {
-            Day: {
-              index: "asc",
-            },
-          },
-        });
-        response = singleUserCalendar;
-        break;
-    }
+        },
+      },
+    });
 
-    return NextResponse.json(response);
+    return NextResponse.json(userData);
   } catch (error) {
     if (error instanceof ZodError) {
       return new Response("Invalid body", { status: 422 });

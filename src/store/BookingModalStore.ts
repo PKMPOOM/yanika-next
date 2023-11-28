@@ -92,7 +92,7 @@ export type classType = {
   subjectName?: string;
 };
 
-export type NewTimeSlot = {
+export type TimeSlot = {
   id: string;
   index: number;
   start_time: Dayjs;
@@ -129,7 +129,7 @@ export type NewDays = {
     | "sunday"
     | "NA";
   index: number;
-  NewTimeSlot: NewTimeSlot[];
+  time_slot: TimeSlot[];
 };
 
 const TimeSlotArraySchema = z.array(Days);

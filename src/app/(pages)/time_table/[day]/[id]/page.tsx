@@ -15,10 +15,10 @@ interface PageProps {
   };
 }
 
-const page = async ({ params }: PageProps) => {
+const Page = async ({ params }: PageProps) => {
   const { id } = params;
 
-  const ClassData = await prisma.newTimeSlot.findUnique({
+  const ClassData = await prisma.timeSlot.findUnique({
     where: {
       id,
     },
@@ -77,4 +77,4 @@ const page = async ({ params }: PageProps) => {
   );
 };
 
-export default page;
+export default Page;

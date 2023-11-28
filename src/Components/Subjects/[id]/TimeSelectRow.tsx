@@ -90,7 +90,7 @@ function TimeSelectRow({ timeSlot }: TimeSlotProps) {
                 {time === dayjs(startTime).format("H:mm") && (
                   <SelectDateTimeCard TIMEGRIDHEIGHT={TIMEGRIDHEIGHT} />
                 )}
-                {todayData?.NewTimeSlot.map((timeslot) => {
+                {todayData?.time_slot.map((timeslot) => {
                   if (dayjs(timeslot.start_time).format("H:mm") === time) {
                     return (
                       <div

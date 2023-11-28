@@ -31,7 +31,7 @@ export async function POST(req: Request) {
       SelectedClass,
     });
 
-    await prisma.newTimeSlot.create({
+    await prisma.timeSlot.create({
       data: {
         start_time: startTime,
         parsed_start_time: parsed_start_time,

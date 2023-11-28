@@ -12,7 +12,7 @@ export async function DELETE(
     const id = params.id;
 
     const [bookedUserID] = await prisma.$transaction([
-      prisma.newTimeSlot.findUnique({
+      prisma.timeSlot.findUnique({
         where: {
           id,
         },
@@ -21,7 +21,7 @@ export async function DELETE(
         },
       }),
 
-      prisma.newTimeSlot.delete({
+      prisma.timeSlot.delete({
         where: { id },
       }),
     ]);
@@ -63,7 +63,7 @@ export async function PUT(_: Request, { params }: { params: { id: string } }) {
     const id = params.id;
 
     const [bookedUserID] = await prisma.$transaction([
-      prisma.newTimeSlot.findUnique({
+      prisma.timeSlot.findUnique({
         where: {
           id,
         },
@@ -72,7 +72,7 @@ export async function PUT(_: Request, { params }: { params: { id: string } }) {
         },
       }),
 
-      prisma.newTimeSlot.update({
+      prisma.timeSlot.update({
         where: { id },
         data: {
           accept: true,
@@ -118,7 +118,7 @@ export async function GET(_: Request, { params }: { params: { id: string } }) {
 
     console.log(id);
 
-    const todayClass = await prisma.newTimeSlot.findMany({
+    const todayClass = await prisma.timeSlot.findMany({
       where: {
         dayId: id as Days,
       },

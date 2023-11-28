@@ -13,7 +13,7 @@ export async function GET() {
   try {
     const timeSlot = await prisma.day.findMany({
       include: {
-        NewTimeSlot: true,
+        time_slot: true,
       },
       orderBy: {
         index: "asc",

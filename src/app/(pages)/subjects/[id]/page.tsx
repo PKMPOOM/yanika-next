@@ -15,7 +15,7 @@ interface PageProps {
   };
 }
 
-const page = async ({ params }: PageProps) => {
+const Page = async ({ params }: PageProps) => {
   const { id } = params;
 
   const subject = await prisma.subject.findUnique({
@@ -129,4 +129,4 @@ const page = async ({ params }: PageProps) => {
   );
 };
 
-export default page;
+export default Page;

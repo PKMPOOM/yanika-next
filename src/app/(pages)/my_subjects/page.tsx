@@ -27,7 +27,7 @@ export default async function MySubjects() {
     return redirect("/subjects");
   }
 
-  const myBookedSuybject = await prisma.newTimeSlot.findMany({
+  const myBookedSuybject = await prisma.timeSlot.findMany({
     where: {
       userId: session.user.id,
     },

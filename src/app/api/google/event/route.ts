@@ -107,7 +107,7 @@ export async function POST(req: Request) {
     });
 
     if (response.status === 200) {
-      await prisma.newTimeSlot.update({
+      await prisma.timeSlot.update({
         where: {
           id: timeSlotId,
         },

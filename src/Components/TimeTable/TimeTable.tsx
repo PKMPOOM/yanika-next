@@ -75,6 +75,8 @@ const TimeTable = () => {
     return <Loader />;
   }
 
+  console.log(requestClassList);
+
   const TIMEGRIDHEIGHT = 50;
   const objectKeys = Object.keys(NewDateTimeMap);
   // const objectKeysLength = Object.keys(NewDateTimeMap).length;
