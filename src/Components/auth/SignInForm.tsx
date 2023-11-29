@@ -29,7 +29,6 @@ function SignInForm() {
         email: event.email,
         password: event.password,
         redirect: false,
-        callbackUrl: `${process.env.NEXTAUTH_URL}`,
       });
 
       setLoading(false);
@@ -70,7 +69,7 @@ function SignInForm() {
           size="large"
           onClick={() => {
             signIn("line", {
-              callbackUrl: `${process.env.NEXTAUTH_URL}`,
+              callbackUrl: `${window.location.origin}/subjects`,
             });
           }}
           block
