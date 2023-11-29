@@ -134,7 +134,7 @@ function Navbar() {
 
   return (
     <>
-      <div className="fixed top-0 z-50 w-full border-b bg-white">
+      <div className="fixed top-0 z-30 w-full border-b bg-white">
         <Container margin={false}>
           <div className="flex h-10 items-center justify-between overflow-hidden ">
             <Link href={isAdmin ? "/dashboard" : "/subjects"}>
@@ -242,7 +242,6 @@ function Navbar() {
                 title="Menu"
                 placement="right"
                 onClose={onClose}
-                // open={true}
                 open={DrawwerOpen}
               >
                 {session?.user ? (
@@ -328,7 +327,7 @@ function Navbar() {
       </div>
 
       {session && !session?.user.email && currentPath !== "/settings" && (
-        <div className="absolute -bottom-10 z-20 flex w-screen justify-center bg-red-400">
+        <div className="fixed top-10 z-50 flex w-screen justify-center bg-red-400">
           <div className="  flex h-10 w-full max-w-7xl items-center justify-between px-8 xl:px-0">
             <p className=" text-white">
               No email added{" "}
