@@ -109,7 +109,7 @@ const TimeTable = () => {
         </div>
       </div>
 
-      <div className="  mt-6 flex h-[calc(100vh-130px)] flex-col items-start justify-start overflow-y-auto  ">
+      <div className="  mt-6 flex h-[calc(100vh-108px)] flex-col items-start justify-start overflow-y-auto  ">
         {/* Time grid lines */}
         {objectKeys.map((time, index) => {
           const dateTimeMap = NewDateTimeMap[time];

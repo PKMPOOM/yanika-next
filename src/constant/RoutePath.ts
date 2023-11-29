@@ -1,4 +1,4 @@
-const routepath = {
+export const routepath = {
   TimeTable: "/time_table",
   Dahsboard: "/dashboard",
   Subject: "/subject",

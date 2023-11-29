@@ -20,9 +20,9 @@ import {
 } from "antd";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { redirect, usePathname, useRouter } from "next/navigation";
 import React, { useState } from "react";
-import Meenites from "../../../public/meen.svg";
+import Meenites from "../../../public/AppLogoNav.svg";
 import { MenuOutlined } from "@ant-design/icons";
 import Container from "./Container";
 const items: MenuProps["items"] = [
@@ -113,7 +113,8 @@ function Navbar() {
 
     switch (key) {
       case "sign_out":
-        return signOut();
+        signOut();
+        return redirect("/auth/signIn");
       case "settings":
         isAdmin ? router.push("/settings/admin") : router.push("/settings");
         break;
