@@ -175,7 +175,7 @@ const Page = ({ params }: PageProps) => {
                 <div className=" flex items-start gap-2">
                   <Title level={5}>{formattedUppercase(dayName)}</Title>
                   <Link href={`/time_table/${dayName}`}>
-                    <div className=" -translate-x-1  rounded-md p-2 pt-0 transition-all duration-150 hover:translate-x-0 hover:text-emerald-500">
+                    <div className=" -translate-x-1 rounded-md  p-2 pt-0 text-slate-800 transition-all duration-150 hover:translate-x-0 hover:text-emerald-500">
                       <LuExternalLink />
                     </div>
                   </Link>
@@ -217,7 +217,7 @@ const Page = ({ params }: PageProps) => {
                         />
                       </div>
                       <Link href={`/time_table/${dayName}/${item.id}`}>
-                        <div className=" -translate-x-1  rounded-md p-2 transition-all duration-150 hover:translate-x-0 hover:text-emerald-500">
+                        <div className=" -translate-x-1 rounded-md p-2 text-slate-800 transition-all duration-150 hover:translate-x-0 hover:text-emerald-500">
                           <LuExternalLink />
                         </div>
                       </Link>

@@ -171,7 +171,7 @@ export async function POST(
         console.error("Error:", error);
       });
 
-    return new Response("Internal server error", { status: 200 });
+    return new Response("OK", { status: 200 });
   } catch (error) {
     if (error instanceof ZodError) {
       console.log(JSON.stringify(error, null, 2));

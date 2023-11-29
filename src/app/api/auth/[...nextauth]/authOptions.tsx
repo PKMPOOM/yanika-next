@@ -5,7 +5,6 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "@/lib/db";
 import { compare } from "bcrypt";
 import { systemRoles } from "@/interface/interface";
-// import GoogleProvider from "next-auth/providers/google";
 
 declare module "next-auth" {
   interface Session extends DefaultSession {
