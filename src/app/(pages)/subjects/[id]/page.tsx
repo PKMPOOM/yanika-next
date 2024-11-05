@@ -1,13 +1,13 @@
 import Container from "@/Components/Global/Container";
 import Subject from "@/Components/Subjects/Subject";
 import BookingButton from "@/Components/Subjects/[id]/BookingButton";
+import Editor from "@/lib/Editor";
 import { prisma } from "@/lib/db";
 import { HomeOutlined } from "@ant-design/icons";
 import { Breadcrumb, Tag } from "antd";
-import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
-const Editor = dynamic(() => import("@/lib/Editor"), { ssr: false });
+// const Editor = dynamic(() => import("@/lib/Editor"), { ssr: false });
 
 interface PageProps {
   params: {
@@ -50,8 +50,8 @@ const Page = async ({ params }: PageProps) => {
 
   return (
     <Container>
-      <div className=" flex min-h-[90vh] flex-col gap-6 ">
-        <div className=" flex justify-between">
+      <div className="flex min-h-[90vh] flex-col gap-6">
+        <div className="flex justify-between">
           <Breadcrumb
             items={[
               {
@@ -71,7 +71,7 @@ const Page = async ({ params }: PageProps) => {
             ]}
           />
         </div>
-        <div className=" flex flex-col gap-4 md:flex-row">
+        <div className="flex flex-col gap-4 md:flex-row">
           <div className="aspect-square max-w-full md:max-w-lg">
             <Image
               width={1000}
@@ -90,12 +90,12 @@ const Page = async ({ params }: PageProps) => {
               }
             />
           </div>
-          <div className=" flex w-full flex-col  items-start gap-4 ">
-            <div className=" flex w-full  gap-3  sm:flex-row sm:justify-between md:flex-col md:items-start lg:flex-row ">
-              <div className=" flex flex-col gap-2 text-3xl ">
-                <div className=" font-semibold">{subject.name}</div>
-                <div className=" text-sm font-semibold">| {formatedGrade}</div>
-                <div className=" flex flex-wrap gap-y-2 ">
+          <div className="flex w-full flex-col items-start gap-4">
+            <div className="flex w-full gap-3 sm:flex-row sm:justify-between md:flex-col md:items-start lg:flex-row">
+              <div className="flex flex-col gap-2 text-3xl">
+                <div className="font-semibold">{subject.name}</div>
+                <div className="text-sm font-semibold">| {formatedGrade}</div>
+                <div className="flex flex-wrap gap-y-2">
                   {subject.tags.map((item) => (
                     <Tag key={item}>{item}</Tag>
                   ))}
@@ -112,13 +112,11 @@ const Page = async ({ params }: PageProps) => {
 
             <p>{subject.description}</p>
 
-            <p className=" font-semibold">Course Outline</p>
-
-            {/* <CourseOutlineDisplay data={subject.course_outline} /> */}
+            <p className="font-semibold">Course Outline</p>
             <Editor data={subject.course_outline} />
           </div>
         </div>
-        <h1 className=" text-2xl font-semibold">Other subjects</h1>
+        <h1 className="text-2xl font-semibold">Other subjects</h1>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {recomendedSubject.map((item) => (
             <Subject key={item.id} subject={item} />

@@ -9,12 +9,8 @@ import {
   LoadingOutlined,
   UploadOutlined,
 } from "@ant-design/icons";
-import {
-  // Block ,
-  BlockNoteEditor,
-} from "@blocknote/core";
 import "@blocknote/core/style.css";
-import { useBlockNote } from "@blocknote/react";
+import { useCreateBlockNote } from "@blocknote/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Button,
@@ -88,22 +84,13 @@ function EditSubjectModal({
     enabled: activeSubject !== undefined,
   });
 
-  // const localStorageKey = `editorContent${activeSubject}`;
-  // const initialContent: string | null = localStorage.getItem(localStorageKey);
-  // initialContent: initialContent ? JSON.parse(initialContent) : undefined,
-  const editor: BlockNoteEditor = useBlockNote({
-    editable: isAdmin,
-    onEditorContentChange: (editor) => {
-      localStorage.setItem(
-        `editorContent`,
-        JSON.stringify(editor.topLevelBlocks),
-      );
-    },
+  const localStorageKey = `editorContent-${activeSubject}`;
+  const initialContent: string | null = localStorage.getItem(localStorageKey);
+
+  const editor = useCreateBlockNote({
+    initialContent: initialContent ? JSON.parse(initialContent) : undefined,
+    trailingBlock: false,
   });
-  // const getBlocks = async (data: string) => {
-  //   const blocks: Block[] = await editor.HTMLToBlocks(data);
-  //   editor.replaceBlocks(editor.topLevelBlocks, blocks);
-  // };
 
   useEffect(() => {
     if (SubjectsData && IsEditing === false) {
@@ -187,8 +174,9 @@ function EditSubjectModal({
     setEditSubjectModalOpen(false);
     setIsEditing(false);
     setUrl(undefined);
-    editor.removeBlocks(editor.topLevelBlocks);
-    queryClient.invalidateQueries(["Subject", activeSubject]);
+    queryClient.invalidateQueries({
+      queryKey: ["Subject", activeSubject],
+    });
   };
 
   //todo fix this
@@ -210,8 +198,12 @@ function EditSubjectModal({
       });
       onCancel();
       setIsEditing(false);
-      queryClient.invalidateQueries(["SubjectList"]);
-      queryClient.invalidateQueries(["Subject", activeSubject]);
+      queryClient.invalidateQueries({
+        queryKey: ["SubjectList"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["Subject", activeSubject],
+      });
     } catch (error) {
       console.log(error);
     }
@@ -290,9 +282,9 @@ function EditSubjectModal({
                 noStyle
               >
                 <Dragger {...props} disabled={Uploading}>
-                  <div className="  flex h-24 flex-col items-center justify-center gap-1 ">
+                  <div className="flex h-24 flex-col items-center justify-center gap-1">
                     {Uploading ? (
-                      <div className=" absolute inset-0 z-10 flex items-center justify-center bg-white/40">
+                      <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/40">
                         <LoadingOutlined
                           style={{ color: token.colorPrimary, fontSize: 50 }}
                         />
@@ -352,9 +344,9 @@ function EditSubjectModal({
             </Form.Item>
 
             <Form.Item style={FormItemStyle}>
-              <div className="flex w-full items-center justify-between ">
+              <div className="flex w-full items-center justify-between">
                 <Text>1-1 price</Text>
-                <div className=" flex items-center gap-2">
+                <div className="flex items-center gap-2">
                   <Form.Item
                     name="single_price"
                     rules={[
@@ -380,9 +372,9 @@ function EditSubjectModal({
             </Form.Item>
 
             <Form.Item>
-              <div className="  flex  w-full items-center justify-between ">
+              <div className="flex w-full items-center justify-between">
                 <Text>Price per student</Text>
-                <div className=" flex items-center gap-2">
+                <div className="flex items-center gap-2">
                   <Form.Item
                     name="group_price"
                     rules={[
@@ -427,13 +419,17 @@ function EditSubjectModal({
               style={{
                 border: `1px solid ${token.colorBorder}`,
               }}
-              className="  max-h-[600px] overflow-auto rounded-md pb-2"
+              className="max-h-[600px] overflow-auto rounded-md pb-2"
             >
-              <Editor data={SubjectsData?.course_outline} editable={true} />
+              <Editor
+                editorOveride={editor}
+                data={SubjectsData?.course_outline}
+                editable={isAdmin}
+              />
             </div>
           </Col>
         </Row>
-        <div className=" flex w-full justify-end gap-2">
+        <div className="flex w-full justify-end gap-2">
           <Button htmlType="reset" onClick={onCancel} type="text">
             Cancel
           </Button>

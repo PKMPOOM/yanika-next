@@ -1,7 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ["kgjimzdelnpigevgscbx.supabase.co"],
+    domains: [
+      "kgjimzdelnpigevgscbx.supabase.co",
+      "wnxfzynxyvzahqireows.supabase.co",
+    ],
   },
   webpack(config) {
     config.module.rules.push({

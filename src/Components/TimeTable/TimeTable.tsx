@@ -84,24 +84,24 @@ const TimeTable = () => {
   return (
     <div>
       {/* table header */}
-      <div className=" -mb-4 flex w-full justify-end">
-        <div className="  -top-12  float-right grid  w-[95%] grid-cols-7 ">
+      <div className="-mb-4 flex w-full justify-end">
+        <div className="-top-12 float-right grid w-[95%] grid-cols-7">
           {daysArray.map((day, index) => {
             const isAvailable = AVAILABLEDAYS.includes(day);
             return (
               <Link
                 href={`/time_table/${day}`}
                 key={day + index}
-                className="group flex items-center justify-between overflow-hidden rounded-md px-2 py-1 text-slate-800 hover:bg-slate-50 "
+                className="group flex items-center justify-between overflow-hidden rounded-md px-2 py-1 text-slate-800 hover:bg-slate-50"
               >
                 <div>
                   <p>{formattedUppercase(day)}</p>
-                  <p className=" text-xs text-slate-500">
+                  <p className="text-xs text-slate-500">
                     {isAvailable ? "Available" : "Break"}
                   </p>
                 </div>
-                <div className=" flex gap-2 opacity-0 transition-all duration-200 group-hover:opacity-100">
-                  <LuEye /> <p className=" text-xs">View</p>
+                <div className="flex gap-2 opacity-0 transition-all duration-200 group-hover:opacity-100">
+                  <LuEye /> <p className="text-xs">View</p>
                 </div>
               </Link>
             );
@@ -109,11 +109,13 @@ const TimeTable = () => {
         </div>
       </div>
 
-      <div className="  mt-6 flex h-[calc(100vh-108px)] flex-col items-start justify-start overflow-y-auto  ">
+      <div className="mt-6 flex h-[calc(100vh-148px)] flex-col items-start justify-start overflow-y-auto pb-10">
         {/* Time grid lines */}
         {objectKeys.map((time, index) => {
           const dateTimeMap = NewDateTimeMap[time];
           const zero = dateTimeMap.m === 0;
+          const isLast = index === objectKeys.length - 1;
+          const isBeforeLast = index === objectKeys.length - 2;
 
           return (
             <div
@@ -123,69 +125,74 @@ const TimeTable = () => {
                 height: `${TIMEGRIDHEIGHT}px`,
                 boxSizing: "border-box",
               }}
-              className="group/box relative flex w-full justify-end   "
+              className="group/box relative flex w-full justify-end"
             >
-              <div className="  flex w-full ">
-                <div className=" top-2 flex w-[5%] -translate-y-[10px] group-first/box:translate-y-0">
+              <div className="flex w-full">
+                <div className="top-2 flex w-[5%] -translate-y-[10px] group-first/box:translate-y-0">
                   {zero && (
-                    <p className=" flex">
+                    <p className="flex">
                       <span>{time}</span>
                     </p>
                   )}
                 </div>
-                <div
-                  className={` flex h-1 w-[95%] grid-cols-7  border-t ${
-                    zero ? "border-slate-300" : " border-slate-200"
-                  }  `}
-                >
-                  {daysArray.map((day, index) => {
-                    const todayClass = requestClassList[day];
-                    const isToday =
-                      dayjs().format("dddd").toLowerCase() === day;
+                {!isLast && (
+                  <div
+                    className={`flex h-1 w-[95%] grid-cols-7 border-t ${
+                      zero ? "border-slate-400" : "border-slate-200"
+                    } `}
+                  >
+                    {daysArray.map((day, index) => {
+                      const todayClass = requestClassList[day];
+                      const isToday =
+                        dayjs().format("dddd").toLowerCase() === day;
 
-                    return (
-                      <div
-                        key={day + index}
-                        style={{
-                          minHeight: `${TIMEGRIDHEIGHT}px`,
-                          height: `${TIMEGRIDHEIGHT}px`,
-                        }}
-                        className={` w-full border-r first:border-l last:border-r ${
-                          isToday ? "bg-emerald-100" : "bg-white"
-                        } `}
-                      >
-                        {AVAILABLEDAYS.includes(day) && todayClass && (
-                          <div className=" flex flex-col">
-                            {todayClass.map((item) => {
-                              const parsedStartTime = dayjs(
-                                item.start_time,
-                              ).format("H:m");
-                              const eventstart = `${dateTimeMap.hour}:${dateTimeMap.m}`;
-                              const CurrentHourEvent =
-                                parsedStartTime === eventstart;
+                      return (
+                        <div
+                          key={day + index}
+                          style={{
+                            minHeight: `${TIMEGRIDHEIGHT}px`,
+                            height: `${TIMEGRIDHEIGHT}px`,
+                          }}
+                          className={`relative w-full border-b border-r ${
+                            isBeforeLast &&
+                            "before:absolute before:-inset-0 before:block before:h-full before:border-b before:border-slate-400 before:content-['']"
+                          } first:border-l ${
+                            isToday ? "bg-emerald-100" : "bg-white"
+                          } `}
+                        >
+                          {AVAILABLEDAYS.includes(day) && todayClass && (
+                            <div className="flex flex-col">
+                              {todayClass.map((item) => {
+                                const parsedStartTime = dayjs(
+                                  item.start_time,
+                                ).format("H:m");
+                                const eventstart = `${dateTimeMap.hour}:${dateTimeMap.m}`;
+                                const CurrentHourEvent =
+                                  parsedStartTime === eventstart;
 
-                              if (CurrentHourEvent) {
-                                return (
-                                  <TimeTableCard
-                                    TIMEGRIDHEIGHT={TIMEGRIDHEIGHT}
-                                    day={day}
-                                    item={item}
-                                    key={item.id}
-                                  />
-                                );
-                              }
-                            })}
-                          </div>
-                        )}
-                        {!AVAILABLEDAYS.includes(day) && (
-                          <div className=" pointer-events-none flex h-full items-center justify-center bg-slate-50 ">
-                            <p className="text-base text-slate-400">Break</p>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
+                                if (CurrentHourEvent) {
+                                  return (
+                                    <TimeTableCard
+                                      TIMEGRIDHEIGHT={TIMEGRIDHEIGHT}
+                                      day={day}
+                                      item={item}
+                                      key={item.id}
+                                    />
+                                  );
+                                }
+                              })}
+                            </div>
+                          )}
+                          {!AVAILABLEDAYS.includes(day) && (
+                            <div className="pointer-events-none flex h-full items-center justify-center bg-slate-50">
+                              <p className="text-base text-slate-400">Break</p>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </div>
           );

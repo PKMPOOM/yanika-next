@@ -18,7 +18,9 @@ export const useUserList = () => {
     return response.data;
   };
 
-  return useQuery<UserDataListType[]>(["userList"], fetcher, {
+  return useQuery<UserDataListType[]>({
+    queryKey: ["userList"],
+    queryFn: fetcher,
     refetchOnWindowFocus: false,
   });
 };
@@ -29,7 +31,9 @@ export const useUserData = (id: string) => {
     return response.data;
   };
 
-  return useQuery<UserDataType>(["userData", id], fetcher, {
+  return useQuery<UserDataType>({
+    queryKey: ["userData", id],
+    queryFn: fetcher,
     refetchOnWindowFocus: false,
   });
 };

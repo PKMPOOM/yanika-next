@@ -2,11 +2,11 @@ import Navbar from "@/Components/Global/Navbar";
 import "@/app/globals.css";
 import AuthProvider from "@/context/AuthProvider";
 import themeConfig from "@/theme/themeConfig";
+import { AntdRegistry } from "@ant-design/nextjs-registry";
 import { ConfigProvider } from "antd";
 import type { Metadata } from "next";
 import { getServerSession } from "next-auth";
 import { Inter } from "next/font/google";
-import StyledComponentsRegistry from "../lib/AntdRegistry";
 import { authOptions } from "./api/auth/[...nextauth]/authOptions";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -28,12 +28,12 @@ export default async function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <AuthProvider>
-          <StyledComponentsRegistry>
+          <AntdRegistry>
             <ConfigProvider theme={themeConfig}>
               {session && <Navbar />}
               {children}
             </ConfigProvider>
-          </StyledComponentsRegistry>
+          </AntdRegistry>
         </AuthProvider>
       </body>
     </html>

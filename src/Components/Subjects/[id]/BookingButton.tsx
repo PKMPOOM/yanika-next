@@ -5,6 +5,7 @@ import React, { createContext, useState } from "react";
 import type { DayList, TimeList } from "@/interface/timeslot_interface";
 import { NotificationInstance } from "antd/es/notification/interface";
 import TimeSelectModal from "./TimeSelectModal";
+import { useShallow } from "zustand/react/shallow";
 import { classType, useBookingModalStore } from "@/store/BookingModalStore";
 type Price = {
   groupPrice: number;
@@ -47,10 +48,9 @@ function BookingButton({
     undefined,
   );
 
-  const [setModalOpen, setSelectedClass] = useBookingModalStore((state) => [
-    state.setModalOpen,
-    state.setSelectedClass,
-  ]);
+  const [setModalOpen, setSelectedClass] = useBookingModalStore(
+    useShallow((state) => [state.setModalOpen, state.setSelectedClass]),
+  );
 
   const openModal = (classType: classType["classType"]) => {
     setModalOpen(true);
@@ -76,10 +76,10 @@ function BookingButton({
   return (
     <timeSlotContext.Provider value={contextValue}>
       {contextHolder}
-      <div className=" flex flex-col gap-4 rounded-lg border border-emerald-500 bg-emerald-50 p-4">
-        <p className=" text-lg font-semibold">Book this subject</p>
+      <div className="flex flex-col gap-4 rounded-lg border border-emerald-500 bg-emerald-50 p-4">
+        <p className="text-lg font-semibold">Book this subject</p>
         {groupPrice > 0 && (
-          <div className=" flex items-center gap-4">
+          <div className="flex items-center gap-4">
             <Button
               size="large"
               type="primary"
@@ -87,15 +87,15 @@ function BookingButton({
             >
               {groupPrice} thb/hour
             </Button>
-            <div className=" flex gap-2">
+            <div className="flex gap-2">
               <p>
                 group class{" "}
-                <span className=" text-slate-500">(3 or more students)</span>
+                <span className="text-slate-500">(3 or more students)</span>
               </p>
             </div>
           </div>
         )}
-        <div className=" flex items-center gap-4">
+        <div className="flex items-center gap-4">
           <Button
             size="large"
             onClick={() => openModal("single")}

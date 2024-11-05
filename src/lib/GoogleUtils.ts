@@ -1,6 +1,4 @@
 import { google } from "googleapis";
-// import { prisma } from "./db";
-// import dayjs from "dayjs";
 
 export const auth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID,

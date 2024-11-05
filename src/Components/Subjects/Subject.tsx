@@ -32,7 +32,9 @@ function Subject({ subject }: { subject: subjectListTypes }) {
 
   const onDelete = async () => {
     await axios.delete(`/api/subject/${subject.id}`);
-    queryClient.invalidateQueries(["SubjectList"]);
+    queryClient.invalidateQueries({
+      queryKey: ["SubjectList"],
+    });
   };
 
   return (
@@ -40,14 +42,12 @@ function Subject({ subject }: { subject: subjectListTypes }) {
       onClick={() => {
         router.push(`/subjects/${subject.id}`);
       }}
-      className=" flex cursor-pointer 
-      flex-col items-start justify-start gap-2 rounded-lg border border-slate-200 p-4 
-      shadow-sm transition-all duration-300 hover:shadow-xl "
+      className="flex cursor-pointer flex-col items-start justify-start gap-2 rounded-lg border border-slate-200 p-4 shadow-sm transition-all duration-300 hover:shadow-xl"
     >
-      <div className=" flex  w-full justify-between">
-        <div className=" font-semibold">{subject.name}</div>
+      <div className="flex w-full justify-between">
+        <div className="font-semibold">{subject.name}</div>
         {IsAdmin && (
-          <div className=" flex gap-2">
+          <div className="flex gap-2">
             <Button
               shape="circle"
               size="small"
@@ -102,7 +102,7 @@ function Subject({ subject }: { subject: subjectListTypes }) {
       >
         {subject.description}
       </Paragraph>
-      <div className=" mt-auto flex flex-wrap gap-y-2">
+      <div className="mt-auto flex flex-wrap gap-y-2">
         {subject.tags?.map((tags, index) => <Tag key={index}>{tags}</Tag>)}
       </div>
     </div>

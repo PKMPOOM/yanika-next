@@ -12,6 +12,7 @@ import { timeSlotContext } from "./BookingButton";
 import ClassRequestSumarry from "./ClassRequestSumarry";
 import DaySelectionButton from "./DaySelectionButton";
 import TimeSelectRow from "./TimeSelectRow";
+import { useShallow } from "zustand/react/shallow";
 
 const { Title } = Typography;
 
@@ -30,21 +31,23 @@ function TimeSelectModal() {
     addOnStudent,
     clearAddOnStudent,
     setSelectedDay,
-  ] = useBookingModalStore((state) => [
-    state.modalOpen,
-    state.setModalOpen,
-    state.setClassDuration,
-    state.classDuration,
-    state.startTime,
-    state.selectedDay,
-    state.SelectedClass,
-    state.formStep,
-    state.setFormStep,
-    state.setStartTime,
-    state.addOnStudent,
-    state.clearAddOnStudent,
-    state.setSelectedDay,
-  ]);
+  ] = useBookingModalStore(
+    useShallow((state) => [
+      state.modalOpen,
+      state.setModalOpen,
+      state.setClassDuration,
+      state.classDuration,
+      state.startTime,
+      state.selectedDay,
+      state.SelectedClass,
+      state.formStep,
+      state.setFormStep,
+      state.setStartTime,
+      state.addOnStudent,
+      state.clearAddOnStudent,
+      state.setSelectedDay,
+    ]),
+  );
   const [Loading, setLoading] = useState(false);
   const [TimeSlotState, setTimeSlotState] = useState<NewDays[]>([]);
   const { api } = useContext(timeSlotContext);
@@ -66,7 +69,6 @@ function TimeSelectModal() {
   useEffect(() => {
     if (timeSlotData) {
       setTimeSlotState(timeSlotData);
-      // setSelectedDay(undefined);
     }
   }, [timeSlotData]);
 
@@ -109,7 +111,9 @@ function TimeSelectModal() {
         placement: "topRight",
       });
       onCancel();
-      queryClient.invalidateQueries(["Timeselect"]);
+      queryClient.invalidateQueries({
+        queryKey: ["Timeselect"],
+      });
     } catch (err) {
       console.log(err);
       api.error({
@@ -134,26 +138,26 @@ function TimeSelectModal() {
       footer={null}
       width={formStep === 1 ? "100%" : "500px"}
     >
-      <div className=" mb-4 flex  flex-col items-start  sm:flex-row sm:items-center sm:gap-4">
+      <div className="mb-4 flex flex-col items-start sm:flex-row sm:items-center sm:gap-4">
         <Title level={3}>Select date & times</Title>
         {formStep === 1 && (
-          <div className=" flex gap-2">
+          <div className="flex gap-2">
             <div className="flex items-center gap-2">
-              <div className=" h-3 w-3  rounded-full bg-orange-400"></div>
+              <div className="h-3 w-3 rounded-full bg-orange-400"></div>
               <div>Request</div>
             </div>
             <div className="flex items-center gap-2">
-              <div className=" h-3 w-3  rounded-full bg-rose-400"></div>
+              <div className="h-3 w-3 rounded-full bg-rose-400"></div>
               <div>Booked</div>
             </div>
           </div>
         )}
       </div>
 
-      <div className=" flex flex-col gap-3">
+      <div className="flex flex-col gap-3">
         {formStep === 1 ? (
           <>
-            <div className=" mb-4 flex gap-2 ">
+            <div className="mb-4 flex gap-2">
               <DaySelectionButton />
             </div>
             <TimeSelectRow timeSlot={TimeSlotState} />
@@ -163,19 +167,19 @@ function TimeSelectModal() {
         )}
       </div>
 
-      <div className=" mt-5 flex w-full flex-col justify-between gap-2 sm:flex-row">
+      <div className="mt-5 flex w-full flex-col justify-between gap-2 sm:flex-row">
         <Button htmlType="reset" onClick={onCancel} type="text">
           Cancel
         </Button>
 
-        <div className=" flex flex-col gap-2 sm:flex-row">
+        <div className="flex flex-col gap-2 sm:flex-row">
           {formStep > 1 && (
             <Button
               onClick={() => {
                 setFormStep(1);
               }}
             >
-              <WideBTNSpan className=" flex items-center gap-2 px-20 text-white">
+              <WideBTNSpan className="flex items-center gap-2 px-20 text-white">
                 <p>Back</p>
               </WideBTNSpan>
             </Button>
@@ -188,7 +192,7 @@ function TimeSelectModal() {
                 setFormStep(2);
               }}
             >
-              <WideBTNSpan className=" flex items-center gap-2 px-20 text-white">
+              <WideBTNSpan className="flex items-center gap-2 px-20 text-white">
                 <p>Next</p>
               </WideBTNSpan>
             </Button>

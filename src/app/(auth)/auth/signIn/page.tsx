@@ -5,9 +5,7 @@ import dynamic from "next/dynamic";
 import { redirect } from "next/navigation";
 import Meenites from "../../../../../public/AppLogo.svg";
 import { routepath } from "@/constant/RoutePath";
-const SignInForm = dynamic(() => import("@/Components/auth/SignInForm"), {
-  ssr: false,
-});
+const SignInForm = dynamic(() => import("@/Components/auth/SignInForm"));
 export const metadata: Metadata = {
   title: "Sign In",
   description: "Meenites classroom management",

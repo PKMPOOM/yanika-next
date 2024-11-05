@@ -136,15 +136,13 @@ function Navbar() {
     <>
       <div className="fixed top-0 z-30 w-full border-b bg-white">
         <Container margin={false}>
-          <div className="flex h-10 items-center justify-between overflow-hidden ">
+          <div className="flex h-10 items-center justify-between overflow-hidden">
             <Link href={isAdmin ? "/dashboard" : "/subjects"}>
-              <div className=" w-24 ">
+              <div className="w-24">
                 <Meenites />
               </div>
             </Link>
-            {/* <div className=" z-50 -translate-x-1/2 rounded-md border border-rose-500 bg-rose-100 p-1 text-xs text-rose-500">
-              Under development
-            </div> */}
+
             <ConfigProvider
               theme={{
                 token: {
@@ -154,10 +152,10 @@ function Navbar() {
                 },
               }}
             >
-              <div className=" hidden md:flex">
+              <div className="hidden md:flex">
                 {session?.user ? (
                   <>
-                    <ul className=" flex items-center gap-3 ">
+                    <ul className="flex items-center gap-3">
                       {session.user.role === "admin" && (
                         <li>
                           <Tag>Admin</Tag>
@@ -181,7 +179,7 @@ function Navbar() {
                                 }
                               >
                                 <p
-                                  className={` mb1 ${
+                                  className={`mb1 ${
                                     currentPath.includes(item.href)
                                       ? // item.href === currentPath
                                         "font-semibold text-emerald-500"
@@ -203,7 +201,7 @@ function Navbar() {
                             <div style={contentStyle}>
                               <div style={{ padding: "10px 16px" }}>
                                 <p>@{session?.user?.name}</p>
-                                <p className=" text-xs text-slate-500">
+                                <p className="text-xs text-slate-500">
                                   {session?.user?.email ?? "No email added"}
                                 </p>
                               </div>
@@ -228,7 +226,7 @@ function Navbar() {
                     </ul>
                   </>
                 ) : (
-                  <div className=" flex items-center gap-5">
+                  <div className="flex items-center gap-5">
                     <Skeleton.Button active={true} size={"small"} />
                     <Skeleton.Button active={true} size={"small"} />
                     <Skeleton.Button active={true} size={"small"} />
@@ -245,9 +243,9 @@ function Navbar() {
                 open={DrawwerOpen}
               >
                 {session?.user ? (
-                  <div className=" flex flex-col">
-                    <div className=" flex items-center justify-between gap-2 ">
-                      <div className=" flex items-center gap-2">
+                  <div className="flex flex-col">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
                         <Avatar
                           style={{
                             backgroundColor: "#10b981",
@@ -259,7 +257,7 @@ function Navbar() {
 
                         <div className="px-2">
                           <p>@{session?.user?.name}</p>
-                          <p className=" text-xs text-slate-500">
+                          <p className="text-xs text-slate-500">
                             {session?.user?.email ?? "No email added"}
                           </p>
                         </div>
@@ -268,7 +266,7 @@ function Navbar() {
 
                     <Divider />
 
-                    <div className=" flex flex-col items-start  ">
+                    <div className="flex flex-col items-start">
                       {navMenu
                         .filter((item) =>
                           item.role.includes(session?.user.role),
@@ -279,7 +277,7 @@ function Navbar() {
                             onClick={() => {
                               drawerNavigate(item.href);
                             }}
-                            className=" flex h-14 w-full cursor-pointer items-center border-b   "
+                            className="flex h-14 w-full cursor-pointer items-center border-b"
                           >
                             <div className="justify-start text-lg font-semibold">
                               <p>{item.name}</p>
@@ -288,7 +286,7 @@ function Navbar() {
                         ))}
                     </div>
 
-                    <div className="  mt-7 flex flex-col gap-2">
+                    <div className="mt-7 flex flex-col gap-2">
                       <Button
                         type="primary"
                         onClick={() => {
@@ -303,7 +301,7 @@ function Navbar() {
                     </div>
                   </div>
                 ) : (
-                  <div className=" flex items-center gap-5">
+                  <div className="flex items-center gap-5">
                     <Skeleton.Button active={true} size={"small"} />
                     <Skeleton.Button active={true} size={"small"} />
                     <Skeleton.Button active={true} size={"small"} />
@@ -313,7 +311,7 @@ function Navbar() {
                 )}
               </Drawer>
             </ConfigProvider>
-            <div className=" md:hidden">
+            <div className="md:hidden">
               <Button
                 onClick={() => {
                   setDrawwerOpen(true);
@@ -328,8 +326,8 @@ function Navbar() {
 
       {session && !session?.user.email && currentPath !== "/settings" && (
         <div className="fixed top-10 z-50 flex w-screen justify-center bg-red-400">
-          <div className="  flex h-10 w-full max-w-7xl items-center justify-between px-8 xl:px-0">
-            <p className=" text-white">
+          <div className="flex h-10 w-full max-w-7xl items-center justify-between px-8 xl:px-0">
+            <p className="text-white">
               No email added{" "}
               <span>
                 <Link href={"/settings"}>Add email</Link>

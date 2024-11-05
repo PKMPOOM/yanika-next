@@ -27,6 +27,8 @@ export const SubjectPageContext = createContext({} as SubjectPageContext);
 function AllSubjects() {
   const { data: session } = useSession();
 
+  console.log(session);
+
   const [EditSubjectModalOpen, setEditSubjectModalOpen] = useState(false);
   const [CreateSubjectModalOpen, setCreateSubjectModalOpen] = useState(false);
   const [ActiveSubject, setActiveSubject] = useState<string | undefined>(
@@ -80,8 +82,8 @@ function AllSubjects() {
 
   return (
     <SubjectPageContext.Provider value={SubjectPageContextValue}>
-      <div className="  flex flex-col gap-6 ">
-        <div className=" flex gap-2 ">
+      <div className="flex flex-col gap-6">
+        <div className="flex gap-2">
           <Input.Search
             value={SearchKey}
             onChange={(e) => {
@@ -107,9 +109,9 @@ function AllSubjects() {
           filteredSubjectList.map((grade) => {
             if (grade.subjects.length > 0) {
               return (
-                <div key={grade.id} className=" mb-4 flex flex-col gap-2 ">
-                  <p className=" font-bold">{grade.name}</p>
-                  <div className=" grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                <div key={grade.id} className="mb-4 flex flex-col gap-2">
+                  <p className="font-bold">{grade.name}</p>
+                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     {grade.subjects.map((items) => (
                       <Subject key={items.id} subject={items} />
                     ))}

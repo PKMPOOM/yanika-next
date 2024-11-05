@@ -35,7 +35,7 @@ export async function POST(
         return NextResponse.json({ error }, { status: 500 });
       }
 
-      const Url = `https://kgjimzdelnpigevgscbx.supabase.co/storage/v1/object/public/subject_image/${data.path}`;
+      const Url = `https://wnxfzynxyvzahqireows.supabase.co/storage/v1/object/public/subject_image/${data.path}`;
 
       await prisma.subject.update({
         where: {

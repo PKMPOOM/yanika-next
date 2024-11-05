@@ -5,6 +5,7 @@ import { useBookingModalStore } from "@/store/BookingModalStore";
 import { Button, Form, Input, Space } from "antd";
 import dayjs from "dayjs";
 import { DeleteOutlined } from "@ant-design/icons";
+import { useShallow } from "zustand/react/shallow";
 
 const ClassRequestSumarry = () => {
   const [
@@ -15,16 +16,18 @@ const ClassRequestSumarry = () => {
     addOnStudent,
     removeAddOnStudent,
     addAddOnStudent,
-  ] = useBookingModalStore((state) => [
-    state.SelectedClass,
-    state.selectedDay,
-    state.startTime,
-    state.classDuration,
+  ] = useBookingModalStore(
+    useShallow((state) => [
+      state.SelectedClass,
+      state.selectedDay,
+      state.startTime,
+      state.classDuration,
 
-    state.addOnStudent,
-    state.removeAddOnStudent,
-    state.addAddOnStudent,
-  ]);
+      state.addOnStudent,
+      state.removeAddOnStudent,
+      state.addAddOnStudent,
+    ]),
+  );
 
   const [form] = Form.useForm();
 
@@ -44,18 +47,18 @@ const ClassRequestSumarry = () => {
   };
 
   return (
-    <div className=" flex flex-col gap-4 ">
-      <div className=" mb-2 mt-4  flex gap-x-16 ">
-        <div className=" flex flex-col  text-sm">
-          <p className=" text-slate-500">Class booked</p>
-          <p className=" text-2xl">{SelectedClass.subjectName}</p>
+    <div className="flex flex-col gap-4">
+      <div className="mb-2 mt-4 flex gap-x-16">
+        <div className="flex flex-col text-sm">
+          <p className="text-slate-500">Class booked</p>
+          <p className="text-2xl">{SelectedClass.subjectName}</p>
           <p>Type: {formattedUppercase(SelectedClass.classType)} class</p>
         </div>
-        <div className=" flex flex-col gap-4">
-          <div className="  flex flex-col gap-2 border-l-[1.5px] border-slate-300 px-4">
-            <p className=" text-slate-500">Selected date times</p>
-            <div className=" h-[1.5px] w-1/6 bg-slate-300"></div>
-            <div className=" flex flex-col gap-0">
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2 border-l-[1.5px] border-slate-300 px-4">
+            <p className="text-slate-500">Selected date times</p>
+            <div className="h-[1.5px] w-1/6 bg-slate-300"></div>
+            <div className="flex flex-col gap-0">
               <p>{selectedDay}</p>
               {classDuration} Hours
               <div>
@@ -65,15 +68,15 @@ const ClassRequestSumarry = () => {
             </div>
           </div>
 
-          <div className=" flex flex-col border-l-[1.5px] border-slate-300 px-4 text-sm">
-            <p className=" text-slate-500"> Price</p>
+          <div className="flex flex-col border-l-[1.5px] border-slate-300 px-4 text-sm">
+            <p className="text-slate-500"> Price</p>
 
             <p>
-              <span className=" text-lg font-semibold">
+              <span className="text-lg font-semibold">
                 {SelectedClass.classPrice * classDuration} Thb
               </span>
             </p>
-            <p className=" text-xs text-slate-500">
+            <p className="text-xs text-slate-500">
               {SelectedClass.classPrice} Thb / hours ({SelectedClass.classType}{" "}
               class )
             </p>
@@ -81,19 +84,19 @@ const ClassRequestSumarry = () => {
         </div>
       </div>
       {SelectedClass.classType === "group" && (
-        <div className=" w-full ">
+        <div className="w-full">
           {/* 
           //todo add basicform and push students list to store 
           //todo add each submit have email validation
            */}
-          <div className=" my-3 flex flex-col gap-2">
+          <div className="my-3 flex flex-col gap-2">
             {addOnStudent.length > 0 ? (
               addOnStudent.map((student_email) => (
                 <div
                   key={student_email}
-                  className=" flex items-center justify-between  gap-2"
+                  className="flex items-center justify-between gap-2"
                 >
-                  <p className=" text-sm">{student_email}</p>
+                  <p className="text-sm">{student_email}</p>
                   <Button
                     size="small"
                     icon={<DeleteOutlined />}

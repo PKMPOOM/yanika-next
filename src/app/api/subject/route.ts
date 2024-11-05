@@ -28,7 +28,7 @@ export async function POST(req: Request) {
 }
 
 export async function GET() {
-  let allSubjects: gradeTypes[] = [
+  let availableGrades: gradeTypes[] = [
     {
       id: "school_1",
       name: "School 1",
@@ -113,7 +113,9 @@ export async function GET() {
     subjectList.forEach((subject) => {
       const { grade, description, id, name, tags } = subject;
 
-      const matchingGrade = allSubjects.find((subject) => subject.id === grade);
+      const matchingGrade = availableGrades.find(
+        (subject) => subject.id === grade,
+      );
       if (matchingGrade) {
         matchingGrade.subjects.push({
           description,
@@ -125,7 +127,7 @@ export async function GET() {
       }
     });
 
-    const filteredGrades = allSubjects.filter(
+    const filteredGrades = availableGrades.filter(
       (item) => item.subjects.length > 0,
     );
 

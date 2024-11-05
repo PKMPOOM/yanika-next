@@ -38,7 +38,7 @@ const Page = async ({ params }: PageProps) => {
     .format("H:mm")} Hrs.`;
   return (
     <Container>
-      <div className=" mb-4 flex justify-between">
+      <div className="mb-4 flex justify-between">
         <Breadcrumb
           items={[
             {
@@ -64,15 +64,10 @@ const Page = async ({ params }: PageProps) => {
           ]}
         />
       </div>
-      <h1 className=" text-xl font-semibold">
-        {ClassData.subject?.name} class
-      </h1>
+      <h1 className="text-xl font-semibold">{ClassData.subject?.name} class</h1>
       <DescValue keyValue="Class Duration" value={classHours} />
       <DescValue keyValue="Income" value={`${ClassData.totalPrice} Thb`} />
       {ClassData.userBooked}
-      {/* <pre className=" max-w-6xl overflow-x-scroll">
-        {JSON.stringify(ClassData, null, 2)}
-      </pre> */}
     </Container>
   );
 };

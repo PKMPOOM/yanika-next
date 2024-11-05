@@ -57,7 +57,9 @@ const TimeTableCard = ({
         reason: "accepted",
       });
 
-      queryClient.invalidateQueries(["todayClass", day]);
+      queryClient.invalidateQueries({
+        queryKey: ["todayClass", day],
+      });
 
       setAcceptLoading(false);
     } catch (error) {
@@ -77,7 +79,9 @@ const TimeTableCard = ({
         reason: "rejected",
       });
 
-      queryClient.invalidateQueries(["todayClass", day]);
+      queryClient.invalidateQueries({
+        queryKey: ["todayClass", day],
+      });
 
       setAcceptLoading(false);
     } catch (error) {
@@ -94,7 +98,9 @@ const TimeTableCard = ({
       });
 
       console.log(response);
-      queryClient.invalidateQueries(["todayClass", day]);
+      queryClient.invalidateQueries({
+        queryKey: ["todayClass", day],
+      });
     } catch (error) {
       console.log(error);
     }
@@ -109,11 +115,11 @@ const TimeTableCard = ({
         height: customHeight,
         left: LEFTOFSET && `${LEFTOFSET}px`,
       }}
-      className=" z-10 flex"
+      className="z-10 flex"
     >
-      <div className=" box-border flex min-h-full flex-1 p-1">
+      <div className="box-border flex min-h-full flex-1 p-1">
         <div
-          className={`relative box-border flex w-full flex-1 flex-col gap-2 overflow-hidden rounded  border p-2   text-slate-900 ${
+          className={`relative box-border flex w-full flex-1 flex-col gap-2 overflow-hidden rounded border p-2 text-slate-900 ${
             item.accept
               ? "border-emerald-500 bg-emerald-50"
               : "border-orange-500 bg-orange-50"
@@ -126,7 +132,7 @@ const TimeTableCard = ({
               }`}
             >
               <div>{item.subject?.name}</div>
-              <div className=" -translate-x-1 transition-all duration-150 group-hover:translate-x-0 ">
+              <div className="-translate-x-1 transition-all duration-150 group-hover:translate-x-0">
                 <LuExternalLink />
               </div>
             </div>
@@ -149,8 +155,8 @@ const TimeTableCard = ({
           )}
 
           {singleDay && (
-            <div className=" flex flex-col gap-2 text-sm ">
-              <div className=" flex gap-2">
+            <div className="flex flex-col gap-2 text-sm">
+              <div className="flex gap-2">
                 <p>Students</p>
                 <ul>
                   {item.userBooked.map((user, index) => (
@@ -169,10 +175,10 @@ const TimeTableCard = ({
               <Link
                 href={`/subjects/${item.subjectId}`}
                 target="_blank"
-                className=" group flex items-center gap-2  text-slate-800"
+                className="group flex items-center gap-2 text-slate-800"
               >
-                <p className=" group-hover:text-emerald-500">Subject Details</p>
-                <div className=" -translate-x-1 transition-all duration-150 group-hover:translate-x-0 group-hover:text-emerald-500">
+                <p className="group-hover:text-emerald-500">Subject Details</p>
+                <div className="-translate-x-1 transition-all duration-150 group-hover:translate-x-0 group-hover:text-emerald-500">
                   <LuExternalLink />
                 </div>
               </Link>
@@ -202,8 +208,8 @@ const TimeTableCard = ({
           )}
 
           {singleDay && isAccept && !item.isScheduled && (
-            <div className="absolute bottom-2 right-2 flex items-center gap-2 ">
-              <p className=" text-sm"> Schedule for</p>
+            <div className="absolute bottom-2 right-2 flex items-center gap-2">
+              <p className="text-sm"> Schedule for</p>
               <Button
                 loading={ScheduleEventLoading}
                 onClick={() => {
@@ -229,7 +235,7 @@ const TimeTableCard = ({
 
           {singleDay && isAccept && item.isScheduled && (
             <div className="absolute bottom-2 right-2 flex items-center gap-2 text-sm">
-              <div className=" flex gap-1">
+              <div className="flex gap-1">
                 {isDayPassed ? (
                   <p>
                     {`Next week ${dayjs(item.start_time)

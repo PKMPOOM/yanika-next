@@ -7,6 +7,7 @@ import {
 import dayjs, { Dayjs } from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
 import SelectDateTimeCard from "./SelectDateTimeCard";
+import { useShallow } from "zustand/react/shallow";
 dayjs.extend(isBetween);
 
 const TIMEGRIDHEIGHT = 40;
@@ -17,12 +18,14 @@ type TimeSlotProps = {
 
 function TimeSelectRow({ timeSlot }: TimeSlotProps) {
   const [startTime, setSelectedDay, setStartTime, currentDay] =
-    useBookingModalStore((state) => [
-      state.startTime,
-      state.setSelectedDay,
-      state.setStartTime,
-      state.currentDay,
-    ]);
+    useBookingModalStore(
+      useShallow((state) => [
+        state.startTime,
+        state.setSelectedDay,
+        state.setStartTime,
+        state.currentDay,
+      ]),
+    );
 
   const todayData = timeSlot?.find((item) => item.name.includes(currentDay));
 
@@ -37,7 +40,7 @@ function TimeSelectRow({ timeSlot }: TimeSlotProps) {
         height: `${TIMEGRIDHEIGHT * 9}px`,
         overflowY: "scroll",
       }}
-      className=" relative pt-2"
+      className="relative pt-2"
     >
       {/* time grid */}
       {Object.keys(NewDateTimeMap).map((time, index) => {
@@ -59,12 +62,12 @@ function TimeSelectRow({ timeSlot }: TimeSlotProps) {
             style={{
               height: `${TIMEGRIDHEIGHT}px`,
             }}
-            className="group flex  w-full justify-end  "
+            className="group flex w-full justify-end"
           >
-            <div className=" absolute flex h-9 w-full justify-between ">
-              <div className=" top-2 flex w-[10%]  ">
+            <div className="absolute flex h-9 w-full justify-between">
+              <div className="top-2 flex w-[10%]">
                 {zero && (
-                  <p className=" flex">
+                  <p className="flex">
                     <span>{time.split(":")[0]} </span>
 
                     <span className="hidden md:block">
@@ -74,7 +77,7 @@ function TimeSelectRow({ timeSlot }: TimeSlotProps) {
                 )}
               </div>
               <div
-                className={` group relative box-content w-full cursor-pointer rounded-md border-t-4 transition-all  duration-200   ${
+                className={`group relative box-content w-full cursor-pointer rounded-md border-t-4 transition-all duration-200 ${
                   zero
                     ? "border-emerald-100 bg-emerald-50/50 hover:border-emerald-300 hover:bg-emerald-50 active:bg-emerald-100"
                     : "border-slate-100 bg-slate-50/50 hover:border-slate-300 hover:bg-slate-50 active:bg-slate-100"
@@ -83,7 +86,7 @@ function TimeSelectRow({ timeSlot }: TimeSlotProps) {
                   setSelectTime(currentTime);
                 }}
               >
-                <div className=" hidden h-full items-center justify-center  text-emerald-400 group-hover:flex">
+                <div className="hidden h-full items-center justify-center text-emerald-400 group-hover:flex">
                   {time}
                 </div>
 
@@ -102,16 +105,16 @@ function TimeSelectRow({ timeSlot }: TimeSlotProps) {
                           height: `${TIMEGRIDHEIGHT * 2 * timeslot.duration}px`,
                           right: 0,
                         }}
-                        className={` absolute top-0 z-[5] box-border flex h-7 cursor-not-allowed items-center justify-center rounded-md border-2  ${
+                        className={`absolute top-0 z-[5] box-border flex h-7 cursor-not-allowed items-center justify-center rounded-md border-2 ${
                           timeslot.accept
-                            ? " border-white bg-rose-100 "
-                            : " border-white bg-orange-100 "
+                            ? "border-white bg-rose-100"
+                            : "border-white bg-orange-100"
                         } `}
                       >
                         {timeslot.accept ? (
-                          <p className=" text-rose-500"> Booked</p>
+                          <p className="text-rose-500"> Booked</p>
                         ) : (
-                          <p className=" text-orange-500"> Requested</p>
+                          <p className="text-orange-500"> Requested</p>
                         )}
                       </div>
                     );

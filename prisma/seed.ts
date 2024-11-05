@@ -31,6 +31,16 @@ async function main() {
     ],
     skipDuplicates: true,
   });
+
+  await prisma.integrations.upsert({
+    create: {
+      id: "main_app",
+    },
+    update: {},
+    where: {
+      id: "main_app",
+    },
+  });
 }
 
 main()

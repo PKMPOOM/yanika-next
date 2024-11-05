@@ -8,7 +8,7 @@ import { Calendar } from "antd";
 import axios from "axios";
 import type { Dayjs } from "dayjs";
 import dayjs from "dayjs";
-import _ from "lodash-es";
+import { find } from "lodash-es";
 import { useSession } from "next-auth/react";
 
 export default function Classes() {
@@ -35,7 +35,7 @@ export default function Classes() {
   }
 
   const dateCellRender = (value: Dayjs) => {
-    const thisDay = _.find(todayClass, function (o) {
+    const thisDay = find(todayClass, function (o) {
       const isPassed = dayjs().isAfter(dayjs(o?.start_time));
 
       const startTime = isPassed
@@ -61,7 +61,7 @@ export default function Classes() {
           {todayClassesData.map((classData) => (
             <div
               key={classData.id}
-              className=" cursor-pointer"
+              className="cursor-pointer"
               onClick={() => {
                 console.log(thisDay);
               }}

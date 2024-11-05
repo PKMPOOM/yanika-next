@@ -109,7 +109,9 @@ function TimeSlotModal() {
         });
       });
 
-    queryClient.invalidateQueries(["Timeslot"]);
+    queryClient.invalidateQueries({
+      queryKey: ["Timeslot"],
+    });
   };
 
   return (
@@ -123,8 +125,8 @@ function TimeSlotModal() {
       {FormSteps === 1 ? (
         <>
           <Title level={3}>Select date & times</Title>
-          <div className=" mb-4 flex items-center gap-2">
-            <div className=" h-3 w-3  rounded-full bg-orange-400"></div>
+          <div className="mb-4 flex items-center gap-2">
+            <div className="h-3 w-3 rounded-full bg-orange-400"></div>
             <div>Pending request by others</div>
           </div>
         </>
@@ -138,7 +140,7 @@ function TimeSlotModal() {
         <ClassRequestSumarry />
       )}
 
-      <div className=" mt-5 flex w-full justify-end gap-2">
+      <div className="mt-5 flex w-full justify-end gap-2">
         <Button htmlType="reset" onClick={onCancel} type="text">
           Cancel
         </Button>
@@ -149,7 +151,7 @@ function TimeSlotModal() {
               setFormSteps(1);
             }}
           >
-            <WideBTNSpan className=" flex items-center gap-2 px-20 text-white">
+            <WideBTNSpan className="flex items-center gap-2 px-20 text-white">
               <p>Back</p>
             </WideBTNSpan>
           </Button>
@@ -162,7 +164,7 @@ function TimeSlotModal() {
               setFormSteps(2);
             }}
           >
-            <WideBTNSpan className=" flex items-center gap-2 px-20 text-white">
+            <WideBTNSpan className="flex items-center gap-2 px-20 text-white">
               <p>Next</p>
             </WideBTNSpan>
           </Button>

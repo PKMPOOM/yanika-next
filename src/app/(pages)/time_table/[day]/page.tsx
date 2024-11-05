@@ -55,7 +55,7 @@ const SingleDayPage = ({ params }: PageProps) => {
 
   return (
     <Container>
-      <div className=" mb-4 flex justify-between">
+      <div className="mb-4 flex justify-between">
         <Breadcrumb
           items={[
             {
@@ -75,31 +75,12 @@ const SingleDayPage = ({ params }: PageProps) => {
         />
       </div>
 
-      <div className=" flex items-baseline justify-between gap-2">
+      <div className="flex items-baseline justify-between gap-2">
         <p>{formattedUppercase(dayID)} </p>
         <Button>Schedule all comfirmed class</Button>
       </div>
 
-      <div className=" relative mt-6 flex h-[calc(100vh-200px)] flex-col items-start">
-        {/* {Array(10)
-          .fill(null)
-          .map((_, index) => (
-            <div
-              key={index}
-              style={{
-                marginBottom: `${TIMEGRIDHEIGHT}px`,
-              }}
-              className="group relative flex w-full justify-end "
-            >
-              <div className=" absolute flex w-full">
-                <div className=" top-2 flex w-[5%] -translate-y-[10px]">
-                  <p>{index + 9} Hrs.</p>
-                </div>
-                <div className=" bottom-0 h-1 w-[95%] border-t border-slate-300 "></div>
-              </div>
-            </div>
-          ))} */}
-
+      <div className="relative mt-6 flex h-[calc(100vh-200px)] flex-col items-start">
         {objectKeys.map((time, index) => {
           const dateTimeMap = NewDateTimeMap[time];
           const zero = dateTimeMap.m === 0;
@@ -112,20 +93,20 @@ const SingleDayPage = ({ params }: PageProps) => {
                 height: `${TIMEGRIDHEIGHT}px`,
                 boxSizing: "border-box",
               }}
-              className="group/box relative flex w-full justify-end   "
+              className="group/box relative flex w-full justify-end"
             >
-              <div className="  flex w-full ">
-                <div className=" top-2 flex w-[5%] -translate-y-[10px] group-first/box:translate-y-0">
+              <div className="flex w-full">
+                <div className="top-2 flex w-[5%] -translate-y-[10px] group-first/box:translate-y-0">
                   {zero && (
-                    <p className=" flex">
+                    <p className="flex">
                       <span>{time}</span>
                     </p>
                   )}
                 </div>
                 <div
-                  className={` flex h-1 w-[95%] grid-cols-7  border-t ${
-                    zero ? "border-slate-300" : " border-slate-200"
-                  }  `}
+                  className={`flex h-1 w-[95%] grid-cols-7 border-t ${
+                    zero ? "border-slate-300" : "border-slate-200"
+                  } `}
                 >
                   {todayClass.map((item) => {
                     const parsedStartTime = dayjs(item.start_time).format(

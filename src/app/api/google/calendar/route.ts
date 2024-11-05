@@ -22,7 +22,7 @@ export async function POST(req: Request) {
     }
 
     if (res?.status === 200 && tokens) {
-      console.log(JSON.stringify({ tokens }, null, 2));
+      console.log("success get token proceed to get user info");
 
       const response = await axios.get(
         "https://www.googleapis.com/oauth2/v1/userinfo?alt=json",
@@ -32,7 +32,11 @@ export async function POST(req: Request) {
           },
         },
       );
-      console.log(response.data.email);
+
+      // if (!tokens.refresh_token) {
+      //   console.log("Error obtain refresh token");
+      //   return new Response("Error obtain token", { status: 400 });
+      // }
 
       await prisma.$transaction([
         prisma.googleToken.upsert({
