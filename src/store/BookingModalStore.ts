@@ -129,7 +129,7 @@ export type NewDays = {
     | "sunday"
     | "NA";
   index: number;
-  time_slot: TimeSlot[];
+  TimeSlot: TimeSlot[];
 };
 
 const TimeSlotArraySchema = z.array(Days);

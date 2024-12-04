@@ -2,8 +2,8 @@
 
 import Loader from "@/Components/Global/Loader";
 import { useGoogleLogin } from "@react-oauth/google";
-import { useQuery } from "@tanstack/react-query";
-import { Button, Typography } from "antd";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Button, Space, Spin, Typography } from "antd";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
@@ -11,35 +11,29 @@ import { LuTrash } from "react-icons/lu";
 import { SiGooglecalendar } from "react-icons/si";
 const { Title } = Typography;
 import { FcGoogle } from "react-icons/fc";
+import {
+  checkGoogleConnection,
+  connectGoogleCalendar,
+  removeGoogleIntegration,
+} from "./api";
 import { RetweetOutlined } from "@ant-design/icons";
+import useMessage from "antd/es/message/useMessage";
 
-export type IntegrationsResponse = {
+export type TIntegrationsResponse = {
   GoogleCalendarConnect: boolean;
   GoogleToken: { email: string };
 };
 
-// export type GoogleAuthUserData = {
-//   id: string;
-//   email: string;
-//   verified_email: boolean;
-//   name: string;
-//   given_name: string;
-//   family_name: string;
-//   picture: string;
-//   locale: string;
-// };
-
-// export type IntegrationData = {
-//   id: string;
-//   GoogleCalendarConnect: boolean;
-// };
+type TLoadingElement = "check" | "connect" | "delete" | undefined;
 
 const Integrations = () => {
   const { data: session } = useSession();
-  const [Loading, setLoading] = useState(false);
+  const [Loading, setLoading] = useState<TLoadingElement>(undefined);
+  const [messageApi, messageContextHolder] = useMessage();
+  const queryClient = useQueryClient();
 
   const getTokenInfo = async () => {
-    const res = await axios.get<IntegrationsResponse>(
+    const res = await axios.get<TIntegrationsResponse>(
       "/api/admin/integrations",
     );
     return res.data;
@@ -58,22 +52,40 @@ const Integrations = () => {
     flow: "auth-code",
     scope: scopes,
     onSuccess: async (codeResponse) => {
-      await axios.post("/api/google/calendar", {
-        code: codeResponse.code,
-      });
+      await connectGoogleCalendar(codeResponse.code);
 
-      setLoading(false);
+      //force refresh
+      // window.location.reload();
+      queryClient.invalidateQueries({ queryKey: ["TokenInfo"] });
+
+      setLoading(undefined);
     },
     onError: (errorResponse) => {
       console.log(errorResponse);
-      setLoading(false);
+      setLoading(undefined);
     },
   });
 
+  const checkConnection = async () => {
+    try {
+      setLoading("check");
+      await checkGoogleConnection();
+
+      setLoading(undefined);
+      messageApi.success("Calendar connected");
+    } catch (error) {
+      setLoading(undefined);
+      messageApi.error("Calendar connection failed");
+      queryClient.invalidateQueries({ queryKey: ["TokenInfo"] });
+
+      console.log(error);
+    }
+  };
+
   const connectToGoogle = async () => {
-    setLoading(true);
+    setLoading("connect");
     googleLogin();
-    setLoading(false);
+    setLoading(undefined);
   };
 
   if (!session) {
@@ -88,16 +100,20 @@ const Integrations = () => {
 
   return (
     <div>
+      {messageContextHolder}
       <Title level={4}> Connected Calendar</Title>
-      {/* integrationData.GoogleCalendarConnect */}
 
-      {GoogleCalendarConnect ? (
-        <div className=" flex items-center justify-between rounded-lg border border-slate-300 p-4">
+      <Spin
+        spinning={
+          Loading === "check" || Loading === "connect" || Loading === "delete"
+        }
+      >
+        <div className="flex items-center justify-between rounded-lg border border-slate-300 p-4">
           <div
             style={{
               fontSize: 30,
             }}
-            className=" flex items-center gap-4"
+            className="flex items-center gap-4"
           >
             <FcGoogle
               style={{
@@ -105,40 +121,49 @@ const Integrations = () => {
               }}
             />
             <div>
-              <p className=" text-lg">Google</p>
-              <p className=" text-sm text-slate-400">{GoogleToken.email}</p>
+              <p className="text-lg">Google</p>
+              <p className="text-sm text-slate-400">{GoogleToken?.email}</p>
             </div>
           </div>
-          <div className=" flex gap-2">
-            <Button
-              icon={<RetweetOutlined />}
-              onClick={() => connectToGoogle()}
-            >
-              Reconnect to Google
-            </Button>
-            <Button danger icon={<LuTrash />}>
-              Delete
-            </Button>
+          <div className="flex gap-2">
+            {GoogleCalendarConnect ? (
+              <Space>
+                <Button
+                  loading={Loading === "check"}
+                  onClick={checkConnection}
+                  icon={<RetweetOutlined />}
+                >
+                  Check connection
+                </Button>
+                <Button
+                  danger
+                  icon={<LuTrash />}
+                  onClick={removeGoogleIntegration}
+                >
+                  Remove connection
+                </Button>
+              </Space>
+            ) : (
+              <Button
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                }}
+                icon={
+                  <div className="bg-red-50">
+                    <SiGooglecalendar />
+                  </div>
+                }
+                loading={Loading === "connect"}
+                size="large"
+                onClick={() => connectToGoogle()}
+              >
+                Connect Google Calendar
+              </Button>
+            )}
           </div>
         </div>
-      ) : (
-        <Button
-          style={{
-            display: "flex",
-            alignItems: "center",
-          }}
-          icon={
-            <div className="bg-red-50">
-              <SiGooglecalendar />
-            </div>
-          }
-          loading={Loading}
-          size="large"
-          onClick={() => connectToGoogle()}
-        >
-          Connect Google Calendar
-        </Button>
-      )}
+      </Spin>
     </div>
   );
 };

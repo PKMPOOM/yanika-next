@@ -1,83 +1,138 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_DATABASE_URL")
 }
 
-generator client {
-  provider      = "prisma-client-js"
-  binaryTargets = ["native", "windows"]
-}
-
 model Account {
-  id                String  @id @default(cuid())
+  id                String  @id
   userId            String
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
+  refresh_token     String?
+  access_token      String?
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? @db.Text
+  id_token          String?
   session_state     String?
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  // other than nextauth
 
   @@unique([provider, providerAccountId])
 }
 
+model Classes {
+  id               String    @id @unique @default(uuid())
+  notify           Boolean   @default(false)
+  is_paid          Boolean   @default(false)
+  payment_slip_url String?
+  meeting_time     DateTime?
+  meeting_link     String?
+  userId           String?
+  subjectId        String
+  Subject          Subject   @relation(fields: [subjectId], references: [id])
+  user             User?     @relation(fields: [userId], references: [id])
+
+  @@index([id])
+}
+
+model Day {
+  id       Days       @id @unique @default(NA)
+  name     Days       @default(NA)
+  index    Int        @default(autoincrement())
+  TimeSlot TimeSlot[]
+
+  @@index([id])
+}
+
 model GoogleToken {
-  access_token   String       @id @default(cuid())
+  access_token   String       @id
   refresh_token  String       @unique
   scope          String
   token_type     String
   id_token       String
-  expire_at      DateTime     @default(now()) @db.Timestamp()
+  expire_at      DateTime     @default(now()) @db.Timestamp(6)
   email          String       @default("")
-  Integrations   Integrations @relation(fields: [integrationsId], references: [id])
   integrationsId String       @unique
+  Integrations   Integrations @relation(fields: [integrationsId], references: [id])
 }
 
 model Integrations {
   id                    String       @id @default(uuid())
-  GoogleToken           GoogleToken?
   GoogleCalendarConnect Boolean      @default(false)
+  GoogleToken           GoogleToken?
 }
 
 model Session {
-  id           String   @id @default(cuid())
+  id           String   @id
   sessionToken String   @unique
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  // other than nextauth
+}
+
+model Subject {
+  id             String     @id @default(uuid())
+  name           String     @default("")
+  description    String     @default("")
+  image_url      String     @default("")
+  course_outline String     @default("") @db.Text
+  group_price    Int        @default(0)
+  single_price   Int        @default(200)
+  created_date   DateTime   @default(now())
+  update_at      DateTime   @default(now()) @updatedAt
+  tags           String[]
+  grade          Grades     @default(school_1)
+  userId         String?
+  Classes        Classes[]
+  user           User?      @relation(fields: [userId], references: [id])
+  TimeSlot       TimeSlot[]
+
+  @@index([id])
+}
+
+model TimeSlot {
+  id                String      @unique @default(uuid())
+  index             Int         @default(autoincrement())
+  start_time        DateTime    @default(now())
+  parsed_start_time String      @default("")
+  duration          Float       @default(1.0)
+  dayId             Days
+  subjectId         String?
+  userBooked        String[]
+  accept            Boolean     @default(false)
+  bookingType       BookingType @default(single)
+  totalPrice        Int         @default(0)
+  isScheduled       Boolean     @default(false)
+  scheduleDateTime  DateTime?
+  meetingLink       String?
+  eventID           String?
+  userId            String
+  Day               Day         @relation(fields: [dayId], references: [id])
+  Subject           Subject?    @relation(fields: [subjectId], references: [id])
+  user              User        @relation(fields: [userId], references: [id])
 }
 
 model User {
-  id            String     @id @default(cuid())
+  id            String     @id
   name          String?
   email         String?    @unique
   emailVerified DateTime?
   image         String?
-  accounts      Account[]
-  sessions      Session[]
-  // other than nextauth
   password      String     @default("")
   role          role       @default(user)
-  classes       Classes[]
-  subject       Subject[]
-  // TimeSlot      TimeSlot[]
-  time_slot     TimeSlot[]
+  Account       Account[]
+  Classes       Classes[]
+  Session       Session[]
+  Subject       Subject[]
+  TimeSlot      TimeSlot[]
 
   @@index([email])
-}
-
-enum role {
-  admin
-  user
 }
 
 model VerificationToken {
@@ -88,24 +143,20 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-model Subject {
-  id             String     @id @default(cuid())
-  name           String     @default("")
-  description    String     @default("")
-  image_url      String     @default("")
-  course_outline String     @default("")
-  group_price    Int        @default(0)
-  single_price   Int        @default(200)
-  created_date   DateTime   @default(now())
-  update_at      DateTime   @updatedAt
-  tags           String[]
-  Classes        Classes[]
-  grade          Grades     @default(school_1)
-  User           User?      @relation(fields: [userId], references: [id])
-  userId         String?
-  time_slot      TimeSlot[]
+enum BookingType {
+  single
+  group
+}
 
-  @@index([id])
+enum Days {
+  NA
+  monday
+  tuesday
+  wednesday
+  thursday
+  friday
+  saturday
+  sunday
 }
 
 enum Grades {
@@ -124,22 +175,6 @@ enum Grades {
   university
 }
 
-model Classes {
-  id               String    @unique @default(cuid())
-  subject          Subject   @relation(fields: [subjectId], references: [id])
-  notify           Boolean   @default(false)
-  is_paid          Boolean   @default(false)
-  payment_slip_url String?
-  meeting_time     DateTime?
-  meeting_link     String?
-  User             User?     @relation(fields: [userId], references: [id])
-  userId           String?
-  subjectId        String
-
-  @@id([id])
-  @@index([id])
-}
-
 enum TimeSlots {
   NA
   nine_ten
@@ -153,51 +188,7 @@ enum TimeSlots {
   five_six
 }
 
-model Day {
-  id        Days       @unique @default(NA)
-  name      Days       @default(NA)
-  index     Int        @default(autoincrement())
-  time_slot TimeSlot[]
-
-  @@id([id])
-  @@index([id])
-}
-
-model TimeSlot {
-  id                String      @unique @default(uuid())
-  index             Int         @default(autoincrement())
-  start_time        DateTime    @default(now())
-  parsed_start_time String      @default("")
-  duration          Float       @default(1.0)
-  Day               Day         @relation(fields: [dayId], references: [id])
-  dayId             Days
-  subject           Subject?    @relation(fields: [subjectId], references: [id])
-  subjectId         String?
-  userBooked        String[]
-  accept            Boolean     @default(false)
-  bookingType       BookingType @default(single)
-  totalPrice        Int         @default(0)
-  // schedule part
-  isScheduled       Boolean     @default(false)
-  scheduleDateTime  DateTime?
-  meetingLink       String?
-  eventID           String?
-  user              User        @relation(fields: [userId], references: [id])
-  userId            String
-}
-
-enum BookingType {
-  single
-  group
-}
-
-enum Days {
-  NA
-  monday
-  tuesday
-  wednesday
-  thursday
-  friday
-  saturday
-  sunday
+enum role {
+  admin
+  user
 }

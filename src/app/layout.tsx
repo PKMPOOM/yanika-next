@@ -1,5 +1,4 @@
 import Navbar from "@/Components/Global/Navbar";
-import "@/app/globals.css";
 import AuthProvider from "@/context/AuthProvider";
 import themeConfig from "@/theme/themeConfig";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
@@ -7,7 +6,8 @@ import { ConfigProvider } from "antd";
 import type { Metadata } from "next";
 import { getServerSession } from "next-auth";
 import { Inter } from "next/font/google";
-import { authOptions } from "./api/auth/[...nextauth]/authOptions";
+import { authOptions } from "./(api)/api/auth/[...nextauth]/authOptions";
+import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -27,14 +27,16 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <AuthProvider>
-          <AntdRegistry>
-            <ConfigProvider theme={themeConfig}>
-              {session && <Navbar />}
-              {children}
-            </ConfigProvider>
-          </AntdRegistry>
-        </AuthProvider>
+        <div className="h-screen w-screen overflow-hidden">
+          <ConfigProvider theme={themeConfig}>
+            <AuthProvider>
+              <AntdRegistry>
+                {session && <Navbar />}
+                {children}
+              </AntdRegistry>
+            </AuthProvider>
+          </ConfigProvider>
+        </div>
       </body>
     </html>
   );

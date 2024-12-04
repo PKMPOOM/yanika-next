@@ -4,7 +4,7 @@ import Statistics from "@/Components/Dashboard/Statistics";
 import ClassLists from "@/Components/Dashboard/ClassLists";
 import Container from "@/Components/Global/Container";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
+import { authOptions } from "@/app/(api)/api/auth/[...nextauth]/authOptions";
 import { redirect } from "next/navigation";
 
 export const metadata = {
@@ -23,9 +23,9 @@ export default async function Dashboard() {
     <Container>
       <Row gutter={16}>
         <Col span={16}>
-          <div className=" flex min-h-[50vh] flex-col gap-6">
+          <div className="flex min-h-[50vh] flex-col gap-6">
             <Statistics />
-            <div className=" flex-1 bg-red-100">graph</div>
+            <div className="flex-1 bg-red-100">graph</div>
           </div>
         </Col>
         <Col span={8}>

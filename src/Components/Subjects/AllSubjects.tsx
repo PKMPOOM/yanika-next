@@ -26,9 +26,6 @@ export const SubjectPageContext = createContext({} as SubjectPageContext);
 
 function AllSubjects() {
   const { data: session } = useSession();
-
-  console.log(session);
-
   const [EditSubjectModalOpen, setEditSubjectModalOpen] = useState(false);
   const [CreateSubjectModalOpen, setCreateSubjectModalOpen] = useState(false);
   const [ActiveSubject, setActiveSubject] = useState<string | undefined>(

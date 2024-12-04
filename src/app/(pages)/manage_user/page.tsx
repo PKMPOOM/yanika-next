@@ -8,20 +8,9 @@ import { ColumnsType } from "antd/es/table";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { useUserList } from "./manageUser.hooks";
+import { UserDataType, useUserList } from "./manageUser.hooks";
 import { useMemo, useState } from "react";
 const { Text } = Typography;
-
-export type UserDataType = {
-  id: string;
-  name: string;
-  email: null;
-  image: string;
-  role: string;
-  accounts: {
-    provider: string;
-  }[];
-};
 
 const columns: ColumnsType<UserDataType> = [
   {
@@ -49,10 +38,9 @@ const columns: ColumnsType<UserDataType> = [
   },
   {
     title: "Accounts provider",
-    dataIndex: "accounts",
     key: "accounts",
-    render: (_, { accounts, id }) => {
-      return accounts.map((item) => <div key={id}>{item.provider}</div>);
+    render: (_, { Account, id }) => {
+      return Account.map((item) => <div key={id}>{item.provider}</div>);
     },
     width: 200,
   },
@@ -70,7 +58,7 @@ const columns: ColumnsType<UserDataType> = [
     title: "Action",
     render(_, record) {
       return (
-        <div className=" flex gap-2">
+        <div className="flex gap-2">
           <Link href={`/manage_user/${record.id}`}>
             <Button>Edit</Button>
           </Link>
@@ -114,7 +102,7 @@ export default function ManageUser() {
 
   return (
     <Container>
-      <div className=" my-2 flex gap-2">
+      <div className="my-2 flex gap-2">
         <Input.Search
           placeholder="Search"
           onChange={(e) => {

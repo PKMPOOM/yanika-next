@@ -3,12 +3,12 @@
 import Container from "@/Components/Global/Container";
 import Loader from "@/Components/Global/Loader";
 import { TodayClasses } from "@/Components/TimeTable/TimeTable";
-import TimeTableCard from "@/Components/TimeTable/TimeTableCard";
+import SingleDayTimeTableCard from "@/Components/TimeTable/SingleDayTimeCard";
 import { formattedUppercase } from "@/lib/formattedUppercase";
 import { NewDateTimeMap } from "@/store/BookingModalStore";
 import { HomeOutlined } from "@ant-design/icons";
 import { useQuery } from "@tanstack/react-query";
-import { Breadcrumb, Button } from "antd";
+import { Breadcrumb } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
 import { useSession } from "next-auth/react";
@@ -55,7 +55,7 @@ const SingleDayPage = ({ params }: PageProps) => {
 
   return (
     <Container>
-      <div className="mb-4 flex justify-between">
+      <div className="mb-4 flex items-baseline justify-between gap-4">
         <Breadcrumb
           items={[
             {
@@ -73,11 +73,6 @@ const SingleDayPage = ({ params }: PageProps) => {
             },
           ]}
         />
-      </div>
-
-      <div className="flex items-baseline justify-between gap-2">
-        <p>{formattedUppercase(dayID)} </p>
-        <Button>Schedule all comfirmed class</Button>
       </div>
 
       <div className="relative mt-6 flex h-[calc(100vh-200px)] flex-col items-start">
@@ -117,8 +112,7 @@ const SingleDayPage = ({ params }: PageProps) => {
 
                     if (CurrentHourEvent) {
                       return (
-                        <TimeTableCard
-                          singleDay
+                        <SingleDayTimeTableCard
                           TIMEGRIDHEIGHT={TIMEGRIDHEIGHT}
                           day={dayID}
                           item={item}

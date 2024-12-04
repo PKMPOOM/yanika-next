@@ -20,9 +20,10 @@ import {
 } from "antd";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
-import { redirect, usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import React, { useState } from "react";
 import Meenites from "../../../public/AppLogoNav.svg";
+
 import { MenuOutlined } from "@ant-design/icons";
 import Container from "./Container";
 const items: MenuProps["items"] = [
@@ -71,12 +72,12 @@ const navMenu: navMenuTypes[] = [
     href: "/my_subjects",
     role: ["user"],
   },
-  {
-    name: "Calendar",
-    id: "calendar",
-    href: "/calendar",
-    role: ["user", "admin"],
-  },
+  // {
+  //   name: "Calendar",
+  //   id: "calendar",
+  //   href: "/calendar",
+  //   role: ["user", "admin"],
+  // },
   {
     name: "Settings",
     id: "settings",
@@ -109,12 +110,13 @@ function Navbar() {
   };
 
   const onDropdownClick: MenuProps["onClick"] = ({ key }) => {
-    console.log(key);
-
     switch (key) {
       case "sign_out":
-        signOut();
-        return redirect("/auth/signIn");
+        // /auth/signIn
+        signOut({
+          callbackUrl: "/auth/signIn",
+        });
+        break;
       case "settings":
         isAdmin ? router.push("/settings/admin") : router.push("/settings");
         break;
@@ -137,7 +139,7 @@ function Navbar() {
       <div className="fixed top-0 z-30 w-full border-b bg-white">
         <Container margin={false}>
           <div className="flex h-10 items-center justify-between overflow-hidden">
-            <Link href={isAdmin ? "/dashboard" : "/subjects"}>
+            <Link href={isAdmin ? "/time_table" : "/subjects"}>
               <div className="w-24">
                 <Meenites />
               </div>

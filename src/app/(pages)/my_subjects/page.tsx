@@ -1,6 +1,6 @@
 import Container from "@/Components/Global/Container";
 import Loader from "@/Components/Global/Loader";
-import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
+import { authOptions } from "@/app/(api)/api/auth/[...nextauth]/authOptions";
 import { prisma } from "@/lib/db";
 import { Button, Empty } from "antd";
 import dayjs from "dayjs";
@@ -32,7 +32,7 @@ export default async function MySubjects() {
       userId: session.user.id,
     },
     include: {
-      subject: {
+      Subject: {
         select: {
           description: true,
           grade: true,
@@ -56,7 +56,7 @@ export default async function MySubjects() {
           <Empty />
         </div>
       ) : (
-        <div className=" flex flex-col gap-3">
+        <div className="flex flex-col gap-3">
           {myBookedSuybject.map((timeSlot) => {
             const isAccept = timeSlot.accept === true;
             const isPassed = dayjs().isAfter(dayjs(timeSlot.start_time));
@@ -69,35 +69,35 @@ export default async function MySubjects() {
             return (
               <div
                 key={timeSlot.id}
-                className={` rounded-md border  p-3 ${
+                className={`rounded-md border p-3 ${
                   isAccept
                     ? "border-emerald-500 bg-emerald-50"
                     : "border-orange-500 bg-orange-50"
                 }`}
               >
                 {/* status */}
-                <div className=" flex items-baseline gap-2 text-sm">
+                <div className="flex items-baseline gap-2 text-sm">
                   <p className="">Status: </p>
                   <p
                     className={`${
                       isAccept ? "text-emerald-500" : "text-orange-500"
-                    } font-semibold `}
+                    } font-semibold`}
                   >
                     {isAccept ? "Accepted" : " Reviewing"}
                   </p>
                 </div>
 
                 {/* class detail */}
-                <div className=" mt-4 flex items-start justify-between gap-2">
-                  <div className="flex flex-col  items-baseline justify-between text-base  text-slate-800">
-                    <p className=" font-semibold">{timeSlot.subject?.name}</p>
-                    <div className=" text-sm">
+                <div className="mt-4 flex items-start justify-between gap-2">
+                  <div className="flex flex-col items-baseline justify-between text-base text-slate-800">
+                    <p className="font-semibold">{timeSlot.Subject?.name}</p>
+                    <div className="text-sm">
                       <p className="">
                         {dayjs.tz(timeSlot.start_time, tz).format("dddd H:mm")}{" "}
                         Hrs.
                       </p>
                       <p>
-                        <span className=" font-semibold">
+                        <span className="font-semibold">
                           {timeSlot.totalPrice} THB{" "}
                         </span>
                         {timeSlot.duration} Hours
@@ -105,7 +105,7 @@ export default async function MySubjects() {
                     </div>
                   </div>
                 </div>
-                <div className=" mt-4 flex">
+                <div className="mt-4 flex">
                   <Link
                     href={`/subjects/${timeSlot.subjectId}`}
                     style={{ width: "100%" }}
@@ -117,7 +117,7 @@ export default async function MySubjects() {
                 </div>
 
                 {timeSlot.isScheduled && timeSlot.meetingLink && (
-                  <div className=" mt-3 flex flex-col gap-1 rounded border border-emerald-500 bg-emerald-100 p-2 text-sm">
+                  <div className="mt-3 flex flex-col gap-1 rounded border border-emerald-500 bg-emerald-100 p-2 text-sm">
                     {` Next class on 
                     ${dayjs.tz(startTime, tz).format("DD MMM H:mm")}  - ${dayjs
                       .tz(endTime, tz)

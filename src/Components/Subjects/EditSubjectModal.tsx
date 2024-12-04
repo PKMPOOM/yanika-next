@@ -107,10 +107,6 @@ function EditSubjectModal({
       if (SubjectsData.image_url) {
         setUrl(SubjectsData.image_url);
       }
-
-      // if (SubjectsData.course_outline) {
-      //   getBlocks(SubjectsData.course_outline);
-      // }
     }
   }, [SubjectsData]);
 
@@ -184,14 +180,15 @@ function EditSubjectModal({
     event: z.infer<typeof editSubjectSchema>,
   ) => {
     const localBlocksContent: string | null =
-      localStorage.getItem("editorContent");
+      localStorage.getItem(localStorageKey);
 
     const payload = {
       ...event,
-      blockNoteData: localBlocksContent,
+      blockNoteData: localBlocksContent ?? "",
     };
 
     setLoading(true);
+
     try {
       await axios.put(`/api/subject/${activeSubject}`, {
         ...payload,
@@ -209,6 +206,11 @@ function EditSubjectModal({
     }
 
     setLoading(false);
+  };
+
+  const onEditorChange = () => {
+    const JSONContent = JSON.stringify(editor.document);
+    localStorage.setItem(localStorageKey, JSONContent);
   };
 
   if (!SubjectsData) {
@@ -425,6 +427,7 @@ function EditSubjectModal({
                 editorOveride={editor}
                 data={SubjectsData?.course_outline}
                 editable={isAdmin}
+                onchange={onEditorChange}
               />
             </div>
           </Col>

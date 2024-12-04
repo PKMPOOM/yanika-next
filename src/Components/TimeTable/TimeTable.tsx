@@ -8,8 +8,9 @@ import axios from "axios";
 import dayjs, { Dayjs } from "dayjs";
 import Link from "next/link";
 import { LuEye } from "react-icons/lu";
+import { z } from "zod";
 import Loader from "../Global/Loader";
-import TimeTableCard from "./TimeTableCard";
+import WeeklyTimeTableCard from "./WeeklyTimeCard";
 
 export type TimeTableResponse = {
   [key in DayList]: TodayClasses[];
@@ -29,15 +30,40 @@ export type TodayClasses = {
   totalPrice: number;
   isScheduled: boolean;
   meetingLink: string;
-  subject: {
+  Subject?: {
     id: string;
     name: string;
     image_url: string;
-  } | null;
-  Day: {
-    index: number;
-  } | null;
+  };
 };
+
+export const todayClassSchema = z.object({
+  id: z.string(),
+  index: z.number(),
+  start_time: z.date(),
+  parsed_start_time: z.string(),
+  duration: z.number(),
+  dayId: z.string(),
+  subjectId: z.string().nullable(),
+  userBooked: z.array(z.string()),
+  accept: z.boolean(),
+  bookingType: z.union([z.literal("single"), z.literal("group")]),
+  totalPrice: z.number(),
+  isScheduled: z.boolean(),
+  meetingLink: z.string(),
+  subject: z
+    .object({
+      id: z.string(),
+      name: z.string(),
+      image_url: z.string(),
+    })
+    .nullable(),
+  Day: z
+    .object({
+      index: z.number(),
+    })
+    .nullable(),
+});
 
 const daysArray: DayList[] = [
   "monday",
@@ -75,16 +101,12 @@ const TimeTable = () => {
     return <Loader />;
   }
 
-  console.log(requestClassList);
-
   const TIMEGRIDHEIGHT = 50;
   const objectKeys = Object.keys(NewDateTimeMap);
-  // const objectKeysLength = Object.keys(NewDateTimeMap).length;
 
   return (
-    <div>
-      {/* table header */}
-      <div className="-mb-4 flex w-full justify-end">
+    <div className="">
+      <div className="flex w-full justify-end">
         <div className="-top-12 float-right grid w-[95%] grid-cols-7">
           {daysArray.map((day, index) => {
             const isAvailable = AVAILABLEDAYS.includes(day);
@@ -108,7 +130,6 @@ const TimeTable = () => {
           })}
         </div>
       </div>
-
       <div className="mt-6 flex h-[calc(100vh-148px)] flex-col items-start justify-start overflow-y-auto pb-10">
         {/* Time grid lines */}
         {objectKeys.map((time, index) => {
@@ -138,7 +159,7 @@ const TimeTable = () => {
                 {!isLast && (
                   <div
                     className={`flex h-1 w-[95%] grid-cols-7 border-t ${
-                      zero ? "border-slate-400" : "border-slate-200"
+                      zero ? "border-slate-300" : "border-slate-100"
                     } `}
                   >
                     {daysArray.map((day, index) => {
@@ -157,7 +178,9 @@ const TimeTable = () => {
                             isBeforeLast &&
                             "before:absolute before:-inset-0 before:block before:h-full before:border-b before:border-slate-400 before:content-['']"
                           } first:border-l ${
-                            isToday ? "bg-emerald-100" : "bg-white"
+                            isToday
+                              ? "border-l border-emerald-500 bg-emerald-100"
+                              : "bg-white"
                           } `}
                         >
                           {AVAILABLEDAYS.includes(day) && todayClass && (
@@ -172,7 +195,7 @@ const TimeTable = () => {
 
                                 if (CurrentHourEvent) {
                                   return (
-                                    <TimeTableCard
+                                    <WeeklyTimeTableCard
                                       TIMEGRIDHEIGHT={TIMEGRIDHEIGHT}
                                       day={day}
                                       item={item}

@@ -1,13 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
-export type UserDataListType = {
+export type UserDataType = {
   id: string;
   name: string;
   email: null;
   image: string;
   role: string;
-  accounts: {
+  Account: {
     provider: string;
   }[];
 };
@@ -18,7 +18,7 @@ export const useUserList = () => {
     return response.data;
   };
 
-  return useQuery<UserDataListType[]>({
+  return useQuery<UserDataType[]>({
     queryKey: ["userList"],
     queryFn: fetcher,
     refetchOnWindowFocus: false,
@@ -31,14 +31,14 @@ export const useUserData = (id: string) => {
     return response.data;
   };
 
-  return useQuery<UserDataType>({
+  return useQuery<FullUserDataType>({
     queryKey: ["userData", id],
     queryFn: fetcher,
     refetchOnWindowFocus: false,
   });
 };
 
-export type UserDataType = {
+export type FullUserDataType = {
   id: string;
   name: string;
   email: string;

@@ -9,30 +9,6 @@ import "@blocknote/core/style.css";
 import "@blocknote/mantine/style.css";
 import { BlockNoteEditor } from "@blocknote/core";
 
-// const blockTheme = {
-//   ...lightDefaultTheme,
-//   componentStyles: (theme) => ({
-//     Editor: {
-//       backgroundColor: theme.colors.editor.background,
-//       borderRadius: theme.borderRadius,
-//       // border: `1px solid ${theme.colors.border}`,
-//       // boxShadow: `0 2px 4px ${theme.colors.shadow}`,
-//     },
-//     Menu: {
-//       ".mantine-Menu-item[data-hovered], .mantine-Menu-item:hover": {
-//         backgroundColor: "#34d399",
-//       },
-//     },
-//     Toolbar: {
-//       ".mantine-Menu-dropdown": {
-//         ".mantine-Menu-item:hover": {
-//           backgroundColor: "blue",
-//         },
-//       },
-//     },
-//   }),
-// } satisfies Theme;
-
 type Props = {
   data: string;
   editable?: boolean;

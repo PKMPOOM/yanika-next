@@ -1,6 +1,6 @@
 import Container from "@/Components/Global/Container";
 import TimeTable from "@/Components/TimeTable/TimeTable";
-import { authOptions } from "@/app/api/auth/[...nextauth]/authOptions";
+import { authOptions } from "@/app/(api)/api/auth/[...nextauth]/authOptions";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import React from "react";

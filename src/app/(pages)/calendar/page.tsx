@@ -61,12 +61,12 @@ export default function Classes() {
           {todayClassesData.map((classData) => (
             <div
               key={classData.id}
-              className="cursor-pointer"
+              className="cursor-pointer bg-red-300"
               onClick={() => {
                 console.log(thisDay);
               }}
             >
-              {classData.parsed_start_time}:{classData.subject?.name}
+              {classData.parsed_start_time} : {classData.subject?.name}
             </div>
           ))}
         </div>
