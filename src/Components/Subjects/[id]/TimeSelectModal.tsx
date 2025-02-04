@@ -134,7 +134,7 @@ function TimeSelectModal() {
     <Modal
       open={modalOpen}
       onCancel={onCancel}
-      style={{ top: 20 }}
+      style={{ top: 20, maxWidth: "1000px" }}
       footer={null}
       width={formStep === 1 ? "100%" : "500px"}
     >

@@ -1,48 +1,30 @@
 "use client";
 
 import { Button } from "antd";
-import { scheduleGoogleMeet } from "./api";
 import { useState } from "react";
-import { useQueryClient } from "@tanstack/react-query";
-import dayjs, { Dayjs } from "dayjs";
+import { acceptClass } from "./api";
 import { TodayClasses } from "./TimeTable";
-import { ScheduleGoogleMeetRequestSchema } from "./SingleDayTimeCard";
+import { useQueryClient } from "@tanstack/react-query";
 
 const ClassActionButton = ({ todayClass }: { todayClass: TodayClasses }) => {
-  const [scheduleEventLoading, setScheduleEventLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const queryClient = useQueryClient();
-  const isDayPassed = dayjs().isAfter(dayjs(todayClass.start_time), "day");
 
-  const handleScheduleGoogleMeet = async (
-    params: ScheduleGoogleMeetRequestSchema,
-  ) => {
-    setScheduleEventLoading(true);
-    try {
-      await scheduleGoogleMeet(params);
-
-      queryClient.invalidateQueries({
-        queryKey: ["todayClass", todayClass.dayId],
-      });
-    } catch (error) {
-      console.log(error);
-    }
-    setScheduleEventLoading(false);
+  const acceptThisClass = async (id: string) => {
+    setLoading(true);
+    await acceptClass(id);
+    setLoading(false);
+    queryClient.invalidateQueries({
+      queryKey: ["todayClass", todayClass.dayId],
+    });
   };
 
   return (
     <Button
-      loading={scheduleEventLoading}
+      loading={loading}
       type="primary"
       onClick={() => {
-        handleScheduleGoogleMeet({
-          timeSlotId: todayClass.id,
-          subjectId: todayClass.subjectId!,
-          start_time: todayClass.start_time as Dayjs,
-          class_duration: todayClass.duration,
-          students: todayClass.userBooked,
-          isPassed: isDayPassed,
-          subject_name: todayClass.Subject?.name!,
-        });
+        acceptThisClass(todayClass.id);
       }}
       block
     >

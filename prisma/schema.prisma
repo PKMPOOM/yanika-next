@@ -77,45 +77,75 @@ model Session {
 }
 
 model Subject {
-  id             String     @id @default(uuid())
-  name           String     @default("")
-  description    String     @default("")
-  image_url      String     @default("")
-  course_outline String     @default("") @db.Text
-  group_price    Int        @default(0)
-  single_price   Int        @default(200)
-  created_date   DateTime   @default(now())
-  update_at      DateTime   @default(now()) @updatedAt
-  tags           String[]
-  grade          Grades     @default(school_1)
-  userId         String?
-  Classes        Classes[]
-  user           User?      @relation(fields: [userId], references: [id])
-  TimeSlot       TimeSlot[]
+  id              String     @id @default(uuid())
+  name            String     @default("")
+  description     String     @default("")
+  image_url       String     @default("")
+  course_outline  String     @default("") @db.Text
+  group_price     Int        @default(0)
+  single_price    Int        @default(200)
+  created_date    DateTime   @default(now())
+  update_at       DateTime   @default(now()) @updatedAt
+  tags            String[]
+  grade           Grades     @default(school_1)
+  stripeProductId String?
+  userId          String?
+  Classes         Classes[]
+  user            User?      @relation(fields: [userId], references: [id])
+  TimeSlot        TimeSlot[]
 
   @@index([id])
 }
 
 model TimeSlot {
-  id                String      @unique @default(uuid())
-  index             Int         @default(autoincrement())
-  start_time        DateTime    @default(now())
-  parsed_start_time String      @default("")
-  duration          Float       @default(1.0)
+  id                String           @unique @default(uuid())
+  index             Int              @default(autoincrement())
+  start_time        DateTime         @default(now())
+  parsed_start_time String           @default("")
+  duration          Float            @default(1.0)
   dayId             Days
   subjectId         String?
   userBooked        String[]
-  accept            Boolean     @default(false)
-  bookingType       BookingType @default(single)
-  totalPrice        Int         @default(0)
-  isScheduled       Boolean     @default(false)
+  accept            Boolean          @default(false)
+  bookingType       BookingType      @default(single)
+  totalPrice        Int              @default(0)
+  isScheduled       Boolean          @default(false)
   scheduleDateTime  DateTime?
   meetingLink       String?
   eventID           String?
   userId            String
-  Day               Day         @relation(fields: [dayId], references: [id])
-  Subject           Subject?    @relation(fields: [subjectId], references: [id])
-  user              User        @relation(fields: [userId], references: [id])
+  Day               Day              @relation(fields: [dayId], references: [id])
+  Subject           Subject?         @relation(fields: [subjectId], references: [id])
+  user              User             @relation(fields: [userId], references: [id])
+  bookingHistory    BookingHistory[]
+}
+
+model BookingHistory {
+  id         String    @id @default(uuid())
+  userId     String
+  amount     Int
+  status     String
+  createdAt  DateTime  @default(now())
+  TimeSlot   TimeSlot? @relation(fields: [timeSlotId], references: [id])
+  timeSlotId String?
+  payment    Payment?
+}
+
+model Payment {
+  id               String          @id @default(uuid())
+  userId           String
+  amount           Int
+  status           String
+  priceId          String
+  paymentLink      String?
+  stripeInvoiceId  String?
+  hostedInvoiceUrl String?
+  amountDue        Int?
+  customerEmail    String?
+  customerName     String?
+  createdAt        DateTime        @default(now())
+  bookingHistory   BookingHistory? @relation(fields: [bookingHistoryId], references: [id])
+  bookingHistoryId String?         @unique
 }
 
 model User {

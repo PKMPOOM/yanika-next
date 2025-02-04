@@ -113,7 +113,9 @@ const Page = async ({ params }: PageProps) => {
             <p>{subject.description}</p>
 
             <p className="font-semibold">Course Outline</p>
-            <Editor data={subject.course_outline} />
+            <div className="h-[600px] overflow-auto overflow-y-auto">
+              <Editor data={subject.course_outline} />
+            </div>
           </div>
         </div>
         <h1 className="text-2xl font-semibold">Other subjects</h1>

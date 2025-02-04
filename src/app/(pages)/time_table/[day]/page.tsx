@@ -25,14 +25,14 @@ const SingleDayPage = ({ params }: PageProps) => {
   const { data: session } = useSession();
   const { day: dayID } = params;
 
-  const fetchData = async () => {
+  const fetcher = async () => {
     const res = await axios.get(`/api/calendar/time_table/${dayID}`);
 
     return res.data;
   };
 
   const { data: todayClass } = useQuery<TodayClasses[]>({
-    queryFn: fetchData,
+    queryFn: fetcher,
     queryKey: ["todayClass", dayID],
     refetchOnWindowFocus: false,
   });
@@ -99,9 +99,8 @@ const SingleDayPage = ({ params }: PageProps) => {
                   )}
                 </div>
                 <div
-                  className={`flex h-1 w-[95%] grid-cols-7 border-t ${
-                    zero ? "border-slate-300" : "border-slate-200"
-                  } `}
+                  className={`flex h-1 w-[95%] grid-cols-7 border-t ${zero ? "border-slate-300" : "border-slate-200"
+                    } `}
                 >
                   {todayClass.map((item) => {
                     const parsedStartTime = dayjs(item.start_time).format(

@@ -9,6 +9,7 @@ import { ZodError } from "zod";
 import { authOptions } from "../../auth/[...nextauth]/authOptions";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import { stripe } from "@/lib/stripe";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -22,17 +23,6 @@ type RequestSchema = {
   isPassed: boolean;
   subject_name: string;
 };
-
-// interface GoogleTokens {
-//   access_token: string;
-//   refresh_token: string;
-//   scope: string;
-//   token_type: string;
-//   id_token: string;
-//   expire_at: Date;
-//   email?: string;
-//   integrationsId?: string;
-// }
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -53,6 +43,19 @@ export async function POST(req: Request) {
     subject_name,
     timeSlotId,
   }: RequestSchema = await req.json();
+
+  const paymentLink = await stripe.paymentLinks.create({
+    line_items: [
+      {
+        price: "price_1QocgpQ2QiWoxqcrKq3rXYA8", // Must be a pre-created Stripe Price ID
+        quantity: 1,
+      },
+    ],
+    invoice_creation: {
+      enabled: true,
+    },
+  });
+
 
   try {
     const tokenResponse = await prisma.googleToken.findFirst({
@@ -92,7 +95,7 @@ export async function POST(req: Request) {
       sendUpdates: "all",
       requestBody: {
         summary: `${subject_name} class`,
-        description: "test event crete by API",
+        description: `Payment Link: ${paymentLink.url}`,
         start: {
           dateTime: startTime.toISOString(),
         },
@@ -119,6 +122,21 @@ export async function POST(req: Request) {
           eventID: response.data.id,
           start_time: dayjs(response.data.start?.dateTime).toISOString(),
           scheduleDateTime: dayjs(response.data.start?.dateTime).toISOString(),
+          // bookingHistory: {
+          //   create: {
+          //     amount: 1,
+          //     status: "pending",
+          //     userId: session.user.id,
+          //     payment: {
+          //       create: {
+          //         amount: 0,
+          //         status: "pending",
+          //         priceId: "price_1QocgpQ2QiWoxqcrKq3rXYA8",
+          //         userId: session.user.id,
+          //       },
+          //     },
+          //   },
+          // },
         },
       });
     }

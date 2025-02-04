@@ -43,6 +43,9 @@ const SingleDayTimeTableCard = ({
   const isDayPassed = dayjs().isAfter(dayjs(todayClass.start_time), "day");
   const subjectNotFound = !todayClass.Subject;
 
+  console.log(todayClass);
+
+
   const handleAcceptClass = async (id: string) => {
     setAcceptLoading(true);
     try {
@@ -103,11 +106,10 @@ const SingleDayTimeTableCard = ({
     >
       <div className="box-border flex min-h-full flex-1 p-1">
         <div
-          className={`relative box-border flex w-full flex-1 flex-col gap-2 overflow-hidden rounded-md border p-2 text-slate-900 shadow-md ${
-            todayClass.accept
+          className={`relative box-border flex w-full flex-1 flex-col gap-2 overflow-hidden rounded-md border p-2 text-slate-900 shadow-md ${todayClass.accept
               ? "border-emerald-500 bg-emerald-50"
               : "border-orange-500 bg-orange-50"
-          }`}
+            }`}
         >
           <div className="flex justify-between">
             <h1 className="font-semibold">
@@ -223,14 +225,7 @@ const SingleDayTimeTableCard = ({
             <div className="absolute bottom-2 right-2 flex items-center gap-2 text-sm">
               <div className="flex gap-1">
                 {isDayPassed ? (
-                  <p>
-                    {`Next week ${dayjs(todayClass.start_time)
-                      .add(7, "day")
-                      .format("DD MMM | H:mm")}-${dayjs(todayClass.start_time)
-                      .add(7, "day")
-                      .add(todayClass.duration, "hour")
-                      .format("H:mm")}`}
-                  </p>
+                  <p className="text-sm"> Schedule for</p>
                 ) : (
                   <p>
                     {`${dayjs(todayClass.start_time).format("DD MMM | H:mm")}-${dayjs(
@@ -241,19 +236,44 @@ const SingleDayTimeTableCard = ({
                   </p>
                 )}
               </div>
-              <Link href={todayClass.meetingLink} target="_blank">
-                <ConfigProvider
-                  theme={{
-                    token: {
-                      colorPrimary: "#1677ff",
-                    },
+              {isDayPassed ? (
+                <Button
+                  loading={ScheduleEventLoading}
+                  onClick={() => {
+                    handleScheduleGoogleMeet({
+                      class_duration: todayClass.duration,
+                      isPassed: isDayPassed,
+                      students: todayClass.userBooked,
+                      subjectId: todayClass.subjectId!,
+                      start_time: todayClass.start_time as Dayjs,
+                      subject_name: todayClass.Subject?.name!,
+                      timeSlotId: todayClass.id,
+                    });
                   }}
                 >
-                  <Button icon={<SiGooglemeet />} type="primary">
-                    Google Meet
-                  </Button>
-                </ConfigProvider>
-              </Link>
+                  {isDayPassed ? (
+                    <>
+                      next {dayjs(todayClass.start_time).format("dddd on H:mm")}
+                    </>
+                  ) : (
+                    <> {dayjs(todayClass.start_time).format("dddd H:mm")}</>
+                  )}
+                </Button>
+              ) : (
+                <Link href={todayClass.meetingLink} target="_blank">
+                  <ConfigProvider
+                    theme={{
+                      token: {
+                        colorPrimary: "#1677ff",
+                      },
+                    }}
+                  >
+                    <Button icon={<SiGooglemeet />} type="primary">
+                      Google Meet
+                    </Button>
+                  </ConfigProvider>
+                </Link>
+              )}
             </div>
           )}
         </div>
