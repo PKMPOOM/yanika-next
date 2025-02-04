@@ -70,7 +70,7 @@ const SelectDateTimeCard = ({ TIMEGRIDHEIGHT }: Props) => {
             e.stopPropagation();
             setStartTime(undefined);
           }}
-          className="my-1 mr-1 box-border flex cursor-pointer items-center justify-center rounded bg-red-400 p-2 active:bg-red-500"
+          className="my-1 mr-1 box-border flex cursor-pointer items-center justify-center rounded-sm bg-red-400 p-2 active:bg-red-500"
         >
           <CloseOutlined
             style={{

@@ -42,7 +42,7 @@ function Subject({ subject }: { subject: subjectListTypes }) {
       onClick={() => {
         router.push(`/subjects/${subject.id}`);
       }}
-      className="flex cursor-pointer flex-col items-start justify-start gap-2 rounded-lg border border-slate-200 p-4 shadow-sm transition-all duration-300 hover:shadow-xl"
+      className="flex cursor-pointer flex-col items-start justify-start gap-2 rounded-lg border border-slate-200 p-4 shadow-xs transition-all duration-300 hover:shadow-xl"
     >
       <div className="flex w-full justify-between">
         <div className="font-semibold">{subject.name}</div>

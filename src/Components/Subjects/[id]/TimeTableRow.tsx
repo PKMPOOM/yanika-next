@@ -64,7 +64,7 @@ function TimeTableRow({ timeSlot }: timeSlot) {
       {filteredDayAvailable?.map((day) => (
         <div
           key={day.name}
-          className={` mb-2 flex items-center  justify-between gap-2 rounded-md border  p-2 outline-none 
+          className={` mb-2 flex items-center  justify-between gap-2 rounded-md border  p-2 outline-hidden 
         transition-all duration-300 hover:border-emerald-300 hover:bg-emerald-50 `}
         >
           <p className=" w-1/12 ">{formattedUppercase(day.name)}</p>

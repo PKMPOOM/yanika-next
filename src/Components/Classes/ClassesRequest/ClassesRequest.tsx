@@ -63,7 +63,7 @@ const ClassesRequest = () => {
         return (
           <div
             key={day.name}
-            className={`mb-2 flex flex-col items-start justify-start gap-2 rounded-md p-2 outline-none transition-all duration-300 ${
+            className={`mb-2 flex flex-col items-start justify-start gap-2 rounded-md p-2 outline-hidden transition-all duration-300 ${
               today
                 ? "border-2 border-emerald-400 bg-emerald-100 shadow-md shadow-emerald-200"
                 : "border hover:border-emerald-300 hover:bg-emerald-50"
@@ -94,14 +94,14 @@ const ClassesRequest = () => {
                   return (
                     <div
                       key={time.id}
-                      className={`group/card flex h-[100px] flex-col gap-2 rounded border bg-white p-2`}
+                      className={`group/card flex h-[100px] flex-col gap-2 rounded-sm border bg-white p-2`}
                     >
                       <p className="text-sm text-slate-800"> {formattedTime}</p>
 
                       {isBooked && (
                         <Link href={`/time_table/${day.name}/${time.id}`}>
                           {/* <Link href={`/time_table/${time.id}`}> */}
-                          <div className="group rounded border border-emerald-300 bg-emerald-50 p-2">
+                          <div className="group rounded-sm border border-emerald-300 bg-emerald-50 p-2">
                             <div className="flex flex-col">
                               <span className="text-md font-semibold text-slate-800 group-hover:text-emerald-500">
                                 {time.bookingData?.user?.name}
@@ -120,7 +120,7 @@ const ClassesRequest = () => {
 
                       {isRequested && (
                         <Link href={`/time_table/${day.name}/${time.id}`}>
-                          <div className="group cursor-pointer rounded border border-orange-300 bg-orange-100 p-2 text-black transition-all duration-300 hover:bg-orange-400">
+                          <div className="group cursor-pointer rounded-sm border border-orange-300 bg-orange-100 p-2 text-black transition-all duration-300 hover:bg-orange-400">
                             <p className="text-xl group-hover:text-white">
                               {time.requestedClass}
                             </p>
@@ -133,7 +133,7 @@ const ClassesRequest = () => {
 
                       {!isRequested && !isBooked && (
                         <Link href={`/time_table/${day.name}/${time.id}`}>
-                          <div className="group cursor-pointer rounded border border-slate-300 bg-slate-100 p-2 text-black opacity-25 transition-all duration-300 hover:bg-slate-400 hover:opacity-100">
+                          <div className="group cursor-pointer rounded-sm border border-slate-300 bg-slate-100 p-2 text-black opacity-25 transition-all duration-300 hover:bg-slate-400 hover:opacity-100">
                             <p className="text-xl group-hover:text-white">
                               {time.requestedClass}
                             </p>

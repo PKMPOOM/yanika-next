@@ -117,7 +117,7 @@ export default async function MySubjects() {
                 </div>
 
                 {timeSlot.isScheduled && timeSlot.meetingLink && (
-                  <div className="mt-3 flex flex-col gap-1 rounded border border-emerald-500 bg-emerald-100 p-2 text-sm">
+                  <div className="mt-3 flex flex-col gap-1 rounded-sm border border-emerald-500 bg-emerald-100 p-2 text-sm">
                     {` Next class on 
                     ${dayjs.tz(startTime, tz).format("DD MMM H:mm")}  - ${dayjs
                       .tz(endTime, tz)

@@ -7,7 +7,7 @@ export default function Subjects() {
     <Container>
       <div className="flex flex-col gap-6 ">
         <div>
-          <p className=" rounded-lg bg-gradient-to-r from-emerald-500 to-emerald-400 p-6 text-3xl text-white">
+          <p className=" rounded-lg bg-linear-to-r from-emerald-500 to-emerald-400 p-6 text-3xl text-white">
             All subjects
           </p>
         </div>

@@ -107,7 +107,7 @@ function TimeSelectRow({ timeSlot }: TimeSlotProps) {
                           height: `${TIMEGRIDHEIGHT * 2 * timeslot.duration}px`,
                           right: 0,
                         }}
-                        className={`absolute top-0 z-[5] box-border flex h-7 cursor-not-allowed items-center justify-center rounded-md border-2 ${
+                        className={`absolute top-0 z-5 box-border flex h-7 cursor-not-allowed items-center justify-center rounded-md border-2 ${
                           timeslot.accept
                             ? "border-white bg-rose-100"
                             : "border-white bg-orange-100"

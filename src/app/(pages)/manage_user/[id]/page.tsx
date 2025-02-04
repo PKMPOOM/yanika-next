@@ -190,7 +190,7 @@ const Page = ({ params }: PageProps) => {
                   return (
                     <div
                       key={item.id}
-                      className="flex items-start justify-between gap-2 rounded-lg border bg-white p-2 transition-all duration-150 hover:shadow"
+                      className="flex items-start justify-between gap-2 rounded-lg border bg-white p-2 transition-all duration-150 hover:shadow-sm"
                     >
                       <div className="flex flex-col gap-2">
                         <DescValue
