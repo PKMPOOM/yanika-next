@@ -77,22 +77,23 @@ model Session {
 }
 
 model Subject {
-  id              String     @id @default(uuid())
-  name            String     @default("")
-  description     String     @default("")
-  image_url       String     @default("")
-  course_outline  String     @default("") @db.Text
-  group_price     Int        @default(0)
-  single_price    Int        @default(200)
-  created_date    DateTime   @default(now())
-  update_at       DateTime   @default(now()) @updatedAt
-  tags            String[]
-  grade           Grades     @default(school_1)
-  stripeProductId String?
-  userId          String?
-  Classes         Classes[]
-  user            User?      @relation(fields: [userId], references: [id])
-  TimeSlot        TimeSlot[]
+  id                String     @id @default(uuid())
+  name              String     @default("")
+  description       String     @default("")
+  image_url         String     @default("")
+  course_outline    String     @default("") @db.Text
+  group_price       Int        @default(0)
+  single_price      Int        @default(200)
+  created_date      DateTime   @default(now())
+  update_at         DateTime   @default(now()) @updatedAt
+  tags              String[]
+  stripe_product_id String?
+  stripe_price_id   String?
+  grade             Grades     @default(school_1)
+  userId            String?
+  Classes           Classes[]
+  user              User?      @relation(fields: [userId], references: [id])
+  TimeSlot          TimeSlot[]
 
   @@index([id])
 }
