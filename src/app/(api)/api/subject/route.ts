@@ -17,8 +17,6 @@ export async function POST(req: Request) {
         )
         const stripeProductId = product.id
 
-        console.log(product.default_price)
-
         const subject = await prisma.subject.create({
             data: {
                 name: subject_name,

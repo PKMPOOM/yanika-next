@@ -112,7 +112,7 @@ export async function GET(_: Request, { params }: { params: { id: string } }) {
                         index: true,
                     },
                 },
-                BookingHistory: {
+                bookingHistory: {
                     include: {
                         payment: true,
                     },
