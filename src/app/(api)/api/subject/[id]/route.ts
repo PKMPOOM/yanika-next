@@ -62,10 +62,19 @@ export async function PUT(
             currentSubject.stripe_product_id &&
             currentSubject.stripe_price_id
         ) {
-            await stripeService.updatePriceDetails({
+            const newPriceId = await stripeService.updatePriceDetails({
                 newPrice: single_price,
                 stripe_product_id: currentSubject.stripe_product_id,
                 stripe_price_id: currentSubject.stripe_price_id,
+            })
+
+            await prisma.subject.update({
+                where: {
+                    id: id,
+                },
+                data: {
+                    stripe_price_id: newPriceId.id,
+                },
             })
         }
 

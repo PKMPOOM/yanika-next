@@ -1,6 +1,6 @@
 import Stripe from "stripe"
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string)
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string)
 
 class StripeService {
     async createProduct(name: string, price: number) {
@@ -67,16 +67,31 @@ class StripeService {
         await stripe.prices.update(stripe_price_id, {
             active: false,
         })
+
+        return newPriceId
     }
 
-    async createPaymentLink(productId: string) {
+    // async createPaymentLink(productId: string, timeSlotId: string) {
+    async createPaymentLink({
+        productId,
+        timeSlotId,
+        userId,
+        amount,
+    }: {
+        productId: string
+        timeSlotId: string
+        userId: string
+        amount: number
+    }) {
         const paymentLink = await stripe.paymentLinks.create({
             line_items: [
                 {
                     price: productId, // Must be a pre-created Stripe Price ID
-                    quantity: 1,
+                    quantity: amount,
                 },
             ],
+
+            metadata: { timeSlotId, userId },
 
             invoice_creation: {
                 enabled: true,
@@ -89,6 +104,20 @@ class StripeService {
     async getInvoice(invoiceId: string) {
         const invoice = await stripe.invoices.retrieve(invoiceId)
         return invoice
+    }
+
+    async verifyWebhook(rawBody: string, sig: string, endpointSecret: string) {
+        const event = stripe.webhooks.constructEvent(
+            rawBody,
+            sig,
+            endpointSecret
+        )
+        return event
+    }
+
+    async getInvoiceUrl(invoiceId: string) {
+        const invoice = await stripe.invoices.retrieve(invoiceId)
+        return invoice.hosted_invoice_url
     }
 }
 

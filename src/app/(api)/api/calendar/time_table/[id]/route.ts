@@ -26,28 +26,28 @@ export async function DELETE(
             }),
         ])
 
-        if (!bookedUserID) {
+        if (!bookedUserID?.userId) {
             return new Response("Not found", { status: 404 })
         }
 
-        const LineUserid = await prisma.user.findUnique({
-            where: {
-                id: bookedUserID.userId,
-            },
-            select: {
-                Account: {
-                    select: {
-                        providerAccountId: true,
-                    },
-                },
-            },
-        })
+        // const LineUserid = await prisma.user.findUnique({
+        //     where: {
+        //         id: bookedUserID.userId,
+        //     },
+        //     select: {
+        //         Account: {
+        //             select: {
+        //                 providerAccountId: true,
+        //             },
+        //         },
+        //     },
+        // })
 
-        if (!LineUserid) {
-            return new Response("LineUserid Not found", { status: 404 })
-        }
+        // if (!LineUserid) {
+        //     return new Response("LineUserid Not found", { status: 404 })
+        // }
 
-        return NextResponse.json(LineUserid.Account[0].providerAccountId)
+        return NextResponse.json({})
     } catch (error) {
         if (error instanceof ZodError) {
             console.log(JSON.stringify(error, null, 2))
@@ -116,8 +116,13 @@ export async function GET(_: Request, { params }: { params: { id: string } }) {
                     include: {
                         payment: true,
                     },
+                    take: 1,
+                    orderBy: {
+                        createdAt: "desc",
+                    },
                 },
             },
+
             orderBy: {
                 Day: {
                     index: "asc",
@@ -125,7 +130,15 @@ export async function GET(_: Request, { params }: { params: { id: string } }) {
             },
         })
 
-        return NextResponse.json([...todayClass])
+        const mapped = todayClass.map((item) => {
+            const { bookingHistory, ...rest } = item
+            return {
+                ...rest,
+                bookingHistory: bookingHistory[0] ?? null,
+            }
+        })
+
+        return NextResponse.json([...mapped])
     } catch (error) {
         if (error instanceof ZodError) {
             console.log(JSON.stringify(error, null, 2))

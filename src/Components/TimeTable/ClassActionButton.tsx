@@ -1,36 +1,40 @@
-"use client";
+"use client"
 
-import { Button } from "antd";
-import { useState } from "react";
-import { acceptClass } from "./api";
-import { TodayClasses } from "./TimeTable";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query"
+import { Button } from "antd"
+import { useState } from "react"
+import { acceptClass } from "./api"
 
-const ClassActionButton = ({ todayClass }: { todayClass: TodayClasses }) => {
-  const [loading, setLoading] = useState(false);
-  const queryClient = useQueryClient();
+type ClassActionButtonProps = {
+    classId: string
+    dayId: any
+}
 
-  const acceptThisClass = async (id: string) => {
-    setLoading(true);
-    await acceptClass(id);
-    setLoading(false);
-    queryClient.invalidateQueries({
-      queryKey: ["todayClass", todayClass.dayId],
-    });
-  };
+const ClassActionButton = ({ classId, dayId }: ClassActionButtonProps) => {
+    const [loading, setLoading] = useState(false)
+    const queryClient = useQueryClient()
 
-  return (
-    <Button
-      loading={loading}
-      type="primary"
-      onClick={() => {
-        acceptThisClass(todayClass.id);
-      }}
-      block
-    >
-      <span className="px-5">Accept this class</span>
-    </Button>
-  );
-};
+    const acceptThisClass = async (id: string) => {
+        setLoading(true)
+        await acceptClass(id)
+        setLoading(false)
+        queryClient.invalidateQueries({
+            queryKey: ["todayClass", dayId],
+        })
+    }
 
-export default ClassActionButton;
+    return (
+        <Button
+            loading={loading}
+            type="primary"
+            onClick={() => {
+                acceptThisClass(classId)
+            }}
+            block
+        >
+            <span className="px-5">Accept this class</span>
+        </Button>
+    )
+}
+
+export default ClassActionButton
