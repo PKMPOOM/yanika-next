@@ -1,5 +1,5 @@
 import { auth } from "@/lib/auth"
-import { prisma } from "@/lib/db"
+import prisma from "@/lib/db"
 import { getToken } from "@/lib/GoogleUtils"
 import axios from "axios"
 import dayjs from "dayjs"

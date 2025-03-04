@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/db"
+import prisma from "@/lib/db"
 import { Days } from "@prisma/client"
 import { NextResponse } from "next/server"
 import { ZodError } from "zod"
@@ -30,23 +30,6 @@ export async function DELETE(
             return new Response("Not found", { status: 404 })
         }
 
-        // const LineUserid = await prisma.user.findUnique({
-        //     where: {
-        //         id: bookedUserID.userId,
-        //     },
-        //     select: {
-        //         Account: {
-        //             select: {
-        //                 providerAccountId: true,
-        //             },
-        //         },
-        //     },
-        // })
-
-        // if (!LineUserid) {
-        //     return new Response("LineUserid Not found", { status: 404 })
-        // }
-
         return NextResponse.json({})
     } catch (error) {
         if (error instanceof ZodError) {
@@ -63,15 +46,6 @@ export async function PUT(_: Request, { params }: { params: { id: string } }) {
         const id = params.id
 
         await prisma.$transaction([
-            prisma.timeSlot.findUnique({
-                where: {
-                    id,
-                },
-                select: {
-                    userId: true,
-                },
-            }),
-
             prisma.timeSlot.update({
                 where: { id },
                 data: {

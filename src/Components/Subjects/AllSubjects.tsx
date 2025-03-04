@@ -22,7 +22,6 @@ type SubjectPageContext = {
 }
 
 export const SubjectPageContext = createContext({} as SubjectPageContext)
-//todo redo responsive => mobile
 
 function AllSubjects() {
     const { data: session } = useSession()

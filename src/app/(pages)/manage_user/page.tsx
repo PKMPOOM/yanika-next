@@ -73,7 +73,6 @@ export default function ManageUser() {
     const [SearchKey, setSearchKey] = useState("")
 
     const { data: session } = authClient.useSession()
-    console.log("NewData", session?.user.role)
 
     const filteredList = useMemo(() => {
         return data?.filter((item) => {

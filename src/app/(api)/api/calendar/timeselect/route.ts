@@ -1,5 +1,5 @@
 import { auth } from "@/lib/auth"
-import { prisma } from "@/lib/db"
+import prisma from "@/lib/db"
 import { headers } from "next/headers"
 import { NextResponse } from "next/server"
 import { ZodError } from "zod"

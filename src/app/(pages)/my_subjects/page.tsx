@@ -2,7 +2,7 @@ import Container from "@/Components/Global/Container"
 import Loader from "@/Components/Global/Loader"
 // import { authOptions } from "@/app/(api)/api/auth/[...nextauth]/authOptions"
 import { auth } from "@/lib/auth"
-import { prisma } from "@/lib/db"
+import prisma from "@/lib/db"
 import { EyeOutlined } from "@ant-design/icons"
 import { Subject, TimeSlot } from "@prisma/client"
 import { Button, Empty } from "antd"
@@ -46,36 +46,73 @@ export default async function MySubjects() {
 
     return (
         <Container>
-            {myBookedSuybject.length === 0 ? (
-                <div>
-                    <Empty />
-                </div>
-            ) : (
-                <div className="flex flex-col gap-3">
-                    {myBookedSuybject.map((timeSlot) => {
-                        const isAccept = timeSlot.accept === true
-                        const isPassed = dayjs().isAfter(
-                            dayjs(timeSlot.start_time)
-                        )
+            <div className="flex flex-col gap-4">
+                {myBookedSuybject.length === 0 ? (
+                    <div>
+                        <Empty />
+                    </div>
+                ) : (
+                    <div className="flex flex-col gap-3 ">
+                        {[...myBookedSuybject, ...myBookedSuybject].map(
+                            (timeSlot) => {
+                                const isAccept = timeSlot.accept === true
+                                const isPassed = dayjs().isAfter(
+                                    dayjs(timeSlot.start_time)
+                                )
 
-                        let startTime = isPassed
-                            ? dayjs(timeSlot.start_time).add(7, "day")
-                            : dayjs(timeSlot.start_time)
-                        let endTime = startTime.add(timeSlot.duration, "hour")
+                                let startTime = isPassed
+                                    ? dayjs(timeSlot.start_time).add(7, "day")
+                                    : dayjs(timeSlot.start_time)
+                                let endTime = startTime.add(
+                                    timeSlot.duration,
+                                    "hour"
+                                )
 
-                        return (
-                            <UserSubjectsDetail
-                                timeSlot={timeSlot}
-                                isAccept={isAccept}
-                                isPassed={isPassed}
-                                subject={timeSlot.Subject}
-                                startTime={startTime}
-                                endTime={endTime}
-                            />
-                        )
-                    })}
-                </div>
-            )}
+                                return (
+                                    <UserSubjectsDetail
+                                        timeSlot={timeSlot}
+                                        isAccept={isAccept}
+                                        isPassed={isPassed}
+                                        subject={timeSlot.Subject}
+                                        startTime={startTime}
+                                        endTime={endTime}
+                                    />
+                                )
+                            }
+                        )}
+                    </div>
+                )}
+
+                {/* <div className="flex flex-col gap-3 overflow-y-scroll">
+                    {[...myBookedSuybject, ...myBookedSuybject].map(
+                        (timeSlot) => {
+                            const isAccept = timeSlot.accept === true
+                            const isPassed = dayjs().isAfter(
+                                dayjs(timeSlot.start_time)
+                            )
+
+                            let startTime = isPassed
+                                ? dayjs(timeSlot.start_time).add(7, "day")
+                                : dayjs(timeSlot.start_time)
+                            let endTime = startTime.add(
+                                timeSlot.duration,
+                                "hour"
+                            )
+
+                            return (
+                                <UserSubjectsDetail
+                                    timeSlot={timeSlot}
+                                    isAccept={isAccept}
+                                    isPassed={isPassed}
+                                    subject={timeSlot.Subject}
+                                    startTime={startTime}
+                                    endTime={endTime}
+                                />
+                            )
+                        }
+                    )}
+                </div> */}
+            </div>
         </Container>
     )
 }
@@ -106,7 +143,6 @@ const UserSubjectsDetail = ({
                     : "border-orange-500 bg-orange-50"
             }`}
         >
-            {/* status */}
             <div className="flex items-baseline gap-2 text-sm">
                 <p className="">Status: </p>
                 <p
@@ -118,7 +154,6 @@ const UserSubjectsDetail = ({
                 </p>
             </div>
 
-            {/* class detail */}
             <div className="mt-4 flex items-start justify-between gap-2">
                 <div className="flex flex-col items-baseline justify-between text-base text-slate-800">
                     <p className="font-semibold">{subject?.name}</p>
@@ -131,7 +166,7 @@ const UserSubjectsDetail = ({
                         </p>
                         <p>
                             <span className="font-semibold">
-                                {timeSlot.totalPrice} THB{" "}
+                                {timeSlot.totalPrice} Credit
                             </span>
                             {timeSlot.duration} Hours
                         </p>

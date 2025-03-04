@@ -31,3 +31,28 @@ export const getUserPoints = (id: string | undefined) => {
         enabled: !!id,
     })
 }
+
+export type PointsHistory = {
+    id: string
+    amount: number
+    createdAt: Date
+    userId: string
+    action: "add" | "subtract"
+    description: string | null
+}
+
+export const getUserCreditHistory = (id: string | undefined) => {
+    const fetcher = async () => {
+        const response = await axios.get<PointsHistory[]>(
+            `/api/user/${id}/points-history`
+        )
+        return response.data
+    }
+
+    return useQuery<PointsHistory[]>({
+        queryKey: ["userCreditHistory", id],
+        queryFn: fetcher,
+        refetchOnWindowFocus: false,
+        enabled: !!id,
+    })
+}

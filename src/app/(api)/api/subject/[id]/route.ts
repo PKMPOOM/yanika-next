@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/db"
+import prisma from "@/lib/db"
 import { stripeService } from "@/lib/stripe"
 import { NextRequest, NextResponse } from "next/server"
 import { ZodError } from "zod"

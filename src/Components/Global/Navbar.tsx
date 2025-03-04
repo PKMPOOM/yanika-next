@@ -138,8 +138,8 @@ function Navbar() {
 
     return (
         <>
-            <div className="fixed top-0 z-30 w-full border-b bg-white">
-                <Container margin={false}>
+            <div className="fixed top-0 z-30 w-full border-b bg-white ">
+                <div className=" w-full max-w-7xl mx-auto  ">
                     <div className="flex h-10 items-center justify-between overflow-hidden">
                         <Link href={isAdmin ? "/time_table" : "/subjects"}>
                             <div className="w-24">
@@ -413,7 +413,7 @@ function Navbar() {
                             />
                         </div>
                     </div>
-                </Container>
+                </div>
             </div>
 
             {session && !session?.user.email && currentPath !== "/settings" && (

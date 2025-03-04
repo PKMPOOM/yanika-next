@@ -1,9 +1,7 @@
 import Container from "@/Components/Global/Container"
 import ClassActionButton from "@/Components/TimeTable/ClassActionButton"
 import StudentDisplayerDrawer from "@/Components/TimeTable/StudentDisplayerDrawer"
-import { TodayClasses } from "@/Components/TimeTable/TimeTable"
-import { DayList, Days } from "@/interface/timeslot_interface"
-import { prisma } from "@/lib/db"
+import prisma from "@/lib/db"
 import { formattedUppercase } from "@/lib/formattedUppercase"
 import {
     BookOutlined,
@@ -32,7 +30,7 @@ type PageProps = {
 const Page = async ({ params }: PageProps) => {
     const { id } = params
 
-    const data = await prisma.timeSlot.findUnique({
+    const timeSlotData = await prisma.timeSlot.findUnique({
         where: {
             id: id,
         },
@@ -79,40 +77,38 @@ const Page = async ({ params }: PageProps) => {
         },
     })
 
-    if (!data) {
-        redirect("/404")
+    if (!timeSlotData) {
+        return redirect("/404")
     }
 
-    const userData = await prisma.user.findUnique({
-        where: {
-            email: data.userBooked[0],
-        },
-        select: {
-            id: true,
-            email: true,
-            name: true,
-            TimeSlot: {
-                select: {
-                    accept: true,
-                    start_time: true,
-                    parsed_start_time: true,
-                    duration: true,
-                    dayId: true,
-                    Subject: {
-                        select: {
-                            name: true,
-                        },
-                    },
-                    totalPrice: true,
-                    scheduleDateTime: true,
-                },
-            },
-        },
-    })
+    // const userData = await prisma.user.findUnique({
+    //     where: {
+    //         email: timeSlotData.userBooked[0],
+    //     },
+    //     select: {
+    //         id: true,
+    //         email: true,
+    //         name: true,
+    //         TimeSlot: {
+    //             select: {
+    //                 accept: true,
+    //                 start_time: true,
+    //                 parsed_start_time: true,
+    //                 duration: true,
+    //                 dayId: true,
+    //                 Subject: {
+    //                     select: {
+    //                         name: true,
+    //                     },
+    //                 },
+    //                 totalPrice: true,
+    //                 scheduleDateTime: true,
+    //             },
+    //         },
+    //     },
+    // })
 
-    console.log(userData)
-
-    const { bookingHistory, ...rest } = data
+    const { bookingHistory, ...rest } = timeSlotData
 
     const ClassData = {
         ...rest,
@@ -288,8 +284,10 @@ const Page = async ({ params }: PageProps) => {
                                     <span>
                                         {ClassData.userBooked.map((user) => (
                                             <StudentDisplayerDrawer
+                                                key={user}
                                                 email={user}
-                                                userData={userData}
+                                                // userData={userData}
+                                                userID={timeSlotData.userId}
                                             />
                                         ))}
                                     </span>
@@ -320,7 +318,7 @@ const Page = async ({ params }: PageProps) => {
                         title={
                             <div className="flex items-center justify-between">
                                 <div>Payment Details</div>
-                                <div className=" bottom-2 right-2 flex items-center gap-2 text-sm ">
+                                {/* <div className=" bottom-2 right-2 flex items-center gap-2 text-sm ">
                                     {isPaid ? (
                                         <div className="bg-emerald-500 px-2 py-1 text-white font-normal rounded-md">
                                             Paid
@@ -330,7 +328,7 @@ const Page = async ({ params }: PageProps) => {
                                             Unpaid
                                         </div>
                                     )}
-                                </div>
+                                </div> */}
                             </div>
                         }
                     >

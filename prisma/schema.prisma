@@ -210,12 +210,13 @@ model User {
 }
 
 model PointHistory {
-  id        String      @id @default(uuid())
-  amount    Int
-  createdAt DateTime    @default(now())
-  userId    String
-  action    PointAction
-  User      User        @relation(fields: [userId], references: [id])
+  id          String      @id @default(uuid())
+  amount      Int
+  createdAt   DateTime    @default(now())
+  userId      String
+  action      PointAction
+  description String?
+  User        User        @relation(fields: [userId], references: [id])
 
   @@index([id, userId])
 }

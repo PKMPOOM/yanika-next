@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/db"
+import prisma from "@/lib/db"
 import "dayjs/locale/th"
 import { auth } from "@/lib/auth"
 import { NextResponse } from "next/server"

@@ -1,29 +1,13 @@
+import { systemRoles } from "@/interface/interface"
 import { betterAuth } from "better-auth"
 import { prismaAdapter } from "better-auth/adapters/prisma"
-import { PrismaClient } from "@prisma/client"
 import { customSession } from "better-auth/plugins"
-import { systemRoles } from "@/interface/interface"
+import prisma from "./db"
 
-const prisma = new PrismaClient()
 export const auth = betterAuth({
     database: prismaAdapter(prisma, {
         provider: "postgresql", // or "mysql", "postgresql", ...etc
     }),
-    // session: {
-    //     fields: {
-    //         expiresAt: "expires", // e.g., "expires_at" or your existing field name
-    //         token: "sessionToken", // e.g., "session_token" or your existing field name
-    //     },
-    // },
-    // accounts: {
-    //     fields: {
-    //         accountId: "providerAccountId",
-    //         refreshToken: "refresh_token",
-    //         accessToken: "access_token",
-    //         accessTokenExpiresAt: "access_token_expires",
-    //         idToken: "id_token",
-    //     },
-    // },
 
     emailAndPassword: {
         enabled: true,
@@ -37,9 +21,10 @@ export const auth = betterAuth({
 
     plugins: [
         customSession(async ({ user, session }) => {
+            const role = await getUserRole(user.email)
             return {
                 user: {
-                    role: "user" as systemRoles,
+                    role: role as systemRoles,
                     ...user,
                 },
                 session,
@@ -47,3 +32,13 @@ export const auth = betterAuth({
         }),
     ],
 })
+
+const getUserRole = async (email: string) => {
+    const user = await prisma.user.findUnique({
+        where: {
+            email,
+        },
+    })
+
+    return user?.role
+}

@@ -1,6 +1,6 @@
 import { gradeTypes } from "@/interface/interface"
 import { createSubjectSchema } from "@/interface/payload_validator"
-import { prisma } from "@/lib/db"
+import prisma from "@/lib/db"
 import { stripeService } from "@/lib/stripe"
 import { NextResponse } from "next/server"
 import { ZodError } from "zod"

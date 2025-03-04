@@ -1,6 +1,6 @@
 import { auth2Client } from "@/lib/GoogleUtils"
 import { auth } from "@/lib/auth"
-import { prisma } from "@/lib/db"
+import prisma from "@/lib/db"
 import { stripeService } from "@/lib/stripe"
 import dayjs, { Dayjs } from "dayjs"
 import timezone from "dayjs/plugin/timezone"

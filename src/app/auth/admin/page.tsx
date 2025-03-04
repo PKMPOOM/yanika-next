@@ -27,64 +27,17 @@ const AdminSignInPage = () => {
         try {
             setError(false)
             setLoading(true)
-            // const response = await signIn("credentials", {
-            //   email: event.email,
-            //   password: event.password,
-            //   redirect: false,
-            // });
 
-            // const { error } = await authClient.signIn.email(
-            //     {
-            //         /**
-            //          * The user email
-            //          */
-            //         email: event.email,
-            //         /**
-            //          * The user password
-            //          */
-            //         password: event.password,
-            //         /**
-            //          * a url to redirect to after the user verifies their email (optional)
-            //          */
-            //         callbackURL: "/time_table",
-            //         /**
-            //          * remember the user session after the browser is closed.
-            //          * @default true
-            //          */
-            //         rememberMe: false,
-            //     },
-            //     {
-            //         //callbacks
-            //     }
-            // )
-
-            const { data, error } = await authClient.signUp.email(
-                {
-                    email: event.email, // user email address
-                    password: event.password, // user password -> min 8 characters by default
-                    name: "POOM", // user display name
-                    image: "", // user image url (optional)
-                    callbackURL: "/", // a url to redirect to after the user verifies their email (optional)
-                },
-                {
-                    onRequest: (ctx) => {
-                        //show loading
-                    },
-                    onSuccess: (ctx) => {
-                        //redirect to the dashboard or sign in page
-                    },
-                    onError: (ctx) => {
-                        // display the error message
-                        alert(ctx.error.message)
-                    },
-                }
-            )
-
-            setLoading(false)
+            const { error } = await authClient.signIn.email({
+                email: event.email, // user email address
+                password: event.password, // user password -> min 8 characters by default
+            })
 
             if (!error) {
                 window.location.href = callbackUrl
+                setLoading(false)
             } else {
+                setLoading(false)
                 setError(true)
             }
         } catch (error) {

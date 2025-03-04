@@ -13,10 +13,14 @@ import ClassRequestSumarry from "./ClassRequestSumarry"
 import DaySelectionButton from "./DaySelectionButton"
 import TimeSelectRow from "./TimeSelectRow"
 import { useShallow } from "zustand/react/shallow"
+import { getUserPoints } from "@/service/user"
+import { useSession } from "@/lib/auth-client"
 
 const { Title } = Typography
 
 function TimeSelectModal() {
+    const queryClient = useQueryClient()
+
     const [
         modalOpen,
         setModalOpen,
@@ -31,6 +35,8 @@ function TimeSelectModal() {
         addOnStudent,
         clearAddOnStudent,
         setSelectedDay,
+        isError,
+        setIsError,
     ] = useBookingModalStore(
         useShallow((state) => [
             state.modalOpen,
@@ -46,17 +52,20 @@ function TimeSelectModal() {
             state.addOnStudent,
             state.clearAddOnStudent,
             state.setSelectedDay,
+            state.isError,
+            state.setIsError,
         ])
     )
+
     const [Loading, setLoading] = useState(false)
+    // const [DisableBookButton, setDisableBookButton] = useState(false)
     const [TimeSlotState, setTimeSlotState] = useState<NewDays[]>([])
     const { api } = useContext(timeSlotContext)
-
-    const queryClient = useQueryClient()
+    const { data: session } = useSession()
+    const { data: points } = getUserPoints(session?.user.id)
 
     const fetchSubjectData = async () => {
         const res = await axios.get(`/api/calendar/timeselect`)
-
         return res.data
     }
 
@@ -72,6 +81,43 @@ function TimeSelectModal() {
         }
     }, [timeSlotData])
 
+    useEffect(() => {
+        const isTimePassed = dayjs().isAfter(dayjs(startTime), "m")
+        const lessThan24HourBook = dayjs(startTime).diff(dayjs(), "hour") <= 24
+
+        if (SelectedClass && points) {
+            const totalBookedPrice = SelectedClass.classPrice * classDuration
+            const haveEnoughCredit = points.totalPoints >= totalBookedPrice
+
+            switch (true) {
+                case !isTimePassed && !lessThan24HourBook && haveEnoughCredit:
+                    setIsError({
+                        isError: false,
+                        message: undefined,
+                    })
+                    break
+                case isTimePassed:
+                    setIsError({
+                        isError: true,
+                        message: "class_already_passed",
+                    })
+                    break
+                case lessThan24HourBook:
+                    setIsError({
+                        isError: true,
+                        message: "less_than_24_hours",
+                    })
+                    break
+                case !haveEnoughCredit:
+                    setIsError({
+                        isError: true,
+                        message: "not_enough_credit",
+                    })
+                    break
+            }
+        }
+    }, [formStep, points, SelectedClass, startTime])
+
     const onCancel = async () => {
         setSelectedDay(undefined)
         setModalOpen(false)
@@ -81,17 +127,8 @@ function TimeSelectModal() {
         clearAddOnStudent([])
     }
 
-    const requestClass = async () => {
-        console.log({
-            startTime,
-            classDuration,
-            selectedDay,
-            parsed_start_time: dayjs(startTime).format("H:mm"),
-            SelectedClass,
-        })
-
+    const onScheduleClass = async () => {
         setLoading(true)
-
         const Payload = {
             startTime,
             classDuration,
@@ -106,13 +143,16 @@ function TimeSelectModal() {
                 data: Payload,
             })
             api.success({
-                message: "Class requested",
-                description: "Requestion infotmation sent to admin",
+                message: "Class scheduled",
+                description: "Class scheduled successfully",
                 placement: "topRight",
             })
             onCancel()
             queryClient.invalidateQueries({
                 queryKey: ["Timeselect"],
+            })
+            queryClient.invalidateQueries({
+                queryKey: ["userPoints", session?.user.id],
             })
         } catch (err) {
             console.log(err)
@@ -198,17 +238,13 @@ function TimeSelectModal() {
                         </Button>
                     ) : (
                         <Button
-                            disabled={
-                                SelectedClass?.classType === "group" &&
-                                addOnStudent.length < 2
-                                    ? true
-                                    : false
-                            }
+                            disabled={isError.isError}
+                            // disabled={DisableBookButton}
                             loading={Loading}
-                            onClick={requestClass}
+                            onClick={onScheduleClass}
                             type="primary"
                         >
-                            <WideBTNSpan>Request</WideBTNSpan>
+                            <WideBTNSpan>Schedule a class</WideBTNSpan>
                         </Button>
                     )}
                 </div>

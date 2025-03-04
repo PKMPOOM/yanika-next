@@ -10,7 +10,6 @@ export async function GET(_: Request, { params }: { params: { id: string } }) {
         const session = await auth.api.getSession({
             headers: await headers(),
         })
-        // const id = params.id
 
         if (!session) {
             return new Response("Unauthenticated", { status: 401 })
@@ -18,19 +17,16 @@ export async function GET(_: Request, { params }: { params: { id: string } }) {
 
         const userId = session.user.id
 
-        const userData = await prisma.user.findUnique({
+        const pointsHistory = await prisma.pointHistory.findMany({
             where: {
-                id: userId,
+                userId: userId,
+            },
+            orderBy: {
+                createdAt: "desc",
             },
         })
 
-        if (!userData) {
-            return new Response("User not found", { status: 404 })
-        }
-
-        return NextResponse.json({
-            totalPoints: userData.totalPoints,
-        })
+        return NextResponse.json(pointsHistory)
     } catch (error) {
         if (error instanceof ZodError) {
             return new Response("Invalid body", { status: 422 })

@@ -10,17 +10,35 @@ export async function GET(_: Request, { params }: { params: { id: string } }) {
         const session = await auth.api.getSession({
             headers: await headers(),
         })
-        // const id = params.id
 
         if (!session) {
             return new Response("Unauthenticated", { status: 401 })
         }
 
-        const userId = session.user.id
-
         const userData = await prisma.user.findUnique({
             where: {
-                id: userId,
+                id: params.id,
+            },
+            select: {
+                id: true,
+                email: true,
+                name: true,
+                TimeSlot: {
+                    select: {
+                        accept: true,
+                        start_time: true,
+                        parsed_start_time: true,
+                        duration: true,
+                        dayId: true,
+                        Subject: {
+                            select: {
+                                name: true,
+                            },
+                        },
+                        totalPrice: true,
+                        scheduleDateTime: true,
+                    },
+                },
             },
         })
 
@@ -28,9 +46,7 @@ export async function GET(_: Request, { params }: { params: { id: string } }) {
             return new Response("User not found", { status: 404 })
         }
 
-        return NextResponse.json({
-            totalPoints: userData.totalPoints,
-        })
+        return NextResponse.json(userData)
     } catch (error) {
         if (error instanceof ZodError) {
             return new Response("Invalid body", { status: 422 })
