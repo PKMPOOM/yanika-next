@@ -5,11 +5,11 @@ import themeConfig from "@/theme/themeConfig"
 import { AntdRegistry } from "@ant-design/nextjs-registry"
 import { ConfigProvider } from "antd"
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
+// import { Inter } from "next/font/google"
 import { headers } from "next/headers"
 import "./globals.css"
 
-const inter = Inter({ subsets: ["latin"] })
+// const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
     title: "Meenites",
@@ -28,7 +28,7 @@ export default async function RootLayout({
 
     return (
         <html lang="en">
-            <body className={inter.className}>
+            <body>
                 <div className="h-screen w-screen overflow-hidden">
                     <ConfigProvider theme={themeConfig}>
                         <AuthProvider>
