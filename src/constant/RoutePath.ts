@@ -8,4 +8,5 @@ export const routepath = {
         Admin: "/settings/admin",
         User: "/settings/user",
     },
+    PrivacyPolicy: "/privacy_policy",
 }

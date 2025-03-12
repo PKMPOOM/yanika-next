@@ -5,6 +5,7 @@ import Meenites from "../../../../public/AppLogo.svg"
 import { routepath } from "@/constant/RoutePath"
 import SignInForm from "@/Components/auth/SignInForm"
 import { headers } from "next/headers"
+import Link from "next/link"
 
 export const metadata: Metadata = {
     title: "Sign In",
@@ -27,8 +28,8 @@ export default async function SignIn() {
 
     return (
         <main className="flex h-screen w-full flex-col gap-6 overflow-hidden xl:flex-row">
-            <div className="flex h-44 w-full items-center bg-linear-to-r from-emerald-500 to-emerald-400 text-white xl:h-screen xl:w-3/5 xl:items-start xl:pt-20">
-                <div className="left-8 top-8 mx-auto w-full max-w-xl px-10 xl:mx-5">
+            <div className="flex bgred h-44 w-full items-center bg-linear-to-r from-emerald-500 to-emerald-400 text-white xl:h-screen xl:w-3/5 xl:items-start xl:pt-20">
+                <div className="left-8 top-8 mx-auto w-full max-w-xl px-10 xl:mx-5 pb-10 flex-1 flex flex-col h-full">
                     <p className={`left-8 top-8 text-6xl`}>
                         <Meenites className="text-white" />
                     </p>
@@ -37,6 +38,11 @@ export default async function SignIn() {
                     >
                         Empower Educators, Elevate Education.
                     </p>
+                    <div className="flex gap-2 mt-auto hover:underline">
+                        <Link href={routepath.PrivacyPolicy}>
+                            <p>Privacy Policy</p>
+                        </Link>
+                    </div>
                 </div>
             </div>
             <div className="flex h-screen w-full xl:w-2/5">
