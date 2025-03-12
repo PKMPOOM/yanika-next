@@ -15,7 +15,7 @@ const availableCreditPackage = [
         name: "1 Credit",
         price: 1,
         description: "1 Classroom Credit",
-        link: "https://buy.stripe.com/test_9AQdSIbCb7REaCA4gp",
+        link: "https://buy.stripe.com/14k2c07kb6Vs5Us8wA",
         priceTHB: 200,
     },
     {
@@ -23,7 +23,7 @@ const availableCreditPackage = [
         name: "3 Credit",
         price: 3,
         description: "3 Classroom Credit",
-        link: "https://buy.stripe.com/test_fZebKA7lV5Jw7qo28i",
+        link: "https://buy.stripe.com/00g5oc0VNcfMaaI147",
         priceTHB: DEFAULT_PRICE_THB * 3,
     },
     {
@@ -31,7 +31,7 @@ const availableCreditPackage = [
         name: "5 Credit",
         price: 5,
         description: "5 Classroom Credit",
-        link: "https://buy.stripe.com/test_3cseWMay7dbY6mk28j",
+        link: "https://buy.stripe.com/fZe7wkawna7E0A89AC",
         priceTHB: DEFAULT_PRICE_THB * 5,
     },
     {
@@ -39,7 +39,7 @@ const availableCreditPackage = [
         name: "10 Credit",
         price: 10,
         description: "10 Classroom Credit",
-        link: "https://buy.stripe.com/test_cN26qgfSreg25igeV6",
+        link: "https://buy.stripe.com/fZe2c047Z2FcdmUcMN",
         priceTHB: DEFAULT_PRICE_THB * 10,
     },
     {
@@ -47,7 +47,7 @@ const availableCreditPackage = [
         name: "20 Credit",
         price: 20,
         description: "20 Classroom Credit",
-        link: "https://buy.stripe.com/test_eVag0QbCb1tg8us00d",
+        link: "https://buy.stripe.com/aEUg2Q1ZR6Vs0A8cMM",
         priceTHB: DEFAULT_PRICE_THB * 20,
     },
 ]
