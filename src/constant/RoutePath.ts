@@ -9,4 +9,5 @@ export const routepath = {
         User: "/settings/user",
     },
     PrivacyPolicy: "/privacy_policy",
+    TermsOfService: "/terms_of_service",
 }
