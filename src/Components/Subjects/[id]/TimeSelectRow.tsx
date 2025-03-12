@@ -40,7 +40,7 @@ function TimeSelectRow({ timeSlot }: TimeSlotProps) {
                 height: `${TIMEGRIDHEIGHT * 9}px`,
                 overflowY: "scroll",
             }}
-            className="relative pt-2"
+            className="relative pt-2 min-h-[500px]"
         >
             {/* time grid */}
             {Object.keys(NewDateTimeMap).map((time, index) => {

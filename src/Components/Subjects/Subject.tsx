@@ -6,6 +6,7 @@ import { Button, Popconfirm, Tag, Typography } from "antd"
 import { SubjectPageContext } from "./AllSubjects"
 import { useRouter } from "next/navigation"
 import {
+    DeleteOutlined,
     DeleteTwoTone,
     EditOutlined,
     QuestionCircleOutlined,
@@ -85,7 +86,7 @@ function Subject({ subject }: { subject: subjectListTypes }) {
                                 shape="circle"
                                 size="small"
                                 type="text"
-                                icon={<DeleteTwoTone twoToneColor="red" />}
+                                icon={<DeleteOutlined />}
                                 onClick={(e) => {
                                     e.stopPropagation()
                                 }}
