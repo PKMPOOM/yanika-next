@@ -42,7 +42,9 @@ function NewSubjectModal() {
       setLoading(false);
       setEditSubjectModalOpen(true);
       setActiveSubject(response.data.id);
-      queryClient.invalidateQueries(["SubjectList"]);
+      queryClient.invalidateQueries({
+        queryKey: ["SubjectList"],
+      });
     } catch (error) {
       console.log(error);
     }
@@ -84,7 +86,7 @@ function NewSubjectModal() {
           <Select showSearch options={gradesOption} />
         </Form.Item>
 
-        <div className=" mt-5 flex w-full justify-end gap-2">
+        <div className="mt-5 flex w-full justify-end gap-2">
           <Button htmlType="reset" onClick={onCancel} type="text">
             Cancel
           </Button>

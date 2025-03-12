@@ -1,82 +1,229 @@
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+generator client {
+  provider = "prisma-client-js"
 }
 
-generator client {
-  provider      = "prisma-client-js"
-  binaryTargets = ["native", "windows"]
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
 }
+
+// model Account {
+//   id                    String    @id
+//   userId                String
+//   type                  String?
+//   provider              String?
+//   expires_at            Int?
+//   token_type            String?
+//   scope                 String?
+//   session_state         String?
+//   user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+//   providerId            String
+//   providerAccountId     String    @map("accountId")
+//   refresh_token         String    @map("refreshToken")
+//   access_token          String?   @map("accessToken")
+//   id_token              String?   @map("idToken")
+//   accessTokenExpiresAt  DateTime?
+//   refreshTokenExpiresAt DateTime?
+//   password              String?
+//   createdAt             DateTime
+//   updatedAt             DateTime
+
+//   @@unique([provider, providerAccountId])
+//   @@map("account")
+// }
 
 model Account {
-  id                String  @id @default(cuid())
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String? @db.Text
-  session_state     String?
-  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                    String    @id
+  userId                String
+  accountId             String // For SSO or equals userId for credentials
+  providerId            String
+  accessToken           String?
+  refreshToken          String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  idToken               String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // other than nextauth
+  @@map("account")
+}
 
-  @@unique([provider, providerAccountId])
+model Classes {
+  id               String    @id @unique @default(uuid())
+  notify           Boolean   @default(false)
+  is_paid          Boolean   @default(false)
+  payment_slip_url String?
+  meeting_time     DateTime?
+  meeting_link     String?
+  userId           String?
+  subjectId        String
+  Subject          Subject   @relation(fields: [subjectId], references: [id])
+  user             User?     @relation(fields: [userId], references: [id])
+
+  @@index([id])
+}
+
+model Day {
+  id       Days       @id @unique @default(NA)
+  name     Days       @default(NA)
+  index    Int        @default(autoincrement())
+  TimeSlot TimeSlot[]
+
+  @@index([id])
 }
 
 model GoogleToken {
-  access_token   String       @id @default(cuid())
+  access_token   String       @id
   refresh_token  String       @unique
   scope          String
   token_type     String
   id_token       String
-  expire_at      DateTime     @default(now()) @db.Timestamp()
+  expire_at      DateTime     @default(now()) @db.Timestamp(6)
   email          String       @default("")
-  Integrations   Integrations @relation(fields: [integrationsId], references: [id])
   integrationsId String       @unique
+  Integrations   Integrations @relation(fields: [integrationsId], references: [id])
 }
 
 model Integrations {
   id                    String       @id @default(uuid())
-  GoogleToken           GoogleToken?
   GoogleCalendarConnect Boolean      @default(false)
+  GoogleToken           GoogleToken?
 }
 
 model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
+  id           String   @id
+  sessionToken String?
+  token        String
   userId       String
-  expires      DateTime
+  expiresAt    DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  // other than nextauth
+  createdAt    DateTime
+  updatedAt    DateTime
+  ipAddress    String?
+  userAgent    String?
+
+  @@unique([sessionToken])
+  @@map("session")
+}
+
+model Subject {
+  id                String     @id @default(uuid())
+  name              String     @default("")
+  description       String     @default("")
+  image_url         String     @default("")
+  course_outline    String     @default("") @db.Text
+  group_price       Int        @default(0)
+  single_price      Int        @default(200)
+  created_date      DateTime   @default(now())
+  update_at         DateTime   @default(now()) @updatedAt
+  tags              String[]
+  stripe_product_id String?
+  stripe_price_id   String?
+  grade             Grades     @default(school_1)
+  userId            String?
+  Classes           Classes[]
+  user              User?      @relation(fields: [userId], references: [id])
+  TimeSlot          TimeSlot[]
+
+  @@index([id])
+}
+
+model TimeSlot {
+  id                String           @id @unique @default(uuid())
+  index             Int              @default(autoincrement())
+  start_time        DateTime         @default(now())
+  parsed_start_time String           @default("")
+  duration          Float            @default(1.0)
+  dayId             Days
+  subjectId         String?
+  userBooked        String[]
+  accept            Boolean          @default(false)
+  bookingType       BookingType      @default(single)
+  totalPrice        Int              @default(0)
+  isScheduled       Boolean          @default(false)
+  scheduleDateTime  DateTime?
+  meetingLink       String?
+  eventID           String?
+  userId            String?
+  Day               Day              @relation(fields: [dayId], references: [id])
+  Subject           Subject?         @relation(fields: [subjectId], references: [id])
+  user              User?            @relation(fields: [userId], references: [id])
+  bookingHistory    BookingHistory[]
+}
+
+model BookingHistory {
+  id         String    @id @default(uuid())
+  userId     String
+  amount     Int
+  status     String
+  createdAt  DateTime  @default(now())
+  TimeSlot   TimeSlot? @relation(fields: [timeSlotId], references: [id])
+  timeSlotId String?
+  payment    Payment?
+
+  @@index([id, timeSlotId])
+}
+
+model Payment {
+  id               String          @id @default(uuid())
+  userId           String
+  amount           Int
+  status           String
+  priceId          String
+  paymentLink      String?
+  stripeInvoiceId  String?
+  hostedInvoiceUrl String?
+  amountDue        Int?
+  customerEmail    String?
+  customerName     String?
+  createdAt        DateTime        @default(now())
+  bookingHistory   BookingHistory? @relation(fields: [bookingHistoryId], references: [id])
+  bookingHistoryId String?         @unique
+
+  @@index([id, bookingHistoryId])
 }
 
 model User {
-  id            String     @id @default(cuid())
+  id            String         @id
   name          String?
-  email         String?    @unique
-  emailVerified DateTime?
+  email         String?        @unique
+  emailVerified Boolean?
   image         String?
-  accounts      Account[]
-  sessions      Session[]
-  // other than nextauth
-  password      String     @default("")
-  role          role       @default(user)
-  classes       Classes[]
-  subject       Subject[]
-  // TimeSlot      TimeSlot[]
-  time_slot     TimeSlot[]
+  password      String         @default("")
+  role          role           @default(user)
+  totalPoints   Int            @default(0)
+  Account       Account[]
+  Classes       Classes[]
+  Session       Session[]
+  Subject       Subject[]
+  TimeSlot      TimeSlot[]
+  PointHistory  PointHistory[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 
   @@index([email])
+  @@map("user")
 }
 
-enum role {
-  admin
-  user
+model PointHistory {
+  id          String      @id @default(uuid())
+  amount      Int
+  createdAt   DateTime    @default(now())
+  userId      String
+  action      PointAction
+  description String?
+  User        User        @relation(fields: [userId], references: [id])
+
+  @@index([id, userId])
+}
+
+enum PointAction {
+  add
+  subtract
 }
 
 model VerificationToken {
@@ -87,24 +234,20 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-model Subject {
-  id             String     @id @default(cuid())
-  name           String     @default("")
-  description    String     @default("")
-  image_url      String     @default("")
-  course_outline String     @default("")
-  group_price    Int        @default(0)
-  single_price   Int        @default(200)
-  created_date   DateTime   @default(now())
-  update_at      DateTime   @updatedAt
-  tags           String[]
-  Classes        Classes[]
-  grade          Grades     @default(school_1)
-  User           User?      @relation(fields: [userId], references: [id])
-  userId         String?
-  time_slot      TimeSlot[]
+enum BookingType {
+  single
+  group
+}
 
-  @@index([id])
+enum Days {
+  NA
+  monday
+  tuesday
+  wednesday
+  thursday
+  friday
+  saturday
+  sunday
 }
 
 enum Grades {
@@ -123,22 +266,6 @@ enum Grades {
   university
 }
 
-model Classes {
-  id               String    @unique @default(cuid())
-  subject          Subject   @relation(fields: [subjectId], references: [id])
-  notify           Boolean   @default(false)
-  is_paid          Boolean   @default(false)
-  payment_slip_url String?
-  meeting_time     DateTime?
-  meeting_link     String?
-  User             User?     @relation(fields: [userId], references: [id])
-  userId           String?
-  subjectId        String
-
-  @@id([id])
-  @@index([id])
-}
-
 enum TimeSlots {
   NA
   nine_ten
@@ -152,51 +279,18 @@ enum TimeSlots {
   five_six
 }
 
-model Day {
-  id        Days       @unique @default(NA)
-  name      Days       @default(NA)
-  index     Int        @default(autoincrement())
-  time_slot TimeSlot[]
-
-  @@id([id])
-  @@index([id])
+enum role {
+  admin
+  user
 }
 
-model TimeSlot {
-  id                String      @unique @default(uuid())
-  index             Int         @default(autoincrement())
-  start_time        DateTime    @default(now())
-  parsed_start_time String      @default("")
-  duration          Float       @default(1.0)
-  Day               Day         @relation(fields: [dayId], references: [id])
-  dayId             Days
-  subject           Subject?    @relation(fields: [subjectId], references: [id])
-  subjectId         String?
-  userBooked        String[]
-  accept            Boolean     @default(false)
-  bookingType       BookingType @default(single)
-  totalPrice        Int         @default(0)
-  // schedule part
-  isScheduled       Boolean     @default(false)
-  scheduleDateTime  DateTime?
-  meetingLink       String?
-  eventID           String?
-  user              User        @relation(fields: [userId], references: [id])
-  userId            String
-}
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime?
+  createdAt  DateTime?
+  updatedAt  DateTime?
 
-enum BookingType {
-  single
-  group
-}
-
-enum Days {
-  NA
-  monday
-  tuesday
-  wednesday
-  thursday
-  friday
-  saturday
-  sunday
+  @@map("verification")
 }

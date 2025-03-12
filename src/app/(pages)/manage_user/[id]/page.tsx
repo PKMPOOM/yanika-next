@@ -58,7 +58,7 @@ const Page = ({ params }: PageProps) => {
 
   return (
     <Container>
-      <div className=" mb-4">
+      <div className="mb-4">
         <Breadcrumb
           items={[
             {
@@ -78,11 +78,11 @@ const Page = ({ params }: PageProps) => {
           ]}
         />
       </div>
-      <div className="  flex w-full  gap-8 "></div>
+      <div className="flex w-full gap-8"></div>
 
-      <div className=" grid grid-cols-2 gap-4">
-        <div className=" flex flex-col gap-2 ">
-          <div className=" flex items-start ">
+      <div className="grid grid-cols-2 gap-4">
+        <div className="flex flex-col gap-2">
+          <div className="flex items-start">
             <Avatar
               src={data.image}
               size={100}
@@ -92,8 +92,8 @@ const Page = ({ params }: PageProps) => {
             </Avatar>
           </div>
 
-          <div className="  flex max-w-2xl flex-col gap-2">
-            <div className=" flex flex-col  justify-between gap-2 ">
+          <div className="flex max-w-2xl flex-col gap-2">
+            <div className="flex flex-col justify-between gap-2">
               <DescValue
                 keyValue="id"
                 element={<Text copyable>{data.id}</Text>}
@@ -107,7 +107,7 @@ const Page = ({ params }: PageProps) => {
               onFinish={(e) => console.log(e)}
               requiredMark="optional"
             >
-              <div className=" flex gap-2 ">
+              <div className="flex gap-2">
                 <Form.Item
                   name={"email"}
                   label="Connected Email"
@@ -136,33 +136,38 @@ const Page = ({ params }: PageProps) => {
           </div>
           <Divider />
 
-          {data.accounts.map((item, idx) => {
-            return (
-              <div
-                key={item.providerAccountId + idx}
-                className=" flex flex-col gap-2 "
-              >
-                <DescValue
-                  keyValue="Auth Type"
-                  value={item.type}
-                  textSize="sm"
-                />
-                <DescValue
-                  keyValue="provider"
-                  value={item.provider.toUpperCase()}
-                  textSize="sm"
-                />
-                <DescValue keyValue="scope" value={item.scope} textSize="sm" />
-                <DescValue
-                  keyValue="providerAccountId"
-                  element={<Text copyable>{item.providerAccountId}</Text>}
-                  textSize="sm"
-                />
-              </div>
-            );
-          })}
+          {data.accounts &&
+            data.accounts.map((item, idx) => {
+              return (
+                <div
+                  key={item.providerAccountId + idx}
+                  className="flex flex-col gap-2"
+                >
+                  <DescValue
+                    keyValue="Auth Type"
+                    value={item.type}
+                    textSize="sm"
+                  />
+                  <DescValue
+                    keyValue="provider"
+                    value={item.provider.toUpperCase()}
+                    textSize="sm"
+                  />
+                  <DescValue
+                    keyValue="scope"
+                    value={item.scope}
+                    textSize="sm"
+                  />
+                  <DescValue
+                    keyValue="providerAccountId"
+                    element={<Text copyable>{item.providerAccountId}</Text>}
+                    textSize="sm"
+                  />
+                </div>
+              );
+            })}
         </div>
-        <div className=" flex flex-col gap-4 ">
+        <div className="flex flex-col gap-4">
           <h2>Booked Date & time</h2>
           {Object.keys(groupedResponse).map((dayName) => {
             const current = groupedResponse[dayName];
@@ -170,12 +175,12 @@ const Page = ({ params }: PageProps) => {
             return (
               <div
                 key={dayName}
-                className=" flex flex-col  justify-between gap-2 border-b border-dashed pb-6"
+                className="flex flex-col justify-between gap-2 border-b border-dashed pb-6"
               >
-                <div className=" flex items-start gap-2">
+                <div className="flex items-start gap-2">
                   <Title level={5}>{formattedUppercase(dayName)}</Title>
                   <Link href={`/time_table/${dayName}`}>
-                    <div className=" -translate-x-1  rounded-md p-2 pt-0 transition-all duration-150 hover:translate-x-0 hover:text-emerald-500">
+                    <div className="-translate-x-1 rounded-md p-2 pt-0 text-slate-800 transition-all duration-150 hover:translate-x-0 hover:text-emerald-500">
                       <LuExternalLink />
                     </div>
                   </Link>
@@ -185,9 +190,9 @@ const Page = ({ params }: PageProps) => {
                   return (
                     <div
                       key={item.id}
-                      className=" flex items-start justify-between gap-2 rounded-lg border bg-white p-2 transition-all duration-150 hover:shadow"
+                      className="flex items-start justify-between gap-2 rounded-lg border bg-white p-2 transition-all duration-150 hover:shadow-sm"
                     >
-                      <div className=" flex flex-col gap-2 ">
+                      <div className="flex flex-col gap-2">
                         <DescValue
                           keyValue="Subject"
                           value={item.subject.name}
@@ -217,7 +222,7 @@ const Page = ({ params }: PageProps) => {
                         />
                       </div>
                       <Link href={`/time_table/${dayName}/${item.id}`}>
-                        <div className=" -translate-x-1  rounded-md p-2 transition-all duration-150 hover:translate-x-0 hover:text-emerald-500">
+                        <div className="-translate-x-1 rounded-md p-2 text-slate-800 transition-all duration-150 hover:translate-x-0 hover:text-emerald-500">
                           <LuExternalLink />
                         </div>
                       </Link>

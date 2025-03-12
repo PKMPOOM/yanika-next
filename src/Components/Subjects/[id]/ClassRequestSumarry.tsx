@@ -1,149 +1,154 @@
-"use client";
+"use client"
 
-import { formattedUppercase } from "@/lib/formattedUppercase";
-import { useBookingModalStore } from "@/store/BookingModalStore";
-import { Button, Form, Input, Space } from "antd";
-import dayjs from "dayjs";
-import { DeleteOutlined } from "@ant-design/icons";
+import { useBookingModalStore } from "@/store/BookingModalStore"
+import { Alert } from "antd"
+import dayjs, { Dayjs } from "dayjs"
+import timezone from "dayjs/plugin/timezone"
+import utc from "dayjs/plugin/utc"
+import { useShallow } from "zustand/react/shallow"
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
 
 const ClassRequestSumarry = () => {
-  const [
-    SelectedClass,
-    selectedDay,
-    startTime,
-    classDuration,
-    addOnStudent,
-    removeAddOnStudent,
-    addAddOnStudent,
-  ] = useBookingModalStore((state) => [
-    state.SelectedClass,
-    state.selectedDay,
-    state.startTime,
-    state.classDuration,
+    const [SelectedClass, selectedDay, startTime, classDuration, isError] =
+        useBookingModalStore(
+            useShallow((state) => [
+                state.SelectedClass,
+                state.selectedDay,
+                state.startTime,
+                state.classDuration,
+                state.isError,
+            ])
+        )
 
-    state.addOnStudent,
-    state.removeAddOnStudent,
-    state.addAddOnStudent,
-  ]);
-
-  const [form] = Form.useForm();
-
-  if (!SelectedClass) {
-    return <>No classs selected</>;
-  }
-
-  const onFinish = (values: any) => {
-    const { student_email } = values;
-    const isExisted = addOnStudent.includes(student_email);
-    if (isExisted) {
-      console.log("error");
-    } else {
-      addAddOnStudent(student_email);
-      form.resetFields();
+    if (!SelectedClass) {
+        return <>No classs selected</>
     }
-  };
 
-  return (
-    <div className=" flex flex-col gap-4 ">
-      <div className=" mb-2 mt-4  flex gap-x-16 ">
-        <div className=" flex flex-col  text-sm">
-          <p className=" text-slate-500">Class booked</p>
-          <p className=" text-2xl">{SelectedClass.subjectName}</p>
-          <p>Type: {formattedUppercase(SelectedClass.classType)} class</p>
-        </div>
-        <div className=" flex flex-col gap-4">
-          <div className="  flex flex-col gap-2 border-l-[1.5px] border-slate-300 px-4">
-            <p className=" text-slate-500">Selected date times</p>
-            <div className=" h-[1.5px] w-1/6 bg-slate-300"></div>
-            <div className=" flex flex-col gap-0">
-              <p>{selectedDay}</p>
-              {classDuration} Hours
-              <div>
-                {dayjs(startTime).format("H:mm")}-
-                {dayjs(startTime).add(classDuration, "hour").format("H:mm")}
-              </div>
-            </div>
-          </div>
-
-          <div className=" flex flex-col border-l-[1.5px] border-slate-300 px-4 text-sm">
-            <p className=" text-slate-500"> Price</p>
-
-            <p>
-              <span className=" text-lg font-semibold">
-                {SelectedClass.classPrice * classDuration} Thb
-              </span>
-            </p>
-            <p className=" text-xs text-slate-500">
-              {SelectedClass.classPrice} Thb / hours ({SelectedClass.classType}{" "}
-              class )
-            </p>
-          </div>
-        </div>
-      </div>
-      {SelectedClass.classType === "group" && (
-        <div className=" w-full ">
-          {/* 
-          //todo add basicform and push students list to store 
-          //todo add each submit have email validation
-           */}
-          <div className=" my-3 flex flex-col gap-2">
-            {addOnStudent.length > 0 ? (
-              addOnStudent.map((student_email) => (
-                <div
-                  key={student_email}
-                  className=" flex items-center justify-between  gap-2"
-                >
-                  <p className=" text-sm">{student_email}</p>
-                  <Button
-                    size="small"
-                    icon={<DeleteOutlined />}
-                    danger
-                    type="primary"
-                    onClick={() => {
-                      removeAddOnStudent(student_email);
-                    }}
-                  />
+    return (
+        <div className="flex flex-col gap-2">
+            <div className="mb-2 mt-4 flex gap-x-16">
+                <div className="flex flex-col text-sm">
+                    <p className="text-slate-500">Class booked</p>
+                    <p className="text-2xl">{SelectedClass.subjectName}</p>
+                    <p className="text-xs text-slate-500">
+                        {SelectedClass.classPrice} Credit / hours
+                    </p>
                 </div>
-              ))
-            ) : (
-              <div>Class group require at least 2 more students</div>
-            )}
-          </div>
+                <div className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-2 border-l-[1.5px] border-slate-300 px-4">
+                        <p className="text-slate-500">Selected date times</p>
+                        <div className="h-[1.5px] w-1/6 bg-slate-300" />
+                        <div className="flex flex-col gap-2">
+                            <div className=" grid grid-cols-2 gap-2">
+                                <p className=" font-semibold">Date:</p>
+                                <p>{Capitalize(selectedDay || "")}</p>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                                <p className=" font-semibold">Time:</p>
+                                <p>
+                                    {dayjs(startTime).format("H:mm")}-
+                                    {dayjs(startTime)
+                                        .add(classDuration, "hour")
+                                        .format("H:mm")}
+                                </p>
+                            </div>
+                            <div className=" grid grid-cols-2 gap-2">
+                                <p className=" font-semibold">Duration:</p>
+                                <p>{classDuration} Hour(s)</p>
+                            </div>
+                        </div>
+                    </div>
 
-          <Form form={form} onFinish={onFinish}>
-            <Form.Item
-              rules={[
-                { required: true, message: "email cannot be blank" },
-                {
-                  pattern: /\w{4,}@gmail.com$/gm,
-                  message: "Please use gmail",
-                },
-                () => ({
-                  validator(_, value) {
-                    const isExisted = addOnStudent.includes(value);
-                    if (!isExisted) {
-                      return Promise.resolve();
-                    }
-                    return Promise.reject(
-                      new Error("This email is already added"),
-                    );
-                  },
-                }),
-              ]}
-              name={"student_email"}
-            >
-              <Space.Compact block>
-                <Input placeholder="email" />
-                <Button htmlType="submit" type="primary">
-                  Add
-                </Button>
-              </Space.Compact>
-            </Form.Item>
-          </Form>
+                    <div className="flex flex-col border-l-[1.5px] border-slate-300 px-4 text-sm">
+                        <p className="text-slate-500"> Total Price</p>
+
+                        <p>
+                            <span className="text-lg font-semibold">
+                                {`${SelectedClass.classPrice * classDuration} Credit`}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <AlertMessage />
         </div>
-      )}
-    </div>
-  );
-};
+    )
+}
 
-export default ClassRequestSumarry;
+export default ClassRequestSumarry
+
+const AlertMessage = () => {
+    const [SelectedClass, selectedDay, startTime, classDuration, isError] =
+        useBookingModalStore(
+            useShallow((state) => [
+                state.SelectedClass,
+                state.selectedDay,
+                state.startTime,
+                state.classDuration,
+                state.isError,
+            ])
+        )
+
+    if (!selectedDay) return null
+
+    switch (true) {
+        case isError.message === "class_already_passed":
+            return (
+                <Alert
+                    message={
+                        <p className=" font-semibold text-rose-600">
+                            The start time of this class is already passed
+                        </p>
+                    }
+                    description="Please select a different day & time"
+                    type="error"
+                />
+            )
+        case isError.message === "less_than_24_hours":
+            return (
+                <Alert
+                    message={
+                        <p className=" font-semibold text-rose-600">
+                            The start time of this class is within 24 hours from
+                            now
+                        </p>
+                    }
+                    description="Please select a different day & time"
+                    type="error"
+                />
+            )
+        case isError.message === "not_enough_credit":
+            return (
+                <Alert
+                    message={
+                        <p className=" font-semibold text-rose-600">
+                            You do not have enough credit to book this class
+                        </p>
+                    }
+                    description="Please top up your credit"
+                    type="error"
+                />
+            )
+
+        default:
+            return (
+                <Alert
+                    message={
+                        <p className=" font-semibold ">
+                            This class will schedule for
+                            <span className=" text-emerald-600">{` this ${Capitalize(selectedDay)}`}</span>
+                        </p>
+                    }
+                    type="success"
+                />
+            )
+    }
+}
+
+const Capitalize = (str: string) => {
+    if (!str) return ""
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase()
+}

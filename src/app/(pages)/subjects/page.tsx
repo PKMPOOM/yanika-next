@@ -2,17 +2,12 @@ import Container from "@/Components/Global/Container";
 import React from "react";
 import AllSubjects from "@/Components/Subjects/AllSubjects";
 
-export const metadata = {
-  title: "Subjects",
-  description: "Meenites classroom management",
-};
-
-export default async function Subjects() {
+export default function Subjects() {
   return (
     <Container>
       <div className="flex flex-col gap-6 ">
         <div>
-          <p className=" rounded-lg bg-gradient-to-r from-emerald-500 to-emerald-400 p-6 text-3xl text-white">
+          <p className=" rounded-lg bg-linear-to-r from-emerald-500 to-emerald-400 p-6 text-3xl text-white">
             All subjects
           </p>
         </div>

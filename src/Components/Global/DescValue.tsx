@@ -3,8 +3,8 @@ import { ReactNode } from "react";
 import { LuArrowUpRight } from "react-icons/lu";
 
 type Props = {
-  keyValue: string;
-  value?: string;
+  keyValue: ReactNode;
+  value?: ReactNode;
   extra?: string;
   element?: ReactNode;
   textSize?: "sm" | "md" | "lg" | "xl";
@@ -32,20 +32,22 @@ const DescValue = ({
     }
   };
   return (
-    <div className={`flex gap-2 ${getTextSize()}  text-slate-500`}>
-      <p className=" ">{keyValue}:</p>
+    <div className={`flex gap-2 ${getTextSize()} text-slate-500`}>
+      <p className=" ">
+        {keyValue} {value ? ":" : ""}
+      </p>
       {href ? (
         <Link href={`/${href}`} target="_blank">
-          <div className=" flex items-baseline gap-1  font-semibold text-black">
+          <div className="flex items-baseline gap-1 font-semibold text-black">
             {value}
             {extra}
-            <div className=" text-emerald-500">
+            <div className="text-emerald-500">
               <LuArrowUpRight />
             </div>
           </div>
         </Link>
       ) : (
-        <div className=" font-semibold text-black">
+        <div className="font-medium text-black">
           {value}
           {extra}
         </div>
