@@ -38,15 +38,24 @@ export default async function SignIn() {
                     >
                         Empower Educators, Elevate Education.
                     </p>
-                    <div className="flex gap-2 mt-auto hover:underline">
-                        <Link href={routepath.PrivacyPolicy}>
-                            <p>Privacy Policy</p>
-                        </Link>
-                    </div>
                 </div>
             </div>
-            <div className="flex h-screen w-full xl:w-2/5">
+            <div className="flex flex-col h-screen w-full xl:w-2/5">
                 <SignInForm />
+                <div className="flex  w-full gap-2 mt-auto pb-5 ">
+                    <Link
+                        className="hover:underline"
+                        href={routepath.PrivacyPolicy}
+                    >
+                        <p>Privacy Policy</p>
+                    </Link>
+                    <Link
+                        className="hover:underline"
+                        href={routepath.TermsOfService}
+                    >
+                        <p>Terms of Service</p>
+                    </Link>
+                </div>
             </div>
         </main>
     )
